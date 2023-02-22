@@ -1,4 +1,4 @@
-from rental_store.data_storage import Film, RentLedger
+from rental_store.data_interface import Film, RentLedger
 
 
 class Client:
@@ -14,14 +14,14 @@ class Client:
         self.client_id = self.data_storage.create_client_and_set_id()
 
     @property
-    def rent_ledger(self):
-        return RentLedger()
+    def rent_ledger(self) -> list:
+        return self.data_storage.get_clients_rent_ledger(self.client_id)
 
     def rents(self, film: Film, up_front_days: int, charge: int, date_of_rent):
-        self.data_storage.add_film_to_clients_ledger(film.film_id, up_front_days, charge, date_of_rent)
+        self.data_storage.add_film_to_clients_ledger(self.client_id, film, up_front_days, charge, date_of_rent)
 
     def returns(self, film: Film, surcharge, date_of_return):
-        self.data_storage.mark_film_as_returned_in_clients_ledger(film.film_id, surcharge, date_of_return)
+        self.data_storage.mark_film_as_returned_in_clients_ledger(self.client_id, film, surcharge, date_of_return)
 
 
 

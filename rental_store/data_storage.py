@@ -4,7 +4,7 @@ from rental_store.data_interface import DataStorageInterface, Film, RentLedger
 class MemoryDataStorage(DataStorageInterface):
 
     def __init__(self):
-        self.clients = [[0, 1], [[], []]]
+        self.clients_ledgers = [[], []]
         self.film_inventory = [
             {
                 "id": 0,
@@ -62,14 +62,32 @@ class MemoryDataStorage(DataStorageInterface):
         return film
 
     def create_client_and_set_id(self):
-        new_id = len(self.clients[0])
-        self.clients[0].append(new_id)
-        self.clients[1].append([])
+        new_id = len(self.clients_ledgers)
+        self.clients_ledgers.append([])
 
         return new_id
 
-    def add_film_to_clients_ledger(self, film_id: int, up_front_days: int, charge, date_of_rent):
-        pass
+    def add_film_to_clients_ledger(self, client_id: int, film: Film, up_front_days: int, charge, date_of_rent):
+        self.clients_ledgers[client_id].append(
+            {
+                "id": film.film_id,
+                "up_front_days": up_front_days,
+                "charge": charge,
+                "date_of_rent": date_of_rent
+            }
+        )
 
-    def mark_film_as_returned_in_clients_ledger(self, film_id, surcharge, date_of_return):
-        pass
+    def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
+        for item in self.clients_ledgers[client_id]:
+            if item["id"] == film.film_id:
+                item.update(
+                    {
+                        "surcharge": surcharge,
+                        "date_of_rent": date_of_return
+                    }
+                )
+
+        self.clients_ledgers[client_id] = "DUPA!"
+
+    def get_clients_rent_ledger(self, client_id: int) -> RentLedger:
+        return self.clients_ledgers[client_id]

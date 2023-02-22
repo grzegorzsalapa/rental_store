@@ -60,8 +60,6 @@ def rent_films(rent_request: RentRequest):
 @store.post("/films/return")
 def return_films(return_request: ReturnRequest):
 
-    print(return_request.client_id)
-
     response_details = []
 
     for item in return_request.returned_films:
@@ -87,6 +85,13 @@ def return_films(return_request: ReturnRequest):
 def get_films():
 
     return film_inventory.get_all()
+
+
+@store.get("/ledger/{client_id}")
+def get_ledger(client_id: int):
+
+    return Client(data_storage, client_id).rent_ledger
+
 
 @store.post("/demo")
 def demo():

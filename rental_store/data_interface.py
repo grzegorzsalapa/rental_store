@@ -1,6 +1,18 @@
 from abc import ABC, abstractmethod
 
 
+class Film:
+
+    def __init__(self, film_id, film_title, film_type):
+        self.film_id = film_id
+        self.film_title = film_title
+        self.film_type = film_type
+
+
+class RentLedger:
+    pass
+
+
 class DataStorageInterface(ABC):
     @abstractmethod
     def add_film_types(self, film_types: set):
@@ -15,7 +27,7 @@ class DataStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def add_film_to_inventory(self, film: dict):
+    def add_film_to_inventory(self, film: Film):
         pass
 
     @abstractmethod
@@ -31,21 +43,13 @@ class DataStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def add_film_to_clients_ledger(self, film_id: int, up_front_days: int, charge, date_of_rent):
+    def add_film_to_clients_ledger(self, client_id: int, film: Film, up_front_days: int, charge, date_of_rent):
         pass
 
     @abstractmethod
-    def mark_film_as_returned_in_clients_ledger(self, film_id, surcharge, date_of_return):
+    def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
         pass
 
-
-class Film:
-
-    def __init__(self, film_id, film_title, film_type):
-        self.film_id = film_id
-        self.film_title = film_title
-        self.film_type = film_type
-
-
-class RentLedger:
-    pass
+    @abstractmethod
+    def get_clients_rent_ledger(self, client_id: int) -> RentLedger:
+        pass
