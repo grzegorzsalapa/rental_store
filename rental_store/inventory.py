@@ -1,4 +1,4 @@
-from rental_store.data_storage import DataStorageInterface, Film
+from rental_store.data_interface import DataStorageInterface, Film
 
 
 class FilmInventory:

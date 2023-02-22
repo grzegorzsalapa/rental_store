@@ -62,16 +62,23 @@ def test_api_returns_films_and_returns_surcharge():
             "/films/return",
             json={
                 "client_id": "0",
-                "film_id": "0"
+                "returned_films": [
+                    {
+                        "film_id": "0"
+                    }
+                ]
             }
         )
         return response
 
     def assertion(response):
-        assert response.json() == {
-            "price": "40",
-            "currency": "SEK"
-        }
+        assert response.json() == [
+            {
+                'film_id': 0,
+                'surcharge': 30,
+                'currency': 'SEK'
+            }
+        ]
 
     with patch('rental_store.store_API.data_storage', new=arrangement()):
         action_result = action()
@@ -81,19 +88,22 @@ def test_api_returns_films_and_returns_surcharge():
 def test_api_returns_all_films():
 
     def arrangement():
-        data_storage_mock = MagicMock()
-        data_storage_mock.get_all_films_from_inventory = MagicMock(return_value=[
-            {"id": 0,
-             "title": "Matrix 11",
-             "type": "New release",
-             },
-            {"id": 1,
-             "title": "Spider Man",
-             "type": "Regular rental",
-             }
-        ])
+        film_inventory_mock = MagicMock()
+        film_inventory_mock.get_all = MagicMock(return_value=[
+                {
+                    "id": 0,
+                    "title": "Matrix 11",
+                    "type": "New release"
+                 },
+                {
+                    "id": 1,
+                    "title": "Spider Man",
+                    "type": "Regular rental"
+                 }
+            ]
+        )
 
-        return data_storage_mock
+        return film_inventory_mock
 
     def action():
         response = test_client.get("/films")
@@ -102,17 +112,19 @@ def test_api_returns_all_films():
 
     def assertion(response):
         assert response.json() == [
-            {"id": 0,
-             "title": "Matrix 11",
-             "type": "New release",
+            {
+                "id": 0,
+                "title": "Matrix 11",
+                "type": "New release"
              },
-            {"id": 1,
-             "title": "Spider Man",
-             "type": "Regular rental",
+            {
+                "id": 1,
+                "title": "Spider Man",
+                "type": "Regular rental"
              }
         ]
 
-    with patch('rental_store.store_API.data_storage', new=arrangement()):
+    with patch('rental_store.store_API.film_inventory', new=arrangement()):
         action_result = action()
         assertion(action_result)
 

@@ -1,4 +1,4 @@
-from rental_store.inventory import Film
+from rental_store.data_storage import Film, RentLedger
 
 
 class Client:
@@ -24,5 +24,4 @@ class Client:
         self.data_storage.mark_film_as_returned_in_clients_ledger(film.film_id, surcharge, date_of_return)
 
 
-class RentLedger:
-    pass
+
