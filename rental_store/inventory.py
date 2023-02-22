@@ -1,17 +1,9 @@
-from rental_store.data_storage import MemoryDataStorage
-
-
-class Film:
-
-    def __init__(self, film_id, title, film_type):
-        self.film_id = film_id
-        self.title = title
-        self.film_type = film_type
+from rental_store.data_storage import DataStorageInterface, Film
 
 
 class FilmInventory:
 
-    def __init__(self, data_storage: MemoryDataStorage):
+    def __init__(self, data_storage: DataStorageInterface):
         self.data_storage = data_storage
 
     def add(self, film: Film):
@@ -20,8 +12,8 @@ class FilmInventory:
     def remove(self, film_id: int):
         pass
 
-    def get_by_id(self, film_id: int):
-        return Film(self.data_storage.get_film_from_inventory(film_id))
+    def get_by_id(self, film_id: int) -> Film:
+        return self.data_storage.get_film_from_inventory(film_id)
 
     def get_all(self):
         return self.data_storage.get_all_films_from_inventory()
@@ -29,19 +21,19 @@ class FilmInventory:
 
 class FilmTypes:
 
-    def __init__(self, data_storage: MemoryDataStorage):
+    def __init__(self, data_storage: DataStorageInterface):
         self.data_storage = data_storage
 
-    def add(self, film_types: list):
+    def add(self, film_types: set):
         self.data_storage.add_item_types(film_types)
 
-    def all(self):
+    def get_all(self) -> set:
         return self.data_storage.get_item_types()
 
 
 class FilmPriceList:
 
-    def __init__(self, data_storage: MemoryDataStorage):
+    def __init__(self, data_storage: DataStorageInterface):
         self.data_storage = data_storage
 
     def update(self):

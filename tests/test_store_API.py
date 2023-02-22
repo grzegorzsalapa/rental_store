@@ -11,12 +11,8 @@ def test_api_rents_films_and_returns_charge():
 
     def arrangement():
         class ChargeCalculatorSelectorMock(MagicMock):
-            def calculate_rent_charge(self, film_id):
+            def calculate_rent_charge(self, up_front_days):
                 return 40, "SEK"
-
-        class ClientMock(MagicMock):
-            pass
-
 
         return ChargeCalculatorSelectorMock
 
@@ -39,10 +35,9 @@ def test_api_rents_films_and_returns_charge():
     def assertion(response):
         assert response.json() == [{"film_id": 0, "charge": "40", "currency": "SEK"}]
 
-    with patch('rental_store.store_API.rent_films.client()'):
-        with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
-            action_result = action()
-            assertion(action_result)
+    with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
+        action_result = action()
+        assertion(action_result)
 
 
 def test_returns_films_and_returns_surcharge():
