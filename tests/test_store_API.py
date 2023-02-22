@@ -33,7 +33,7 @@ def test_api_rents_films_and_returns_charge():
         return response
 
     def assertion(response):
-        assert response.json() == [{"film_id": 0, "charge": "40", "currency": "SEK"}]
+        assert response.json() == [{"film_id": 0, "charge": 40, "currency": "SEK"}]
 
     with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
         action_result = action()

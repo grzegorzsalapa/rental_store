@@ -26,7 +26,7 @@ class RentRequest(BaseModel):
 def rent_films(rent_request: RentRequest):
 
     film_inventory = FilmInventory(data_storage)
-    client = Client(rent_request.client_id)
+    client = Client(data_storage, rent_request.client_id)
     response_details = []
 
     for item in rent_request.rented_films:
@@ -34,7 +34,7 @@ def rent_films(rent_request: RentRequest):
         calculator = ChargeCalculatorSelector(film)
         charge, currency = calculator.calculate_rent_charge(item.up_front_days)
         client.rents(film, item.up_front_days, charge, date.today())
-        response_details.append({"film_id": film.id, "charge": charge, "currency": currency})
+        response_details.append({"film_id": film.film_id, "charge": charge, "currency": currency})
 
     return response_details
 

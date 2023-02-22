@@ -19,7 +19,7 @@ class DataStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def get_all_films(self) -> list:
+    def get_all_films_from_inventory(self) -> list:
         pass
 
     @abstractmethod
@@ -41,16 +41,16 @@ class DataStorageInterface(ABC):
 
 class Film:
 
-    def __init__(self, id_, title, type_):
-        self.id_ = id_
-        self.title = title
-        self.type_ = type_
+    def __init__(self, film_id, film_title, film_type):
+        self.film_id = film_id
+        self.film_title = film_title
+        self.film_type = film_type
 
 
 class MemoryDataStorage(DataStorageInterface):
 
     def __init__(self):
-        self.clients = [[], []]
+        self.clients = [[0, 1], [[], []]]
         self.film_inventory = [
             {
                 "id": 0,
@@ -97,13 +97,13 @@ class MemoryDataStorage(DataStorageInterface):
     def add_film_to_inventory(self, film: dict):
         pass
 
-    def get_all_films(self) -> list:
+    def get_all_films_from_inventory(self) -> list:
         return self.film_inventory
 
     def get_film_from_inventory(self, film_id: int) -> Film:
         for item in self.film_inventory:
             if item["id"] == film_id:
-                film = Film()
+                film = Film(*[value for value in item.values()])
 
         return film
 
