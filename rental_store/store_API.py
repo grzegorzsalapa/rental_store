@@ -25,11 +25,6 @@ class RentRequest(BaseModel):
 @store.post("/films/rent")
 def rent_films(rent_request: RentRequest):
 
-    print(rent_request.dict())
-    print(rent_request.client_id)
-    print(rent_request.rented_films[0].film_id)
-    print(rent_request.rented_films[0].up_front_days)
-
     film_inventory = FilmInventory(data_storage)
     client = Client(rent_request.client_id)
     response_details = []
@@ -54,3 +49,8 @@ def get_films():
     film_inventory = FilmInventory(data_storage)
 
     return film_inventory.get_all()
+
+@store.post("/demo")
+def demo():
+    for i in range(10):
+        Client(data_storage)

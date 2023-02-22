@@ -4,22 +4,7 @@ from rental_store.store_API import store
 from unittest.mock import patch, MagicMock
 
 
-client = TestClient(store)
-
-
-def _set_up_mocked_data_storage(client_id=None, client_metadata=None):
-
-    data_storage = MagicMock(name="DataStorage_Instance")
-    data_storage.add_client_and_set_id = MagicMock(return_value=client_id)
-    data_storage.get_client = MagicMock(return_value=client_metadata)
-    data_storage.add_client_rented_items = MagicMock()
-    data_storage.add_item_types = MagicMock()
-    data_storage.get_item_types = MagicMock()
-    data_storage.add_items_to_inventory = MagicMock()
-    data_storage.get_all_items_from_inventory = MagicMock()
-    data_storage.get_items_from_inventory = MagicMock()
-
-    return data_storage
+test_client = TestClient(store)
 
 
 def test_api_rents_films_and_returns_charge():
@@ -29,10 +14,14 @@ def test_api_rents_films_and_returns_charge():
             def calculate_rent_charge(self, film_id):
                 return 40, "SEK"
 
+        class ClientMock(MagicMock):
+            pass
+
+
         return ChargeCalculatorSelectorMock
 
     def action():
-        response = client.post(
+        response = test_client.post(
             "/films/rent",
             json={
                 "client_id": 0,
@@ -50,9 +39,10 @@ def test_api_rents_films_and_returns_charge():
     def assertion(response):
         assert response.json() == [{"film_id": 0, "charge": "40", "currency": "SEK"}]
 
-    with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
-        action_result = action()
-        assertion(action_result)
+    with patch('rental_store.store_API.rent_films.client()'):
+        with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
+            action_result = action()
+            assertion(action_result)
 
 
 def test_returns_films_and_returns_surcharge():
@@ -73,7 +63,7 @@ def test_returns_films_and_returns_surcharge():
         return _set_up_mocked_data_storage(client_metadata=client_metadata)
 
     def action():
-        response = client.post(
+        response = test_client.post(
             "/films/return",
             json={
                 "client_id": "0",
@@ -111,7 +101,7 @@ def test_api_returns_all_films():
         return data_storage_mock
 
     def action():
-        response = client.get("/films")
+        response = test_client.get("/films")
 
         return response
 
@@ -130,3 +120,18 @@ def test_api_returns_all_films():
     with patch('rental_store.store_API.data_storage', new=arrangement()):
         action_result = action()
         assertion(action_result)
+
+
+def _set_up_mocked_data_storage(client_id=None, client_metadata=None):
+
+    data_storage = MagicMock(name="DataStorage_Instance")
+    data_storage.add_client_and_set_id = MagicMock(return_value=client_id)
+    data_storage.get_client = MagicMock(return_value=client_metadata)
+    data_storage.add_client_rented_items = MagicMock()
+    data_storage.add_item_types = MagicMock()
+    data_storage.get_item_types = MagicMock()
+    data_storage.add_items_to_inventory = MagicMock()
+    data_storage.get_all_items_from_inventory = MagicMock()
+    data_storage.get_items_from_inventory = MagicMock()
+
+    return data_storage
