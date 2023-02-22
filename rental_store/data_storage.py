@@ -79,15 +79,13 @@ class MemoryDataStorage(DataStorageInterface):
 
     def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
         for item in self.clients_ledgers[client_id]:
-            if item["id"] == film.film_id:
+            if item["id"] == film.film_id and "date_of_return" not in item.keys():
                 item.update(
                     {
                         "surcharge": surcharge,
-                        "date_of_rent": date_of_return
+                        "date_of_return": date_of_return
                     }
                 )
-
-        self.clients_ledgers[client_id] = "DUPA!"
 
     def get_clients_rent_ledger(self, client_id: int) -> RentLedger:
         return self.clients_ledgers[client_id]
