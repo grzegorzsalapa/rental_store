@@ -40,7 +40,7 @@ def test_api_rents_films_and_returns_charge():
         assertion(action_result)
 
 
-def test_returns_films_and_returns_surcharge():
+def test_api_returns_films_and_returns_surcharge():
 
     def arrangement():
         client_metadata = {
