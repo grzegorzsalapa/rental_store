@@ -3,13 +3,14 @@ from pydantic import BaseModel
 from datetime import date
 from rental_store.data_storage import MemoryDataStorage
 from rental_store.inventory import FilmInventory
-from rental_store.calculators import ChargeCalculatorSelector
+from rental_store.calculators import PriceCalculator
 from rental_store.client import Client
 
 
 store = FastAPI()
 
 data_storage = MemoryDataStorage()
+price_calculator = PriceCalculator()
 
 
 class RentListModel(BaseModel):
@@ -31,8 +32,7 @@ def rent_films(rent_request: RentRequest):
 
     for item in rent_request.rented_films:
         film = film_inventory.get_by_id(item.film_id)
-        calculator = ChargeCalculatorSelector(film)
-        charge, currency = calculator.calculate_rent_charge(item.up_front_days)
+        charge, currency = price_calculator.calculate_rent_charge(film, item.up_front_days)
         client.rents(film, item.up_front_days, charge, date.today())
         response_details.append({"film_id": film.film_id, "charge": charge, "currency": currency})
 

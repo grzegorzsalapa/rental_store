@@ -10,11 +10,11 @@ test_client = TestClient(store)
 def test_api_rents_films_and_returns_charge():
 
     def arrangement():
-        class ChargeCalculatorSelectorMock(MagicMock):
+        class PriceCalculatorMock(MagicMock):
             def calculate_rent_charge(self, up_front_days):
                 return 40, "SEK"
 
-        return ChargeCalculatorSelectorMock
+        return PriceCalculatorMock
 
     def action():
         response = test_client.post(
@@ -35,7 +35,7 @@ def test_api_rents_films_and_returns_charge():
     def assertion(response):
         assert response.json() == [{"film_id": 0, "charge": 40, "currency": "SEK"}]
 
-    with patch('rental_store.store_API.ChargeCalculatorSelector', new=arrangement()):
+    with patch('rental_store.store_API.PriceCalculator', new=arrangement()):
         action_result = action()
         assertion(action_result)
 
