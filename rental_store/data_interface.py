@@ -37,6 +37,15 @@ class Film:
         return self.film_type
 
 
+class PriceList:
+
+    def __init__(self, currency, premium_price, basic_price):
+        self.currency = currency
+        self.premium_price = premium_price
+        self.basic_price = basic_price
+
+
+
 class FilmRentRequestItem(BaseModel):
     film_id: int
     up_front_days: int

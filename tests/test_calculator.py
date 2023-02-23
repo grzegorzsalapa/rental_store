@@ -1,30 +1,29 @@
 import pytest
-from unittest.mock import patch, MagicMock
-from rental_store.calculator import PriceCalculator
-from rental_store.data_interface import Film, Customer
+from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
+from rental_store.data_interface import Film, Customer, PriceList
 from datetime import date, timedelta
 
 
 def test_calculate_rent_charge_for_new_release():
 
     def arrangement():
+
+        price_list = PriceList("SEK", 40, 30)
+        film = Film(0, "Matrix 11", "New release")
         up_front_days = 1
-        film_mock = Film(0, "Matrix 11", "New release")
 
-        return film_mock, up_front_days
+        return price_list, film, up_front_days
 
-    def action(film_mock, up_front_days):
-
-        price_calculator = PriceCalculator()
-        charge = price_calculator.calculate_rent_charge(film_mock, up_front_days)
+    def action(price_list, film, up_front_days):
+        charge = calculate_rent_charge(price_list, film, up_front_days)
 
         return charge
 
     def assertion(charge):
         assert charge == (40, "SEK")
 
-    film_mock, up_front_days = arrangement()
-    action_result = action(film_mock, up_front_days)
+    price_list, film, up_front_days = arrangement()
+    action_result = action(price_list, film, up_front_days)
     assertion(action_result)
 
 
@@ -32,44 +31,36 @@ def test_calculate_rent_surcharge_for_new_release():
 
     def arrangement():
 
-        film_mock = Film(0, "Matrix 11", "New release")
+        price_list = PriceList("SEK", 40, 30)
+        film = Film(0, "Matrix 11", "New release")
 
-        class CustomerMock(MagicMock):
+        today = date.today()
+        d = timedelta(days=3)
+        rent_date = (today - d)
 
-            def rent_ledger(self):
+        print(rent_date)
 
-                today = date.today()
-                d = timedelta(days=3)
-                rent_date = (today - d).day
+        rentals = [
+            {
+                "film_id": 0,
+                "up_front_days": 1,
+                "charge": 40,
+                "date_of_rent": rent_date
+            }
+        ]
 
-                rent_ledger_mock = [
-                    {
-                        "film_id": 0,
-                        "up_front_days": 1,
-                        "charge": 40,
-                        "date_of_rent": rent_date
-                    }
-                ]
+        customer = Customer(7, rentals)
 
-                return rent_ledger_mock
+        return price_list, film, customer
 
-        return film_mock, CustomerMock
-
-    def action(film_mock):
-
-        data_storage = MagicMock()
-        test_customer = Customer(data_storage)
-        price_calculator = PriceCalculator()
-
-        charge = price_calculator.calculate_rent_charge(film_mock, test_customer)
+    def action(price_list, film, customer):
+        charge = calculate_rent_surcharge(price_list, film, customer)
 
         return charge
 
     def assertion(charge):
-        assert charge == (40, "SEK")
+        assert charge == (80, "SEK")
 
-    film_mock, CustomerMock = arrangement()
-
-    with patch('tests.test_calculator.Customer', new=CustomerMock):
-        action_result = action(film_mock)
-        assertion(action_result)
+    price_list, film, customer = arrangement()
+    action_result = action(price_list, film, customer)
+    assertion(action_result)

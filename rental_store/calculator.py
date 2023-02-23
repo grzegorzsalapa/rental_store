@@ -1,34 +1,45 @@
-from rental_store.data_interface import Film, Customer
-from datetime import date
+from rental_store.data_interface import Film, Customer, PriceList
+from datetime import date, datetime
 
 
-class PriceCalculator:
+def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days):
 
-    premium_price = 40
-    basic_price = 30
+    premium_price = price_list.premium_price
+    basic_price = price_list.basic_price
+    currency = price_list.currency
 
-    def calculate_rent_charge(self, film: Film, up_front_days):
+    print(premium_price)
 
-        if film.film_type == "New release":
-            return PriceCalculator.premium_price * up_front_days, "SEK"
+    if film.film_type == "New release":
+        charge = premium_price * up_front_days
 
-        elif film.film_type == "Regular":
-            return 30, "SEK"
+        return charge, currency
 
-        elif film.film_type == "Old":
-            return 20, "SEK"
+    elif film.film_type == "Regular":
+        return 30, "SEK"
 
-    def calculate_rent_surcharge(self, film: Film, customer: Customer):
+    elif film.film_type == "Old":
+        return 20, "SEK"
 
-        if film.film_type == "New":
-            for item in customer.rent_ledger:
-                if item["id"] == film.film_id and "date_of_return" not in item.keys():
-                    rent_duration = (date.today() - item["date_of_rent"]).days
 
-            return PriceCalculator.premium_price * rent_duration, "SEK"
+def calculate_rent_surcharge(price_list: PriceList, film: Film, customer: Customer):
 
-        elif film.film_type == "Regular":
-            return 31, "SEK"
+    premium_price = price_list.premium_price
+    basic_price = price_list.basic_price
+    currency = price_list.currency
 
-        elif film.film_type == "Old":
-            return 21, "SEK"
+    if film.film_type == "New release":
+        for item in customer.rent_ledger:
+            if item["film_id"] == film.film_id and "date_of_return" not in item.keys():
+                rent_duration = (date.today() - item["date_of_rent"]).days
+                overdue = rent_duration - item["up_front_days"]
+
+        charge = overdue * premium_price
+
+        return charge, currency
+
+    elif film.film_type == "Regular":
+        return 31, "SEK"
+
+    elif film.film_type == "Old":
+        return 21, "SEK"
