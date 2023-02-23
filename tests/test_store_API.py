@@ -2,7 +2,8 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch, MagicMock
-from rental_store.data_interface import FilmRentResponse, FilmRentResponseItem
+from rental_store.data_interface import FilmRentResponse, FilmRentResponseItem, FilmReturnResponse,\
+    FilmReturnResponseItem
 
 
 test_client = TestClient(store)
@@ -10,8 +11,8 @@ test_client = TestClient(store)
 
 def test_api_rents_films_and_returns_charge():
 
-    def arrangement(film_id, up_front_days):
-        film_rent_response_item = [FilmRentResponseItem(film_id=film_id, charge=40, currency="SEK")]
+    def arrangement():
+        film_rent_response_item = [FilmRentResponseItem(film_id=0, charge=40, currency="SEK")]
         film_rent_response_mock = FilmRentResponse(rented_films=film_rent_response_item)
 
         return film_rent_response_mock
@@ -51,19 +52,10 @@ def test_api_rents_films_and_returns_charge():
 def test_api_returns_films_and_returns_surcharge():
 
     def arrangement():
-        client_metadata = {
-            "client_id": 0,
-            "rented_films": [
-                {
-                    "film_id": 0,
-                    "date_of_rent": "10/02/2023",
-                    "up_front_days": 3,
-                    "date_of_return": None
-                }
-            ]
-        }
+        film_return_response_item = [FilmReturnResponseItem(film_id=3, surcharge=30, currency="SEK")]
+        film_return_response_mock = FilmReturnResponse(returned_films=film_return_response_item)
 
-        return _set_up_mocked_data_storage(client_metadata=client_metadata)
+        return film_return_response_mock
 
     def action():
         response = test_client.post(
@@ -72,7 +64,7 @@ def test_api_returns_films_and_returns_surcharge():
                 "client_id": "0",
                 "returned_films": [
                     {
-                        "film_id": "0"
+                        "film_id": "3"
                     }
                 ]
             }
@@ -80,15 +72,17 @@ def test_api_returns_films_and_returns_surcharge():
         return response
 
     def assertion(response):
-        assert response.json() == [
-            {
-                'film_id': 0,
-                'surcharge': 30,
-                'currency': 'SEK'
-            }
-        ]
+        assert response.json() == {
+            "returned_films": [
+                {
+                    'film_id': 3,
+                    'surcharge': 30,
+                    'currency': 'SEK'
+                }
+            ]
+        }
 
-    with patch('rental_store.store_API.data_storage', new=arrangement()):
+    with patch('rental_store.store_API.FilmReturnResponse', return_value=arrangement()):
         action_result = action()
         assertion(action_result)
 

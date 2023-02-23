@@ -4,7 +4,8 @@ from rental_store.data_storage import MemoryDataStorage
 from rental_store.inventory import FilmInventory
 from rental_store.calculator import PriceCalculator
 from rental_store.client import Client
-from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem
+from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem,\
+    FilmReturnResponse, FilmReturnResponseItem
 
 
 store = FastAPI()
@@ -32,10 +33,10 @@ def rent_films(rent_request: FilmRentRequest):
     return FilmRentResponse(rented_films=response_items)
 
 
-@store.post("/films/return")
+@store.post("/films/return", response_model=FilmReturnResponse)
 def return_films(return_request: FilmReturnRequest):
 
-    response_details = []
+    response_items = []
 
     for item in return_request.returned_films:
 
@@ -44,16 +45,9 @@ def return_films(return_request: FilmReturnRequest):
         surcharge, currency = price_calculator.calculate_rent_surcharge(film, client)
 
         client.returns(film, surcharge, date.today())
+        response_items.append(FilmReturnResponseItem(film_id=film.film_id, surcharge=surcharge, currency=currency))
 
-        response_details.append(
-            {
-                "film_id": film.film_id,
-                "surcharge": surcharge,
-                "currency": currency
-            }
-        )
-
-    return response_details
+    return FilmReturnResponse(returned_films=response_items)
 
 
 @store.get("/films")

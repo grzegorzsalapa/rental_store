@@ -14,23 +14,23 @@ class RentLedger:
     pass
 
 
-class FilmRentItemModel(BaseModel):
+class FilmRentRequestItem(BaseModel):
     film_id: int
     up_front_days: int
 
 
 class FilmRentRequest(BaseModel):
     client_id: int
-    rented_films: list[FilmRentItemModel]
+    rented_films: list[FilmRentRequestItem]
 
 
-class FilmReturnItemModel(BaseModel):
+class FilmReturnRequestItem(BaseModel):
     film_id: int
 
 
 class FilmReturnRequest(BaseModel):
     client_id: int
-    returned_films: list[FilmReturnItemModel]
+    returned_films: list[FilmReturnRequestItem]
 
 
 class FilmRentResponseItem(BaseModel):
@@ -41,6 +41,16 @@ class FilmRentResponseItem(BaseModel):
 
 class FilmRentResponse(BaseModel):
     rented_films: list[FilmRentResponseItem]
+
+
+class FilmReturnResponseItem(BaseModel):
+    film_id: int
+    surcharge: int
+    currency: str
+
+
+class FilmReturnResponse(BaseModel):
+    returned_films: list[FilmReturnResponseItem]
 
 
 class DataStorageInterface(ABC):

@@ -14,17 +14,17 @@ class MemoryDataStorage(DataStorageInterface):
             {
                 "id": 1,
                 "title": "Spider Man",
-                "type": "Regular rental",
+                "type": "Regular films",
              },
             {
                 "id": 2,
                 "title": "Spider Man 2",
-                "type": "Regular rental",
+                "type": "Regular films",
              },
             {
                 "id": 3,
                 "title": "Out of Africa",
-                "type": "Old film",
+                "type": "Old films",
              }
         ]
         self.film_types = {"New release", "Regular films", "Old films"}
