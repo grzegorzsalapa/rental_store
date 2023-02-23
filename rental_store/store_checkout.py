@@ -1,6 +1,5 @@
 from datetime import date
 from typing import Type
-from rental_store.inventory import FilmInventory
 from rental_store.calculator import PriceCalculator
 from rental_store.data_interface import \
     RepositoryInterface,\
@@ -20,7 +19,6 @@ class StoreCheckout:
 
     def __init__(self, DataStorage: Type[RepositoryInterface]):
         self.repository = DataStorage()
-        self.film_inventory = FilmInventory(self.repository)
         self.price_calculator = PriceCalculator()
 
     def rent_films(self, rent_request: FilmRentRequest):
