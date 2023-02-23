@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch, MagicMock
 from rental_store.data_interface import FilmRentResponse, FilmRentResponseItem, FilmReturnResponse,\
-    FilmReturnResponseItem
+    FilmReturnResponseItem, FilmInventoryModel, FilmInventoryItemModel
 
 
 test_client = TestClient(store)
@@ -90,20 +90,9 @@ def test_api_returns_films_and_returns_surcharge():
 def test_api_returns_all_films():
 
     def arrangement():
-        film_inventory_mock = MagicMock()
-        film_inventory_mock.get_all = MagicMock(return_value=[
-                {
-                    "id": 0,
-                    "title": "Matrix 11",
-                    "type": "New release"
-                 },
-                {
-                    "id": 1,
-                    "title": "Spider Man",
-                    "type": "Regular rental"
-                 }
-            ]
-        )
+        film_inventory_item_1 = FilmInventoryItemModel(film_id=0, film_title="Matrix 11", film_type="New release")
+        film_inventory_item_2 = FilmInventoryItemModel(film_id=1, film_title="Spider Man", film_type="Regular")
+        film_inventory_mock = FilmInventoryModel(film_inventory=[film_inventory_item_1, film_inventory_item_2])
 
         return film_inventory_mock
 
@@ -113,34 +102,21 @@ def test_api_returns_all_films():
         return response
 
     def assertion(response):
-        assert response.json() == [
-            {
-                "id": 0,
-                "title": "Matrix 11",
-                "type": "New release"
-             },
-            {
-                "id": 1,
-                "title": "Spider Man",
-                "type": "Regular rental"
-             }
-        ]
+        assert response.json() == {
+            "film_inventory": [
+                {
+                    "film_id": 0,
+                    "film_title": "Matrix 11",
+                    "film_type": "New release"
+                 },
+                {
+                    "film_id": 1,
+                    "film_title": "Spider Man",
+                    "film_type": "Regular"
+                 }
+            ]
+        }
 
-    with patch('rental_store.store_API.film_inventory', new=arrangement()):
+    with patch('rental_store.store_API.FilmInventoryModel', return_value=arrangement()):
         action_result = action()
         assertion(action_result)
-
-
-def _set_up_mocked_data_storage(client_id=None, client_metadata=None):
-
-    data_storage = MagicMock(name="DataStorage_Instance")
-    data_storage.add_client_and_set_id = MagicMock(return_value=client_id)
-    data_storage.get_client = MagicMock(return_value=client_metadata)
-    data_storage.add_client_rented_items = MagicMock()
-    data_storage.add_item_types = MagicMock()
-    data_storage.get_item_types = MagicMock()
-    data_storage.add_items_to_inventory = MagicMock()
-    data_storage.get_all_items_from_inventory = MagicMock()
-    data_storage.get_items_from_inventory = MagicMock()
-
-    return data_storage

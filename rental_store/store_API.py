@@ -5,7 +5,7 @@ from rental_store.inventory import FilmInventory
 from rental_store.calculator import PriceCalculator
 from rental_store.client import Client
 from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem,\
-    FilmReturnResponse, FilmReturnResponseItem
+    FilmReturnResponse, FilmReturnResponseItem, FilmInventoryItemModel, FilmInventoryModel
 
 
 store = FastAPI()
@@ -53,7 +53,12 @@ def return_films(return_request: FilmReturnRequest):
 @store.get("/films")
 def get_films():
 
-    return film_inventory.get_all()
+    films = film_inventory.get_all()
+    films_formatted = []
+    for item in films:
+        films_formatted = FilmInventoryItemModel(**item)
+
+    return FilmInventoryModel(film_inventory=films_formatted)
 
 
 @store.get("/ledger/{client_id}")

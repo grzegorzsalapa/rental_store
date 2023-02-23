@@ -53,6 +53,16 @@ class FilmReturnResponse(BaseModel):
     returned_films: list[FilmReturnResponseItem]
 
 
+class FilmInventoryItemModel(BaseModel):
+    film_id: int
+    film_title: str
+    film_type: str
+
+
+class FilmInventoryModel(BaseModel):
+    film_inventory: list[FilmInventoryItemModel]
+
+
 class DataStorageInterface(ABC):
     @abstractmethod
     def add_film_types(self, film_types: set):

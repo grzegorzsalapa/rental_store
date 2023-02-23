@@ -7,27 +7,27 @@ class MemoryDataStorage(DataStorageInterface):
         self.clients_ledgers = [[], []]
         self.film_inventory = [
             {
-                "id": 0,
-                "title": "Matrix 11",
-                "type": "New release",
+                "film_id": 0,
+                "film_title": "Matrix 11",
+                "film_type": "New release",
              },
             {
-                "id": 1,
-                "title": "Spider Man",
-                "type": "Regular films",
+                "film_id": 1,
+                "film_title": "Spider Man",
+                "film_type": "Regular",
              },
             {
-                "id": 2,
-                "title": "Spider Man 2",
-                "type": "Regular films",
+                "film_id": 2,
+                "film_title": "Spider Man 2",
+                "film_type": "Regular",
              },
             {
-                "id": 3,
-                "title": "Out of Africa",
-                "type": "Old films",
+                "film_id": 3,
+                "film_title": "Out of Africa",
+                "film_type": "Old",
              }
         ]
-        self.film_types = {"New release", "Regular films", "Old films"}
+        self.film_types = {"New release", "Regular", "Old"}
         self.film_price_list = [
             {
                 "premium price": 40,
@@ -56,7 +56,7 @@ class MemoryDataStorage(DataStorageInterface):
 
     def get_film_from_inventory(self, film_id: int) -> Film:
         for item in self.film_inventory:
-            if item["id"] == film_id:
+            if item["film_id"] == film_id:
                 film = Film(*[value for value in item.values()])
 
         return film
@@ -70,7 +70,7 @@ class MemoryDataStorage(DataStorageInterface):
     def add_film_to_clients_ledger(self, client_id: int, film: Film, up_front_days: int, charge, date_of_rent):
         self.clients_ledgers[client_id].append(
             {
-                "id": film.film_id,
+                "film_id": film.film_id,
                 "up_front_days": up_front_days,
                 "charge": charge,
                 "date_of_rent": date_of_rent
@@ -79,7 +79,7 @@ class MemoryDataStorage(DataStorageInterface):
 
     def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
         for item in self.clients_ledgers[client_id]:
-            if item["id"] == film.film_id and "date_of_return" not in item.keys():
+            if item["film_id"] == film.film_id and "date_of_return" not in item.keys():
                 item.update(
                     {
                         "surcharge": surcharge,
