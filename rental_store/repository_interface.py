@@ -20,7 +20,7 @@ class FilmRentRequestItem(BaseModel):
 
 
 class FilmRentRequest(BaseModel):
-    client_id: int
+    customer_id: int
     rented_films: list[FilmRentRequestItem]
 
 
@@ -29,7 +29,7 @@ class FilmReturnRequestItem(BaseModel):
 
 
 class FilmReturnRequest(BaseModel):
-    client_id: int
+    customer_id: int
     returned_films: list[FilmReturnRequestItem]
 
 
@@ -63,7 +63,7 @@ class FilmInventoryModel(BaseModel):
     film_inventory: list[FilmInventoryItemModel]
 
 
-class DataStorageInterface(ABC):
+class RepositoryInterface(ABC):
     @abstractmethod
     def add_film_types(self, film_types: set):
         pass
@@ -89,17 +89,24 @@ class DataStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def create_client_and_set_id(self):
+    def create_customer_and_set_id(self):
         pass
 
     @abstractmethod
-    def add_film_to_clients_ledger(self, client_id: int, film: Film, up_front_days: int, charge, date_of_rent):
+    def get_customer_from_inventory(self, customer_id):
         pass
 
     @abstractmethod
-    def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
+    def add_film_to_customers_ledger(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
         pass
 
     @abstractmethod
-    def get_clients_rent_ledger(self, client_id: int) -> RentLedger:
+    def mark_film_as_returned_in_customers_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
         pass
+
+    @abstractmethod
+    def get_customers_rent_ledger(self, customer_id: int) -> RentLedger:
+        pass
+
+
+

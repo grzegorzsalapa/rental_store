@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch
-from rental_store.data_interface import \
+from rental_store.repository_interface import \
     FilmRentResponse,\
     FilmRentResponseItem,\
     FilmReturnResponse,\
@@ -32,7 +32,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
         response = test_client.post(
             "/films/rent",
             json={
-                "client_id": 0,
+                "customer_id": 0,
                 "rented_films": [
                     {
                         "film_id": 0,
@@ -58,7 +58,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
 
         no_shadow_mock.assert_called_once_with(
             FilmRentRequest(
-                client_id=0,
+                customer_id=0,
                 rented_films=[
                     FilmRentRequestItem(
                         film_id=0,
@@ -87,7 +87,7 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
         response = test_client.post(
             "/films/return",
             json={
-                "client_id": "0",
+                "customer_id": "0",
                 "returned_films": [
                     {
                         "film_id": "3"
@@ -111,7 +111,7 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
 
         no_shadow_mock.assert_called_once_with(
             FilmReturnRequest(
-                client_id=0,
+                customer_id=0,
                 returned_films=[
                     FilmReturnRequestItem(
                         film_id=3,

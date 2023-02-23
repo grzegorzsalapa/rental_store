@@ -1,10 +1,10 @@
-from rental_store.data_interface import DataStorageInterface, Film, RentLedger
+from rental_store.repository_interface import RepositoryInterface, RentLedger, Film
 
 
-class MemoryDataStorage(DataStorageInterface):
+class MemoryDataStorage(RepositoryInterface):
 
     def __init__(self):
-        self.clients_ledgers = [[], []]
+        self.customers_ledgers = [[], []]
         self.film_inventory = [
             {
                 "film_id": 0,
@@ -61,14 +61,17 @@ class MemoryDataStorage(DataStorageInterface):
 
         return film
 
-    def create_client_and_set_id(self):
-        new_id = len(self.clients_ledgers)
-        self.clients_ledgers.append([])
+    def create_customer_and_set_id(self):
+        new_id = len(self.customers_ledgers)
+        self.customers_ledgers.append([])
 
         return new_id
 
-    def add_film_to_clients_ledger(self, client_id: int, film: Film, up_front_days: int, charge, date_of_rent):
-        self.clients_ledgers[client_id].append(
+    def get_customer_from_inventory(self, customer_id):
+        pass
+
+    def add_film_to_customers_ledger(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
+        self.customers_ledgers[customer_id].append(
             {
                 "film_id": film.film_id,
                 "up_front_days": up_front_days,
@@ -77,8 +80,8 @@ class MemoryDataStorage(DataStorageInterface):
             }
         )
 
-    def mark_film_as_returned_in_clients_ledger(self, client_id: int, film: Film, surcharge, date_of_return):
-        for item in self.clients_ledgers[client_id]:
+    def mark_film_as_returned_in_customers_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
+        for item in self.customers_ledgers[customer_id]:
             if item["film_id"] == film.film_id and "date_of_return" not in item.keys():
                 item.update(
                     {
@@ -87,5 +90,5 @@ class MemoryDataStorage(DataStorageInterface):
                     }
                 )
 
-    def get_clients_rent_ledger(self, client_id: int) -> RentLedger:
-        return self.clients_ledgers[client_id]
+    def get_customers_rent_ledger(self, customer_id: int) -> RentLedger:
+        return self.customers_ledgers[customer_id]

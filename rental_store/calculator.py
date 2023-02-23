@@ -1,5 +1,5 @@
-from rental_store.inventory import Film
-from rental_store.client import Client
+from rental_store.repository_interface import Film
+from rental_store.customer import Customer
 from datetime import date
 
 
@@ -19,10 +19,10 @@ class PriceCalculator:
         elif film.film_type == "Old":
             return 20, "SEK"
 
-    def calculate_rent_surcharge(self, film: Film, client: Client):
+    def calculate_rent_surcharge(self, film: Film, customer: Customer):
 
         if film.film_type == "New":
-            for item in client.rent_ledger:
+            for item in customer.rent_ledger:
                 if item["id"] == film.film_id and "date_of_return" not in item.keys():
                     rent_duration = (date.today() - item["date_of_rent"]).days
 

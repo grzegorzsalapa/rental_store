@@ -1,9 +1,10 @@
-from rental_store.data_interface import DataStorageInterface, Film
+from rental_store.repository_interface import RepositoryInterface
+from rental_store.data_storage import Film
 
 
 class FilmInventory:
 
-    def __init__(self, data_storage: DataStorageInterface):
+    def __init__(self, data_storage: RepositoryInterface):
         self.data_storage = data_storage
 
     def add(self, film: Film):
@@ -21,7 +22,7 @@ class FilmInventory:
 
 class FilmTypes:
 
-    def __init__(self, data_storage: DataStorageInterface):
+    def __init__(self, data_storage: RepositoryInterface):
         self.data_storage = data_storage
 
     def add(self, film_types: set):
@@ -33,7 +34,7 @@ class FilmTypes:
 
 class FilmPriceList:
 
-    def __init__(self, data_storage: DataStorageInterface):
+    def __init__(self, data_storage: RepositoryInterface):
         self.data_storage = data_storage
 
     def update(self):
