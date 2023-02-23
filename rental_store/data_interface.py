@@ -108,7 +108,7 @@ class RepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def get_film_from_inventory(self, film_id: int):
+    def get_film_by_id(self, film_id: int):
         pass
 
     @abstractmethod
@@ -116,7 +116,7 @@ class RepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def get_customer_from_inventory(self, customer_id):
+    def get_customer(self, customer_id):
         pass
 
     @abstractmethod

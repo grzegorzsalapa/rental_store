@@ -26,11 +26,12 @@ class StoreCheckout:
         response_items = []
 
         for item in rent_request.rented_films:
-            film = self.film_inventory.get_by_id(item.film_id)
+
+            film = self.repository.get_film_by_id(item.film_id)
             charge, currency = self.price_calculator.calculate_rent_charge(film, item.up_front_days)
 
-            customer = Customer(self.repository, rent_request.customer_id)
-            customer.rents(film, item.up_front_days, charge, date.today())
+            customer = self.repository.get_customer(rent_request.customer_id)
+            self.rent_film(customer, film, item.up_front_days, charge, date.today())
 
             response_items.append(FilmRentResponseItem(film_id=film.film_id, charge=charge, currency=currency))
 
@@ -41,11 +42,13 @@ class StoreCheckout:
         response_items = []
 
         for item in return_request.returned_films:
-            film = self.film_inventory.get_by_id(item.film_id)
-            customer = Customer(self.repository, return_request.customer_id)
+
+            film = self.repository.get_film_by_id(item.film_id)
+            customer = self.repository.get_customer(return_request.customer_id)
             surcharge, currency = self.price_calculator.calculate_rent_surcharge(film, customer)
 
-            customer.returns(film, surcharge, date.today())
+            self.return_film(customer, film, surcharge, date.today())
+
             response_items.append(FilmReturnResponseItem(film_id=film.film_id, surcharge=surcharge, currency=currency))
 
         return FilmReturnResponse(returned_films=response_items)
@@ -63,10 +66,8 @@ class StoreCheckout:
 
         return Customer(self.repository, customer_id).rent_ledger
 
+    def rent_film(self, customer: Customer, film: Film, up_front_days: int, charge: int, date_of_rent):
+        self.repository.add_film_to_rentals_ledger(customer.id, film.id, up_front_days, charge, date_of_rent)
 
-def rent_film(film: Film, up_front_days: int, charge: int, date_of_rent):
-    self.data_storage.add_film_to_customers_ledger(self.customer_id, film, up_front_days, charge, date_of_rent)
-
-
-def return_film(film: Film, surcharge, date_of_return):
-    self.data_storage.mark_film_as_returned_in_customers_ledger(self.customer_id, film, surcharge, date_of_return)
+    def return_film(self, customer: Customer, film: Film, surcharge: int, date_of_return):
+        self.repository.mark_film_as_returned_in_rentals_ledger(customer.id, film.id, surcharge, date_of_return)

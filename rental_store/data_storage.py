@@ -54,7 +54,7 @@ class MemoryDataStorage(RepositoryInterface):
     def get_all_films_from_inventory(self) -> list:
         return self.film_inventory
 
-    def get_film_from_inventory(self, film_id: int) -> Film:
+    def get_film_by_id(self, film_id: int) -> Film:
         for item in self.film_inventory:
             if item["film_id"] == film_id:
                 film = Film(*[value for value in item.values()])
@@ -67,7 +67,7 @@ class MemoryDataStorage(RepositoryInterface):
 
         return new_id
 
-    def get_customer_from_inventory(self, customer_id):
+    def get_customer(self, customer_id):
         pass
 
     def add_film_to_customers_ledger(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
