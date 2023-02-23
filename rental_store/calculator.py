@@ -1,5 +1,4 @@
-from rental_store.repository_interface import Film
-from rental_store.customer import Customer
+from rental_store.data_interface import Film, Customer
 from datetime import date
 
 

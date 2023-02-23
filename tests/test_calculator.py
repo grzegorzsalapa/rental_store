@@ -1,8 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from rental_store.calculator import PriceCalculator
-from rental_store.repository_interface import Film
-from rental_store.customer import Customer
+from rental_store.data_interface import Film, Customer
 from datetime import date, timedelta
 
 

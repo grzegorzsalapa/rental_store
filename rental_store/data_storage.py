@@ -1,4 +1,4 @@
-from rental_store.repository_interface import RepositoryInterface, RentLedger, Film
+from rental_store.data_interface import RepositoryInterface, RentLedger, Film
 
 
 class MemoryDataStorage(RepositoryInterface):

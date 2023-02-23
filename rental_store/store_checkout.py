@@ -2,9 +2,8 @@ from datetime import date
 from rental_store.data_storage import MemoryDataStorage
 from rental_store.inventory import FilmInventory
 from rental_store.calculator import PriceCalculator
-from rental_store.customer import Customer
-from rental_store.repository_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem,\
-    FilmReturnResponse, FilmReturnResponseItem, FilmInventoryItemModel, FilmInventoryModel
+from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem, \
+    FilmReturnResponse, FilmReturnResponseItem, FilmInventoryItemModel, FilmInventoryModel, Film, Customer
 
 
 class StoreCheckout:
@@ -56,3 +55,10 @@ class StoreCheckout:
 
         return Customer(self.repository, customer_id).rent_ledger
 
+
+def rents(self, film: Film, up_front_days: int, charge: int, date_of_rent):
+    self.data_storage.add_film_to_customers_ledger(self.customer_id, film, up_front_days, charge, date_of_rent)
+
+
+def returns(self, film: Film, surcharge, date_of_return):
+    self.data_storage.mark_film_as_returned_in_customers_ledger(self.customer_id, film, surcharge, date_of_return)

@@ -2,12 +2,39 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 
+class Customer:
+
+    def __init__(self, customer_id: int, rentals: list):
+        self.customer_id = customer_id
+        self.rentals = rentals
+
+    @property
+    def rent_ledger(self) -> list:
+        return self.rentals
+
+    @property
+    def id(self) -> int:
+        return self.customer_id
+
+
 class Film:
 
     def __init__(self, film_id, film_title, film_type):
         self.film_id = film_id
         self.film_title = film_title
         self.film_type = film_type
+
+    @property
+    def id(self):
+        return self.film_id
+
+    @property
+    def title(self):
+        return self.film_title
+
+    @property
+    def type(self):
+        return self.film_type
 
 
 class RentLedger:
@@ -107,6 +134,3 @@ class RepositoryInterface(ABC):
     @abstractmethod
     def get_customers_rent_ledger(self, customer_id: int) -> RentLedger:
         pass
-
-
-

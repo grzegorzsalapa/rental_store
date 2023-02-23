@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from rental_store.repository_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmReturnResponse
+from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmReturnResponse
 from rental_store.store_checkout import StoreCheckout
 
 

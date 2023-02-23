@@ -1,4 +1,4 @@
-from rental_store.repository_interface import RepositoryInterface
+from rental_store.data_interface import RepositoryInterface
 from rental_store.data_storage import Film
 
 

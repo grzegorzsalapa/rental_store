@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch
-from rental_store.repository_interface import \
+from rental_store.data_interface import \
     FilmRentResponse,\
     FilmRentResponseItem,\
     FilmReturnResponse,\
