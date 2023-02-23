@@ -1,4 +1,4 @@
-from rental_store.data_interface import RepositoryInterface, RentLedger, Film
+from rental_store.data_interface import RepositoryInterface, Film
 
 
 class MemoryDataStorage(RepositoryInterface):
@@ -90,5 +90,5 @@ class MemoryDataStorage(RepositoryInterface):
                     }
                 )
 
-    def get_customers_rent_ledger(self, customer_id: int) -> RentLedger:
+    def get_customers_rent_ledger(self, customer_id: int):
         return self.customers_ledgers[customer_id]

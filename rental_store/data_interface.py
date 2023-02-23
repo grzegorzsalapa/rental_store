@@ -37,10 +37,6 @@ class Film:
         return self.film_type
 
 
-class RentLedger:
-    pass
-
-
 class FilmRentRequestItem(BaseModel):
     film_id: int
     up_front_days: int
@@ -129,8 +125,4 @@ class RepositoryInterface(ABC):
 
     @abstractmethod
     def mark_film_as_returned_in_customers_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
-        pass
-
-    @abstractmethod
-    def get_customers_rent_ledger(self, customer_id: int) -> RentLedger:
         pass

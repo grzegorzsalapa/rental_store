@@ -1,11 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmReturnResponse
 from rental_store.store_checkout import StoreCheckout
+from rental_store.data_storage import MemoryDataStorage
 
 
 store = FastAPI()
 
-store_checkout = StoreCheckout()
+store_checkout = StoreCheckout(MemoryDataStorage)
 
 
 @store.post("/films/rent", response_model=FilmRentResponse)
@@ -54,5 +55,3 @@ def get_film_inventory():
 def get_ledger(customer_id: int):
 
     return store_checkout.get_ledger(customer_id)
-
-
