@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request, HTTPException
-from pydantic import BaseModel
 from datetime import date
 from rental_store.data_storage import MemoryDataStorage
 from rental_store.inventory import FilmInventory
-from rental_store.calculators import PriceCalculator
+from rental_store.calculator import PriceCalculator
 from rental_store.client import Client
+from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmRentResponseItem
 
 
 store = FastAPI()
@@ -14,29 +14,10 @@ film_inventory = FilmInventory(data_storage)
 price_calculator = PriceCalculator()
 
 
-class RentListModel(BaseModel):
-    film_id: int
-    up_front_days: int
+@store.post("/films/rent", response_model=FilmRentResponse)
+def rent_films(rent_request: FilmRentRequest):
 
-
-class RentRequest(BaseModel):
-    client_id: int
-    rented_films: list[RentListModel]
-
-
-class ReturnListModel(BaseModel):
-    film_id: int
-
-
-class ReturnRequest(BaseModel):
-    client_id: int
-    returned_films: list[ReturnListModel]
-
-
-@store.post("/films/rent")
-def rent_films(rent_request: RentRequest):
-
-    response_details = []
+    response_items = []
 
     for item in rent_request.rented_films:
 
@@ -46,19 +27,13 @@ def rent_films(rent_request: RentRequest):
         client = Client(data_storage, rent_request.client_id)
         client.rents(film, item.up_front_days, charge, date.today())
 
-        response_details.append(
-            {
-                "film_id": film.film_id,
-                "charge": charge,
-                "currency": currency
-            }
-        )
+        response_items.append(FilmRentResponseItem(film_id=film.film_id, charge=charge, currency=currency))
 
-    return response_details
+    return FilmRentResponse(rented_films=response_items)
 
 
 @store.post("/films/return")
-def return_films(return_request: ReturnRequest):
+def return_films(return_request: FilmReturnRequest):
 
     response_details = []
 

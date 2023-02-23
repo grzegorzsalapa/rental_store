@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pydantic import BaseModel
 
 
 class Film:
@@ -11,6 +12,35 @@ class Film:
 
 class RentLedger:
     pass
+
+
+class FilmRentItemModel(BaseModel):
+    film_id: int
+    up_front_days: int
+
+
+class FilmRentRequest(BaseModel):
+    client_id: int
+    rented_films: list[FilmRentItemModel]
+
+
+class FilmReturnItemModel(BaseModel):
+    film_id: int
+
+
+class FilmReturnRequest(BaseModel):
+    client_id: int
+    returned_films: list[FilmReturnItemModel]
+
+
+class FilmRentResponseItem(BaseModel):
+    film_id: int
+    charge: int
+    currency: str
+
+
+class FilmRentResponse(BaseModel):
+    rented_films: list[FilmRentResponseItem]
 
 
 class DataStorageInterface(ABC):

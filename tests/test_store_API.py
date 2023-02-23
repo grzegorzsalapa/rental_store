@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch, MagicMock
+from rental_store.data_interface import FilmRentResponse, FilmRentResponseItem
 
 
 test_client = TestClient(store)
@@ -9,12 +10,11 @@ test_client = TestClient(store)
 
 def test_api_rents_films_and_returns_charge():
 
-    def arrangement():
-        class PriceCalculatorMock(MagicMock):
-            def calculate_rent_charge(self, up_front_days):
-                return 40, "SEK"
+    def arrangement(film_id, up_front_days):
+        film_rent_response_item = [FilmRentResponseItem(film_id=film_id, charge=40, currency="SEK")]
+        film_rent_response_mock = FilmRentResponse(rented_films=film_rent_response_item)
 
-        return PriceCalculatorMock
+        return film_rent_response_mock
 
     def action():
         response = test_client.post(
@@ -33,9 +33,17 @@ def test_api_rents_films_and_returns_charge():
         return response
 
     def assertion(response):
-        assert response.json() == [{"film_id": 0, "charge": 40, "currency": "SEK"}]
+        assert response.json() == {
+            "rented_films": [
+                {
+                    "film_id": 0,
+                    "charge": 40,
+                    "currency": "SEK"
+                }
+            ]
+        }
 
-    with patch('rental_store.store_API.PriceCalculator', new=arrangement()):
+    with patch('rental_store.store_API.FilmRentResponse', return_value=arrangement()):
         action_result = action()
         assertion(action_result)
 
