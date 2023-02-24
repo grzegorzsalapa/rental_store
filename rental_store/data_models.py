@@ -18,10 +18,11 @@ class Customer:
 
 class Film:
 
-    def __init__(self, film_id, film_title, film_type):
+    def __init__(self, film_id, film_title, film_type, available_items: int):
         self.film_id = film_id
         self.film_title = film_title
         self.film_type = film_type
+        self.available_items = available_items
 
     @property
     def id(self):

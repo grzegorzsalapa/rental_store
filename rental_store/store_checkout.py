@@ -54,29 +54,27 @@ def rent_films(rent_request: FilmRentRequestModel):
     for item in rent_request.rented_films:
 
         film = Repository.get_film_by_id(item.film_id)
-        print(item.film_id)
-        print(film.id)
 
         charge, currency = calculate_rent_charge(film, item.up_front_days)
 
-        Repository.add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
+        add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
 
         response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
 
     return FilmRentResponseModel(rented_films=response_items)
 
 
-def return_films(self, return_request: FilmReturnRequestModel):
+def return_films(return_request: FilmReturnRequestModel):
 
     response_items = []
 
     for item in return_request.returned_films:
 
-        film = self.repository.get_film_by_id(item.film_id)
-        customer = self.repository.get_customer(return_request.customer_id)
-        surcharge, currency = self.price_calculator.calculate_rent_surcharge(film, customer)
+        film = Repository.get_film_by_id(item.film_id)
+        customer = Repository.get_customer(return_request.customer_id)
+        surcharge, currency = calculate_rent_surcharge(film, customer)
 
-        self.return_film(customer, film, surcharge, date.today())
+        return_film(customer, film, surcharge, date.today())
 
         response_items.append(FilmReturnResponseItemModel(film_id=film.film_id, surcharge=surcharge, currency=currency))
 
@@ -84,27 +82,25 @@ def return_films(self, return_request: FilmReturnRequestModel):
 
 
 def get_film_inventory():
-
-    films = self.film_inventory.get_all()
-    films_formatted = []
-    for item in films:
-        films_formatted = FilmInventoryItemModel(**item)
-
-    return FilmInventoryModel(film_inventory=films_formatted)
+    return Repository.get_film_inventory()
 
 
 def get_customers_rentals(customer_id: int):
+    return Repository.get_customers_rentals(customer_id)
+
+
+def reserve_film(request_id, film_id: int):
+    film = Repository.get_film_by_id(film_id)
+    if film.available_items:
+        Repository.set_reservation_on_film(request_id)
+
+
+
+def add_record_to_rental_ledger(request_id, customer_id, film_id, up_front_days, charge, date_of_rent):
     pass
 
 
-def reserve_film(request_id, film):
+def return_film(customer: Customer, film: Film, surcharge: int, date_of_return):
     pass
 
-
-def add_record_to_rental_ledger(self, request_id):
-    self.repository.add_film_to_rentals_ledger(customer.id, film.id, up_front_days, charge, date_of_rent)
-
-
-def return_film(self, customer: Customer, film: Film, surcharge: int, date_of_return):
-    self.repository.mark_film_as_returned_in_rentals_ledger(customer.id, film.id, surcharge, date_of_return)
 
