@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from rental_store.data_interface import FilmRentResponse, FilmRentRequest, FilmReturnRequest, FilmReturnResponse
+from rental_store.data_interface import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, FilmReturnResponseModel
 from rental_store.store_checkout import StoreCheckout
 from rental_store.data_storage import MemoryDataStorage
 
@@ -9,8 +9,8 @@ store = FastAPI()
 store_checkout = StoreCheckout(MemoryDataStorage)
 
 
-@store.post("/films/rent", response_model=FilmRentResponse)
-def rent_films(rent_request: FilmRentRequest):
+@store.post("/films/rent", response_model=FilmRentResponseModel)
+def rent_films(rent_request: FilmRentRequestModel):
 
     try:
         response = store_checkout.rent_films(rent_request)
@@ -25,8 +25,8 @@ def rent_films(rent_request: FilmRentRequest):
     return response
 
 
-@store.post("/films/return", response_model=FilmReturnResponse)
-def return_films(return_request: FilmReturnRequest):
+@store.post("/films/return", response_model=FilmReturnResponseModel)
+def return_films(return_request: FilmReturnRequestModel):
 
     try:
         response = store_checkout.return_films(return_request)

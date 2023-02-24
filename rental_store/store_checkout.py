@@ -3,12 +3,12 @@ from typing import Type
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.data_interface import \
     RepositoryInterface,\
-    FilmRentResponse,\
-    FilmRentRequest,\
-    FilmReturnRequest,\
-    FilmRentResponseItem, \
-    FilmReturnResponse,\
-    FilmReturnResponseItem,\
+    FilmRentResponseModel,\
+    FilmRentRequestModel,\
+    FilmReturnRequestModel,\
+    FilmRentResponseItemModel, \
+    FilmReturnResponseModel,\
+    FilmReturnResponseItemModel,\
     FilmInventoryItemModel,\
     FilmInventoryModel,\
     Film,\
@@ -39,7 +39,7 @@ class StoreCheckout:
     def __init__(self, Repository: Type[RepositoryInterface]):
         self.repository = Repository()
 
-    def rent_films(self, rent_request: FilmRentRequest):
+    def rent_films(self, rent_request: FilmRentRequestModel):
 
         request_id = uuid.uuid4()
         customer = self.repository.get_customer(rent_request.customer_id)
@@ -64,11 +64,11 @@ class StoreCheckout:
 
             self.add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
 
-            response_items.append(FilmRentResponseItem(film_id=film.id, charge=charge, currency=currency))
+            response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
 
-        return FilmRentResponse(rented_films=response_items)
+        return FilmRentResponseModel(rented_films=response_items)
 
-    def return_films(self, return_request: FilmReturnRequest):
+    def return_films(self, return_request: FilmReturnRequestModel):
 
         response_items = []
 
@@ -80,9 +80,9 @@ class StoreCheckout:
 
             self.return_film(customer, film, surcharge, date.today())
 
-            response_items.append(FilmReturnResponseItem(film_id=film.film_id, surcharge=surcharge, currency=currency))
+            response_items.append(FilmReturnResponseItemModel(film_id=film.film_id, surcharge=surcharge, currency=currency))
 
-        return FilmReturnResponse(returned_films=response_items)
+        return FilmReturnResponseModel(returned_films=response_items)
 
     def get_film_inventory(self):
 

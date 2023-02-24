@@ -3,16 +3,16 @@ from fastapi.testclient import TestClient
 from rental_store.store_API import store
 from unittest.mock import patch
 from rental_store.data_interface import \
-    FilmRentResponse,\
-    FilmRentResponseItem,\
-    FilmReturnResponse,\
-    FilmReturnResponseItem,\
+    FilmRentResponseModel,\
+    FilmRentResponseItemModel,\
+    FilmReturnResponseModel,\
+    FilmReturnResponseItemModel,\
     FilmInventoryModel,\
     FilmInventoryItemModel,\
-    FilmRentRequestItem,\
-    FilmRentRequest,\
-    FilmReturnRequestItem,\
-    FilmReturnRequest
+    FilmRentRequestItemModel,\
+    FilmRentRequestModel,\
+    FilmReturnRequestItemModel,\
+    FilmReturnRequestModel
 
 
 test_client = TestClient(store)
@@ -22,8 +22,8 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
 
     def arrangement():
 
-        film_rent_response_item = [FilmRentResponseItem(film_id=0, charge=40, currency="SEK")]
-        film_rent_response = FilmRentResponse(rented_films=film_rent_response_item)
+        film_rent_response_item = [FilmRentResponseItemModel(film_id=0, charge=40, currency="SEK")]
+        film_rent_response = FilmRentResponseModel(rented_films=film_rent_response_item)
 
         return film_rent_response
 
@@ -57,10 +57,10 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
         }
 
         no_shadow_mock.assert_called_once_with(
-            FilmRentRequest(
+            FilmRentRequestModel(
                 customer_id=0,
                 rented_films=[
-                    FilmRentRequestItem(
+                    FilmRentRequestItemModel(
                         film_id=0,
                         up_front_days=1
                     )
@@ -78,8 +78,8 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
 
     def arrangement():
 
-        film_return_response_item = [FilmReturnResponseItem(film_id=3, surcharge=30, currency="SEK")]
-        film_return_response_mock = FilmReturnResponse(returned_films=film_return_response_item)
+        film_return_response_item = [FilmReturnResponseItemModel(film_id=3, surcharge=30, currency="SEK")]
+        film_return_response_mock = FilmReturnResponseModel(returned_films=film_return_response_item)
 
         return film_return_response_mock
 
@@ -111,10 +111,10 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
         }
 
         no_shadow_mock.assert_called_once_with(
-            FilmReturnRequest(
+            FilmReturnRequestModel(
                 customer_id=0,
                 returned_films=[
-                    FilmReturnRequestItem(
+                    FilmReturnRequestItemModel(
                         film_id=3,
                     )
                 ]

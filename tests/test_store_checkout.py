@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import MagicMock, patch
 from rental_store.data_interface import \
-    FilmRentRequest,\
-    FilmRentRequestItem,\
-    FilmRentResponse,\
-    FilmRentResponseItem,\
+    FilmRentRequestModel,\
+    FilmRentRequestItemModel,\
+    FilmRentResponseModel,\
+    FilmRentResponseItemModel,\
     Film,\
     Customer
 from rental_store.store_checkout import StoreCheckout, AvailabilityError
@@ -24,10 +24,10 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
 
         repository_mock = _set_up_mocked_repository()
 
-        rent_request = FilmRentRequest(
+        rent_request = FilmRentRequestModel(
             customer_id=700,
             rented_films=[
-                FilmRentRequestItem(
+                FilmRentRequestItemModel(
                     film_id=0,
                     up_front_days=1
                 )
@@ -45,9 +45,9 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
 
     def assertion(result):
 
-        film_rent_response = FilmRentResponse(
+        film_rent_response = FilmRentResponseModel(
             rented_films=[
-                FilmRentResponseItem(
+                FilmRentResponseItemModel(
                     film_id=0,
                     charge=40,
                     currency="SEK"
@@ -76,10 +76,10 @@ def test_rent_films_returns_exception_if_one_of_films_not_available():
 
         repository_mock = _set_up_mocked_repository()
 
-        rent_request = FilmRentRequest(
+        rent_request = FilmRentRequestModel(
             customer_id=700,
             rented_films=[
-                FilmRentRequestItem(
+                FilmRentRequestItemModel(
                     film_id=0,
                     up_front_days=1
                 )
@@ -97,9 +97,9 @@ def test_rent_films_returns_exception_if_one_of_films_not_available():
 
     def assertion(result):
 
-        film_rent_response = FilmRentResponse(
+        film_rent_response = FilmRentResponseModel(
             rented_films=[
-                FilmRentResponseItem(
+                FilmRentResponseItemModel(
                     film_id=0,
                     charge=40,
                     currency="SEK"

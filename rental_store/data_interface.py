@@ -45,44 +45,43 @@ class PriceList:
         self.basic_price = basic_price
 
 
-
-class FilmRentRequestItem(BaseModel):
+class FilmRentRequestItemModel(BaseModel):
     film_id: int
     up_front_days: int
 
 
-class FilmRentRequest(BaseModel):
+class FilmRentRequestModel(BaseModel):
     customer_id: int
-    rented_films: list[FilmRentRequestItem]
+    rented_films: list[FilmRentRequestItemModel]
 
 
-class FilmReturnRequestItem(BaseModel):
+class FilmReturnRequestItemModel(BaseModel):
     film_id: int
 
 
-class FilmReturnRequest(BaseModel):
+class FilmReturnRequestModel(BaseModel):
     customer_id: int
-    returned_films: list[FilmReturnRequestItem]
+    returned_films: list[FilmReturnRequestItemModel]
 
 
-class FilmRentResponseItem(BaseModel):
+class FilmRentResponseItemModel(BaseModel):
     film_id: int
     charge: int
     currency: str
 
 
-class FilmRentResponse(BaseModel):
-    rented_films: list[FilmRentResponseItem]
+class FilmRentResponseModel(BaseModel):
+    rented_films: list[FilmRentResponseItemModel]
 
 
-class FilmReturnResponseItem(BaseModel):
+class FilmReturnResponseItemModel(BaseModel):
     film_id: int
     surcharge: int
     currency: str
 
 
-class FilmReturnResponse(BaseModel):
-    returned_films: list[FilmReturnResponseItem]
+class FilmReturnResponseModel(BaseModel):
+    returned_films: list[FilmReturnResponseItemModel]
 
 
 class FilmInventoryItemModel(BaseModel):
