@@ -15,6 +15,12 @@ from rental_store.data_interface import \
     Customer
 
 
+class AvailabilityError(Exception):
+
+    def __init__(self, message: str):
+        self.message = message
+
+
 class StoreCheckout:
 
     def __init__(self, Repository: Type[RepositoryInterface]):
@@ -30,7 +36,7 @@ class StoreCheckout:
             charge, currency = calculate_rent_charge(film, item.up_front_days)
 
             customer = self.repository.get_customer(rent_request.customer_id)
-            self.rent_film(customer, film, item.up_front_days, charge, date.today())
+            self.repository.add_record_to_rental_ledger(customer, film, item.up_front_days, charge, date.today())
 
             response_items.append(FilmRentResponseItem(film_id=film.film_id, charge=charge, currency=currency))
 
