@@ -23,9 +23,9 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
     def arrangement():
 
         film_rent_response_item = [FilmRentResponseItem(film_id=0, charge=40, currency="SEK")]
-        film_rent_response_mock = FilmRentResponse(rented_films=film_rent_response_item)
+        film_rent_response = FilmRentResponse(rented_films=film_rent_response_item)
 
-        return film_rent_response_mock
+        return film_rent_response
 
     def action():
 
@@ -68,7 +68,8 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
             )
         )
 
-    with patch('rental_store.store_API.store_checkout.rent_films', return_value=arrangement()) as no_shadow_mock:
+    film_rent_response = arrangement()
+    with patch('rental_store.store_API.store_checkout.rent_films', return_value=film_rent_response) as no_shadow_mock:
         action_result = action()
         assertion(action_result, no_shadow_mock)
 

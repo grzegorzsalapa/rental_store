@@ -17,8 +17,8 @@ from rental_store.data_interface import \
 
 class StoreCheckout:
 
-    def __init__(self, DataStorage: Type[RepositoryInterface]):
-        self.repository = DataStorage()
+    def __init__(self, Repository: Type[RepositoryInterface]):
+        self.repository = Repository()
 
     def rent_films(self, rent_request: FilmRentRequest):
 
@@ -27,7 +27,7 @@ class StoreCheckout:
         for item in rent_request.rented_films:
 
             film = self.repository.get_film_by_id(item.film_id)
-            charge, currency = self.price_calculator.calculate_rent_charge(film, item.up_front_days)
+            charge, currency = calculate_rent_charge(film, item.up_front_days)
 
             customer = self.repository.get_customer(rent_request.customer_id)
             self.rent_film(customer, film, item.up_front_days, charge, date.today())
