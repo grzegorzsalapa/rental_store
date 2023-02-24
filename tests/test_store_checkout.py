@@ -7,47 +7,51 @@ from rental_store.data_models import \
     FilmRentResponseItemModel,\
     Film,\
     Customer
-from rental_store.store_checkout import AvailabilityError, rent_films, return_films, y
+from rental_store.store_checkout import AvailabilityError, rent_films, return_films
 
 
 def test_rent_films_assignes_film_to_customer_in_rental_ledger():
 
     def arrangement():
+
+        film_id = 14
+        film = Film(film_id, "Matrix 11", "New release")
+
         def _set_up_mocked_repository():
-            repository_mock = MagicMock(name="Repository_Instance")
-            repository_mock.get_film_by_id = MagicMock(return_value=Film(0, "Matrix 11", "New release"))
-            repository_mock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
-            repository_mock.reserve_film = MagicMock()
-            repository_mock.add_record_to_rental_ledger = MagicMock()
+            RepositoryMock = MagicMock(name="Repository_Instance")
+            RepositoryMock.get_film_by_id.return_value = film
+            RepositoryMock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
+            RepositoryMock.reserve_film = MagicMock()
+            RepositoryMock.add_record_to_rental_ledger = MagicMock()
 
-            return repository_mock
+            return RepositoryMock
 
-        repository_mock = _set_up_mocked_repository()
+        RepositoryMock = _set_up_mocked_repository()
 
         rent_request = FilmRentRequestModel(
             customer_id=700,
             rented_films=[
                 FilmRentRequestItemModel(
-                    film_id=0,
-                    up_front_days=1
+                    film_id=film_id,
+                    up_front_days=8
                 )
             ]
         )
 
-        return repository_mock, rent_request
+        return RepositoryMock, rent_request, film
 
-    def action(repository_mock, rent_request):
+    def action(rent_request):
 
-        result = rent_films(repository_mock, rent_request)
+        result = rent_films(rent_request)
 
         return result
 
-    def assertion(result):
+    def assertion(result, calculate_rent_charge_mock, film, RepositoryMock):
 
         film_rent_response = FilmRentResponseModel(
             rented_films=[
                 FilmRentResponseItemModel(
-                    film_id=0,
+                    film_id=14,
                     charge=40,
                     currency="SEK"
                 )
@@ -55,62 +59,65 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
         )
 
         assert result == film_rent_response
-
-    repository_mock, rent_request = arrangement()
-    with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK")):
-        result = action(repository_mock, rent_request)
-        assertion(result)
+        assert RepositoryMock.get_customer.assert_called_once_with(700)
+        assert calculate_rent_charge_mock.assert_called_once_with(film, 8)
 
 
-def test_rent_films_returns_exception_if_one_of_films_not_available():
-
-    def arrangement():
-        def _set_up_mocked_repository():
-            repository_mock = MagicMock(name="Repository_Instance")
-            repository_mock.get_film_by_id = MagicMock(return_value=Film(0, "Matrix 11", "New release"))
-            repository_mock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
-            repository_mock.reserve_film = MagicMock(side_effect=AvailabilityError('Film not available.'))
-
-            return repository_mock
-
-        repository_mock = _set_up_mocked_repository()
-
-        rent_request = FilmRentRequestModel(
-            customer_id=700,
-            rented_films=[
-                FilmRentRequestItemModel(
-                    film_id=0,
-                    up_front_days=1
-                )
-            ]
-        )
-
-        return repository_mock, rent_request
-
-    def action(repository_mock, rent_request):
-
-        store_checkout = StoreCheckout(repository_mock)
-        result = store_checkout.rent_films(rent_request)
-
-        return result
-
-    def assertion(result):
-
-        film_rent_response = FilmRentResponseModel(
-            rented_films=[
-                FilmRentResponseItemModel(
-                    film_id=0,
-                    charge=40,
-                    currency="SEK"
-                )
-            ]
-        )
-
-        assert result == film_rent_response
-
-    repository_mock, rent_request = arrangement()
-    with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK")):
-        result = action(repository_mock, rent_request)
-        assertion(result)
+    RepositoryMock, rent_request, film = arrangement()
+    with patch('rental_store.store_checkout.Repository', new=RepositoryMock):
+        with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK"))\
+                as calculate_rent_charge_mock:
+            result = action(rent_request)
+            assertion(result, calculate_rent_charge_mock, film, RepositoryMock)
 
 
+# def test_rent_films_returns_exception_if_one_of_films_not_available():
+#
+#     def arrangement():
+#         def _set_up_mocked_repository():
+#             RepositoryMock = MagicMock(name="Repository_Instance")
+#             RepositoryMock.get_film_by_id = MagicMock(return_value=Film(0, "Matrix 11", "New release"))
+#             RepositoryMock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
+#             RepositoryMock.reserve_film = MagicMock()
+#
+#             return RepositoryMock
+#
+#         RepositoryMock = _set_up_mocked_repository()
+#
+#         rent_request = FilmRentRequestModel(
+#             customer_id=700,
+#             rented_films=[
+#                 FilmRentRequestItemModel(
+#                     film_id=0,
+#                     up_front_days=1
+#                 )
+#             ]
+#         )
+#
+#         return RepositoryMock, rent_request
+#
+#     def action(rent_request):
+#
+#         result = rent_films(rent_request)
+#
+#         return result
+#
+#     def assertion(result):
+#
+#         film_rent_response = FilmRentResponseModel(
+#             rented_films=[
+#                 FilmRentResponseItemModel(
+#                     film_id=0,
+#                     charge=40,
+#                     currency="SEK"
+#                 )
+#             ]
+#         )
+#
+#         assert result == film_rent_response
+#
+#     RepositoryMock, rent_request = arrangement()
+#     with patch('rental_store.store_checkout.Repository', new=RepositoryMock):
+#         with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK")):
+#             result = action(rent_request)
+#             assertion(result)

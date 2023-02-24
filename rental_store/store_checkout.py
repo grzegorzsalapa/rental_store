@@ -36,12 +36,11 @@ class RentError(Exception):
 def rent_films(rent_request: FilmRentRequestModel):
 
     request_id = uuid.uuid4()
-    customer = Repository.get_customer(rent_request.customer_id)
 
     for item in rent_request.rented_films:
 
         try:
-            reserve_film(request_id, customer, item.film_id)
+            reserve_film(request_id, item.film_id)
 
         except AvailabilityError as e:
             raise RentError(str(e))
@@ -49,14 +48,18 @@ def rent_films(rent_request: FilmRentRequestModel):
         except DuplicateRentError as e:
             raise RentError(str(e))
 
+    customer = Repository.get_customer(rent_request.customer_id)
     response_items = []
+
     for item in rent_request.rented_films:
 
-        film = self.repository.get_film_by_id(item.film_id)
+        film = Repository.get_film_by_id(item.film_id)
+        print(item.film_id)
+        print(film.id)
 
         charge, currency = calculate_rent_charge(film, item.up_front_days)
 
-        self.add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
+        Repository.add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
 
         response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
 
@@ -105,6 +108,3 @@ def add_record_to_rental_ledger(self, request_id):
 def return_film(self, customer: Customer, film: Film, surcharge: int, date_of_return):
     self.repository.mark_film_as_returned_in_rentals_ledger(customer.id, film.id, surcharge, date_of_return)
 
-
-def y():
-    Repository.get_customer(2)

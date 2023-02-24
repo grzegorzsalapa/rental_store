@@ -7,4 +7,4 @@ class Repository:
 
     @classmethod
     def get_customer(cls, customer_id: int):
-        print(data_storage.film_inventory)
+        pass
