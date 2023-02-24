@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
-from rental_store.store_API import store
-from unittest.mock import patch
-from rental_store.data_interface import \
+from rental_store.store_api import store
+from unittest.mock import patch, MagicMock
+from rental_store.data_models import \
     FilmRentResponseModel,\
     FilmRentResponseItemModel,\
     FilmReturnResponseModel,\
@@ -44,7 +44,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
 
         return response
 
-    def assertion(response, no_shadow_mock):
+    def assertion(response, rent_films_mock):
 
         assert response.json() == {
             "rented_films": [
@@ -56,7 +56,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
             ]
         }
 
-        no_shadow_mock.assert_called_once_with(
+        rent_films_mock.assert_called_once_with(
             FilmRentRequestModel(
                 customer_id=0,
                 rented_films=[
@@ -69,9 +69,9 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
         )
 
     film_rent_response = arrangement()
-    with patch('rental_store.store_API.store_checkout.rent_films', return_value=film_rent_response) as no_shadow_mock:
+    with patch('rental_store.store_api.rent_films', return_value=film_rent_response) as rent_films_mock:
         action_result = action()
-        assertion(action_result, no_shadow_mock)
+        assertion(action_result, rent_films_mock)
 
 
 def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode():
@@ -98,7 +98,7 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
         )
         return response
 
-    def assertion(response, no_shadow_mock):
+    def assertion(response, return_films_mock):
 
         assert response.json() == {
             "returned_films": [
@@ -110,7 +110,7 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
             ]
         }
 
-        no_shadow_mock.assert_called_once_with(
+        return_films_mock.assert_called_once_with(
             FilmReturnRequestModel(
                 customer_id=0,
                 returned_films=[
@@ -121,9 +121,10 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
             )
         )
 
-    with patch('rental_store.store_API.store_checkout.return_films', return_value=arrangement()) as no_shadow_mock:
-        action_result = action()
-        assertion(action_result, no_shadow_mock)
+    film_return_response = arrangement()
+    with patch('rental_store.store_api.return_films', return_value=film_return_response) as return_films_mock:
+        result = action()
+        assertion(result, return_films_mock)
 
 
 def test_api_get_film_inventory_returns_correct_json_mode():
@@ -156,6 +157,7 @@ def test_api_get_film_inventory_returns_correct_json_mode():
             ]
         }
 
-    with patch('rental_store.store_API.store_checkout.get_film_inventory', return_value=arrangement()):
+    film_inventory_mock = arrangement()
+    with patch('rental_store.store_api.get_film_inventory', return_value=film_inventory_mock):
         action_result = action()
         assertion(action_result)

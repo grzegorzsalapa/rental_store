@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from rental_store.data_interface import \
+from rental_store.data_models import \
     FilmRentRequestModel,\
     FilmRentRequestItemModel,\
     FilmRentResponseModel,\
     FilmRentResponseItemModel,\
     Film,\
     Customer
-from rental_store.store_checkout import StoreCheckout, AvailabilityError
+from rental_store.store_checkout import AvailabilityError, rent_films, return_films, y
 
 
 def test_rent_films_assignes_film_to_customer_in_rental_ledger():
@@ -38,8 +38,7 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
 
     def action(repository_mock, rent_request):
 
-        store_checkout = StoreCheckout(repository_mock)
-        result = store_checkout.rent_films(rent_request)
+        result = rent_films(repository_mock, rent_request)
 
         return result
 
@@ -113,3 +112,5 @@ def test_rent_films_returns_exception_if_one_of_films_not_available():
     with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK")):
         result = action(repository_mock, rent_request)
         assertion(result)
+
+

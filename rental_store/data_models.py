@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from pydantic import BaseModel
 
 
@@ -92,45 +91,3 @@ class FilmInventoryItemModel(BaseModel):
 
 class FilmInventoryModel(BaseModel):
     film_inventory: list[FilmInventoryItemModel]
-
-
-class RepositoryInterface(ABC):
-    @abstractmethod
-    def add_film_types(self, film_types: set):
-        pass
-
-    @abstractmethod
-    def get_film_types(self) -> set:
-        pass
-
-    @abstractmethod
-    def update_film_type(self, film_id: int):
-        pass
-
-    @abstractmethod
-    def add_film_to_inventory(self, film: Film):
-        pass
-
-    @abstractmethod
-    def get_all_films_from_inventory(self) -> FilmInventoryModel:
-        pass
-
-    @abstractmethod
-    def get_film_by_id(self, film_id: int):
-        pass
-
-    @abstractmethod
-    def create_customer_and_set_id(self):
-        pass
-
-    @abstractmethod
-    def get_customer(self, customer_id):
-        pass
-
-    @abstractmethod
-    def add_film_to_customers_ledger(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
-        pass
-
-    @abstractmethod
-    def mark_film_as_returned_in_customers_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
-        pass

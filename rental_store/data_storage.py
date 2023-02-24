@@ -1,7 +1,7 @@
-from rental_store.data_interface import RepositoryInterface, Film, FilmInventoryModel, FilmInventoryItemModel
+from rental_store.data_models import Film, FilmInventoryModel, FilmInventoryItemModel
 
 
-class MemoryDataStorage(RepositoryInterface):
+class MemoryDataStorage:
 
     def __init__(self):
         self.customers_ledgers = [[], []]
@@ -45,9 +45,6 @@ class MemoryDataStorage(RepositoryInterface):
     def get_film_types(self) -> set:
         return self.film_types
 
-    def update_film_type(self, film_id: int):
-        pass
-
     def add_film_to_inventory(self, film: dict):
         pass
 
@@ -67,7 +64,7 @@ class MemoryDataStorage(RepositoryInterface):
 
         return film
 
-    def create_customer_and_set_id(self):
+    def add_customer_and_get_id(self):
         new_id = len(self.customers_ledgers)
         self.customers_ledgers.append([])
 
@@ -76,7 +73,7 @@ class MemoryDataStorage(RepositoryInterface):
     def get_customer(self, customer_id):
         pass
 
-    def add_film_to_customers_ledger(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
+    def add_film_to_customers_rentals(self, customer_id: int, film: Film, up_front_days: int, charge, date_of_rent):
         self.customers_ledgers[customer_id].append(
             {
                 "film_id": film.film_id,
@@ -86,7 +83,7 @@ class MemoryDataStorage(RepositoryInterface):
             }
         )
 
-    def mark_film_as_returned_in_customers_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
+    def mark_film_as_returned_in_rentals_ledger(self, customer_id: int, film: Film, surcharge, date_of_return):
         for item in self.customers_ledgers[customer_id]:
             if item["film_id"] == film.film_id and "date_of_return" not in item.keys():
                 item.update(
@@ -96,5 +93,5 @@ class MemoryDataStorage(RepositoryInterface):
                     }
                 )
 
-    def get_customers_rent_ledger(self, customer_id: int):
+    def get_customers_rentals(self, customer_id: int):
         return self.customers_ledgers[customer_id]

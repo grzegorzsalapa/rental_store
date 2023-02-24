@@ -1,19 +1,22 @@
+import rental_store.config
 from fastapi import FastAPI, HTTPException
-from rental_store.data_interface import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, FilmReturnResponseModel
-from rental_store.store_checkout import StoreCheckout
+from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, FilmReturnResponseModel
 from rental_store.data_storage import MemoryDataStorage
+from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals
 
 
 store = FastAPI()
 
-store_checkout = StoreCheckout(MemoryDataStorage)
+rental_store.config.data_storage_class = MemoryDataStorage
+
+# data_storage = MemoryDataStorage()
 
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)
 def rent_films(rent_request: FilmRentRequestModel):
 
     try:
-        response = store_checkout.rent_films(rent_request)
+        response = rent_films(rent_request)
 
     except Exception as e:
         raise HTTPException(
@@ -29,7 +32,7 @@ def rent_films(rent_request: FilmRentRequestModel):
 def return_films(return_request: FilmReturnRequestModel):
 
     try:
-        response = store_checkout.return_films(return_request)
+        response = return_films(return_request)
 
     except Exception as e:
         raise HTTPException(
@@ -45,7 +48,7 @@ def return_films(return_request: FilmReturnRequestModel):
 def get_film_inventory():
 
     try:
-        response = store_checkout.get_film_inventory()
+        response = get_film_inventory()
 
     except Exception as e:
         raise HTTPException(
@@ -60,4 +63,4 @@ def get_film_inventory():
 @store.get("/ledger/{customer_id}")
 def get_customers_rentals(customer_id: int):
 
-    return store_checkout.get_customers_rentals(customer_id)
+    return get_customers_rentals(customer_id)

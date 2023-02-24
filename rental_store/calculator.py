@@ -1,4 +1,4 @@
-from rental_store.data_interface import Film, Customer, PriceList
+from rental_store.data_models import Film, Customer, PriceList
 from datetime import date, datetime
 
 
