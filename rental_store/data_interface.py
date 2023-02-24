@@ -113,7 +113,7 @@ class RepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def get_all_films_from_inventory(self) -> list:
+    def get_all_films_from_inventory(self) -> FilmInventoryModel:
         pass
 
     @abstractmethod

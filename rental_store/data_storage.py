@@ -1,4 +1,4 @@
-from rental_store.data_interface import RepositoryInterface, Film
+from rental_store.data_interface import RepositoryInterface, Film, FilmInventoryModel, FilmInventoryItemModel
 
 
 class MemoryDataStorage(RepositoryInterface):
@@ -51,8 +51,14 @@ class MemoryDataStorage(RepositoryInterface):
     def add_film_to_inventory(self, film: dict):
         pass
 
-    def get_all_films_from_inventory(self) -> list:
-        return self.film_inventory
+    def get_all_films_from_inventory(self) -> FilmInventoryModel:
+
+        films = self.film_inventory.get_all()
+        films_formatted = []
+        for item in films:
+            films_formatted = FilmInventoryItemModel(**item)
+
+        return FilmInventoryModel(film_inventory=films_formatted)
 
     def get_film_by_id(self, film_id: int) -> Film:
         for item in self.film_inventory:

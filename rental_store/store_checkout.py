@@ -13,11 +13,24 @@ from rental_store.data_interface import \
     FilmInventoryModel,\
     Film,\
     Customer
+import uuid
 
 
 class AvailabilityError(Exception):
 
     def __init__(self, message: str):
+        self.message = message
+
+
+class DuplicateRentError(Exception):
+
+    def __init__(self, message: str):
+        self.message = message
+
+
+class RentError(Exception):
+
+    def __init__(self, message):
         self.message = message
 
 
@@ -28,17 +41,30 @@ class StoreCheckout:
 
     def rent_films(self, rent_request: FilmRentRequest):
 
-        response_items = []
+        request_id = uuid.uuid4()
+        customer = self.repository.get_customer(rent_request.customer_id)
 
         for item in rent_request.rented_films:
 
+            try:
+                self.reserve_film(request_id, customer, item.film_id)
+
+            except AvailabilityError as e:
+                raise RentError(str(e))
+
+            except DuplicateRentError as e:
+                raise RentError(str(e))
+
+        response_items = []
+        for item in rent_request.rented_films:
+
             film = self.repository.get_film_by_id(item.film_id)
+
             charge, currency = calculate_rent_charge(film, item.up_front_days)
 
-            customer = self.repository.get_customer(rent_request.customer_id)
-            self.repository.add_record_to_rental_ledger(customer, film, item.up_front_days, charge, date.today())
+            self.add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
 
-            response_items.append(FilmRentResponseItem(film_id=film.film_id, charge=charge, currency=currency))
+            response_items.append(FilmRentResponseItem(film_id=film.id, charge=charge, currency=currency))
 
         return FilmRentResponse(rented_films=response_items)
 
@@ -67,12 +93,16 @@ class StoreCheckout:
 
         return FilmInventoryModel(film_inventory=films_formatted)
 
-    def get_ledger(self, customer_id: int):
+    def get_customers_rentals(self, customer_id: int):
+        pass
 
-        return Customer(self.repository, customer_id).rent_ledger
+    def reserve_film(self, request_id, film):
+        pass
 
-    def rent_film(self, customer: Customer, film: Film, up_front_days: int, charge: int, date_of_rent):
+    def add_record_to_rental_ledger(self, request_id):
         self.repository.add_film_to_rentals_ledger(customer.id, film.id, up_front_days, charge, date_of_rent)
 
     def return_film(self, customer: Customer, film: Film, surcharge: int, date_of_return):
         self.repository.mark_film_as_returned_in_rentals_ledger(customer.id, film.id, surcharge, date_of_return)
+
+

@@ -16,9 +16,11 @@ def rent_films(rent_request: FilmRentRequest):
         response = store_checkout.rent_films(rent_request)
 
     except Exception as e:
-        raise HTTPException(status_code=500,
-                            detail=str(e),
-                            headers={"X-Error": "Unexpected error."})
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
 
     return response
 
@@ -30,9 +32,11 @@ def return_films(return_request: FilmReturnRequest):
         response = store_checkout.return_films(return_request)
 
     except Exception as e:
-        raise HTTPException(status_code=500,
-                            detail=str(e),
-                            headers={"X-Error": "Unexpected error."})
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
 
     return response
 
@@ -44,14 +48,16 @@ def get_film_inventory():
         response = store_checkout.get_film_inventory()
 
     except Exception as e:
-        raise HTTPException(status_code=500,
-                            detail=str(e),
-                            headers={"X-Error": "Unexpected error."})
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
 
     return response
 
 
 @store.get("/ledger/{customer_id}")
-def get_ledger(customer_id: int):
+def get_customers_rentals(customer_id: int):
 
-    return store_checkout.get_ledger(customer_id)
+    return store_checkout.get_customers_rentals(customer_id)

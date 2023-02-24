@@ -17,7 +17,7 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
             repository_mock = MagicMock(name="Repository_Instance")
             repository_mock.get_film_by_id = MagicMock(return_value=Film(0, "Matrix 11", "New release"))
             repository_mock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
-            repository_mock.reserv_film = MagicMock()
+            repository_mock.reserve_film = MagicMock()
             repository_mock.add_record_to_rental_ledger = MagicMock()
 
             return repository_mock
@@ -70,7 +70,7 @@ def test_rent_films_returns_exception_if_one_of_films_not_available():
             repository_mock = MagicMock(name="Repository_Instance")
             repository_mock.get_film_by_id = MagicMock(return_value=Film(0, "Matrix 11", "New release"))
             repository_mock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
-            repository_mock.reserv_film = MagicMock(side_effect=AvailabilityError('Film not available.'))
+            repository_mock.reserve_film = MagicMock(side_effect=AvailabilityError('Film not available.'))
 
             return repository_mock
 
