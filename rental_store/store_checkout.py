@@ -21,19 +21,13 @@ class AvailabilityError(Exception):
         self.message = message
 
 
-class DuplicateRentError(Exception):
-
-    def __init__(self, message: str):
-        self.message = message
-
-
 class RentError(Exception):
 
     def __init__(self, message):
         self.message = message
 
 
-def rent_films(rent_request: FilmRentRequestModel):
+def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
     request_id = uuid.uuid4()
 
@@ -43,9 +37,8 @@ def rent_films(rent_request: FilmRentRequestModel):
             reserve_film(request_id, item.film_id)
 
         except AvailabilityError as e:
-            raise RentError(str(e))
+            Repository.clear_reservation(request_id)
 
-        except DuplicateRentError as e:
             raise RentError(str(e))
 
     customer = Repository.get_customer(rent_request.customer_id)
@@ -64,7 +57,7 @@ def rent_films(rent_request: FilmRentRequestModel):
     return FilmRentResponseModel(rented_films=response_items)
 
 
-def return_films(return_request: FilmReturnRequestModel):
+def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
 
     response_items = []
 
@@ -92,8 +85,9 @@ def get_customers_rentals(customer_id: int):
 def reserve_film(request_id, film_id: int):
     film = Repository.get_film_by_id(film_id)
     if film.available_items:
-        Repository.set_reservation_on_film(request_id)
-
+        Repository.set_reservation_on_film(film_id, request_id)
+    else:
+        raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
 
 
 def add_record_to_rental_ledger(request_id, customer_id, film_id, up_front_days, charge, date_of_rent):

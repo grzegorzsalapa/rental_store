@@ -1,4 +1,6 @@
 import rental_store.config
+from rental_store.data_models import Film, Customer
+
 
 data_storage = rental_store.config.data_storage_class()
 
@@ -10,7 +12,7 @@ class Repository:
         pass
 
     @classmethod
-    def get_film_by_id(cls, film_id: int):
+    def get_film_by_id(cls, film_id: int) -> Film:
         pass
 
     @classmethod
@@ -22,6 +24,14 @@ class Repository:
         rentals_ledger = data_storage.get_rentals_ledger
 
     @classmethod
-    def set_reservation_on_film(cls, request_id):
+    def set_reservation_on_film(cls, film: Film, request_id):
+        pass
+
+    @classmethod
+    def clear_reservation(cls, request_id):
+        pass
+
+    @classmethod
+    def clear_reservation_on_film(cls, request_id, film_id):
         pass
 

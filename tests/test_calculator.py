@@ -9,7 +9,7 @@ def test_calculate_rent_charge_for_new_release():
     def arrangement():
 
         price_list = PriceList("SEK", 40, 30)
-        film = Film(0, "Matrix 11", "New release")
+        film = Film(0, "Matrix 11", "New release", 72)
         up_front_days = 1
 
         return price_list, film, up_front_days
@@ -32,7 +32,7 @@ def test_calculate_rent_surcharge_for_new_release():
     def arrangement():
 
         price_list = PriceList("SEK", 40, 30)
-        film = Film(0, "Matrix 11", "New release")
+        film = Film(0, "Matrix 11", "New release", 50)
 
         today = date.today()
         d = timedelta(days=3)
