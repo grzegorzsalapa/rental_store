@@ -4,16 +4,10 @@ from datetime import date, datetime
 
 def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days):
 
-    premium_price = price_list.premium_price
-    basic_price = price_list.basic_price
-    currency = price_list.currency
-
-    print(premium_price)
-
     if film.film_type == "New release":
-        charge = premium_price * up_front_days
+        charge = price_list.premium_price * up_front_days
 
-        return charge, currency
+        return charge, price_list.currency
 
     elif film.film_type == "Regular":
         return 30, "SEK"
@@ -24,19 +18,15 @@ def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days):
 
 def calculate_rent_surcharge(price_list: PriceList, film: Film, customer: Customer):
 
-    premium_price = price_list.premium_price
-    basic_price = price_list.basic_price
-    currency = price_list.currency
-
     if film.film_type == "New release":
         for record in customer.rentals:
             if record.film_id == film.film_id and record.date_of_return is None:
                 rent_duration = (date.today() - record.date_of_rent).days
                 overdue = rent_duration - record.up_front_days
 
-        charge = max(0, overdue) * premium_price
+        charge = max(0, overdue) * price_list.premium_price
 
-        return charge, currency
+        return charge, price_list.currency
 
     elif film.film_type == "Regular":
         return 31, "SEK"

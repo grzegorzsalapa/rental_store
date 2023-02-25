@@ -42,12 +42,12 @@ class Film:
         return self.film_type
 
 
-class PriceList:
+class PriceList (BaseModel):
 
-    def __init__(self, currency, premium_price, basic_price):
-        self.currency = currency
-        self.premium_price = premium_price
-        self.basic_price = basic_price
+    currency: str = "SEK"
+    premium_price: int = 40
+    basic_price: int = 30
+
 
 
 class FilmRentRequestItemModel(BaseModel):
