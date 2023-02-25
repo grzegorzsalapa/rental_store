@@ -1,6 +1,7 @@
 import rental_store.config
-from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger
-
+from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
+from uuid import UUID
+import datetime
 
 data_storage = rental_store.config.data_storage_class()
 
@@ -12,7 +13,7 @@ class Repository:
         pass
 
     @classmethod
-    def create_film(cls, customer_id: int) -> Film:
+    def create_film(cls) -> Film:
         pass
 
     @classmethod
@@ -25,6 +26,12 @@ class Repository:
 
     @classmethod
     def create_ledger(cls) -> Ledger:
+        pass
+
+    @classmethod
+    def create_rental_record(cls, request_id: UUID, customer_id: Customer,
+                             film_id: int, up_front_days: int, charge: int,
+                             date_of_rent: datetime.date) -> RentalRecord:
         pass
 
     @classmethod

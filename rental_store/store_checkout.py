@@ -1,7 +1,7 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.repositories import Repository
-from rental_store.data_models import Film, Customer, Inventory, \
+from rental_store.data_models import Film, Customer, Inventory, ReservationRecord, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
     FilmReturnRequestModel,\
@@ -9,7 +9,6 @@ from rental_store.data_models import Film, Customer, Inventory, \
     FilmReturnResponseModel,\
     FilmReturnResponseItemModel
 from uuid import UUID, uuid4
-from typing import Type
 
 
 class AvailabilityError(Exception):
@@ -34,7 +33,7 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
             reserve_film(request_id, item.film_id)
 
         except AvailabilityError as e:
-            revert_reservation(request_id)
+            release_reservation(request_id)
 
             raise RentError(str(e))
 
@@ -44,12 +43,15 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
     for item in rent_request.rented_films:
 
         film = Repository.get_film(item.film_id)
+        price_list = Repository.get_price_list()
 
-        charge, currency = calculate_rent_charge(film, item.up_front_days)
+        charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
 
-        add_record_to_rental_ledger(request_id, customer.id, film.id, item.up_front_days, charge, date.today())
+        Repository.create_rental_record(request_id, customer, film.id, item.up_front_days, charge, date.today())
 
         response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
+
+    release_reservation(request_id)
 
     return FilmRentResponseModel(rented_films=response_items)
 
@@ -62,11 +64,13 @@ def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseMo
 
         film = Repository.get_film(item.film_id)
         customer = Repository.get_customer(return_request.customer_id)
-        surcharge, currency = calculate_rent_surcharge(film, customer)
+        price_list = Repository.get_price_list()
+
+        surcharge, currency = calculate_rent_surcharge(price_list, film, customer)
 
         return_film(customer, film, surcharge, date.today())
 
-        response_items.append(FilmReturnResponseItemModel(film_id=film.film_id, surcharge=surcharge, currency=currency))
+        response_items.append(FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
 
     return FilmReturnResponseModel(returned_films=response_items)
 
@@ -80,25 +84,43 @@ def get_customers_rentals(customer_id: int) -> list:
     return customer.rentals
 
 
-def reserve_film(request_id, film_id: int):
+def reserve_film(request_id: UUID, film_id: int):
+
+    ledger = Repository.get_ledger()
+
+    rented = 0
+    for item in ledger.rentals:
+        if item.film_id == film_id:
+            rented += 1
+
+    reserved = 0
+    for item in ledger.reservations:
+        if item.film_id == film_id:
+            reserved += 1
 
     film = Repository.get_film(film_id)
-    available_items = film.items_total - len(film.reservation_list)
+
+    available_items = film.items_total - rented - reserved
 
     if available_items:
-        film.reservation_list.append(request_id)
-        Repository.update_film(film)
+        new_record = ReservationRecord(request_id=request_id, film_id=film_id)
+        ledger.reservations.append(new_record)
+        Repository.update_ledger(ledger)
     else:
         raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
 
 
-def revert_reservation(request_id):
-    inventory = Repository.get_inventory()
-    for item in inventory.films:
-        item.reservation_list.remove(request_id)
+def release_reservation(request_id):
+
+    ledger = Repository.get_ledger()
+    for item in ledger.reservations:
+        if item.request_id == request_id:
+            ledger.reservations.remove(item)
+
+    Repository.update_ledger(ledger)
 
 
-def add_record_to_rental_ledger(request_id: Type[UUID], customer_id: Customer, film_id, up_front_days, charge, date_of_rent):
+def add_record_to_ledger(request_id: UUID, customer_id: Customer, film_id, up_front_days, charge, date_of_rent):
     pass
 
 

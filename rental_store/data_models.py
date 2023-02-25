@@ -4,8 +4,6 @@ from uuid import UUID
 
 
 class RentalRecord(BaseModel):
-
-    customer_id: int = None
     request_id: UUID = None
     film_id: int = None
     date_of_rent: datetime.date = None
@@ -15,36 +13,36 @@ class RentalRecord(BaseModel):
     surcharge: int = None
 
 
-class Ledger(BaseModel):
+class ReservationRecord(BaseModel):
+    request_id: UUID
+    film_id: int
 
+
+class Ledger(BaseModel):
     rentals: list[RentalRecord]
+    reservations: list[ReservationRecord]
 
 
 class Film(BaseModel):
-
     id: int
     title: str
     type: str
     items_total: int
-    reservation_list: list[UUID]
 
 
 class Inventory(BaseModel):
-
     films: list[Film]
 
 
-class PriceList (BaseModel):
+class Customer (BaseModel):
+    id: int
+    rentals: list[RentalRecord]
 
+
+class PriceList (BaseModel):
     currency: str = "SEK"
     premium_price: int = 40
     basic_price: int = 30
-
-
-class Customer (BaseModel):
-
-    id: int
-    rentals: list[RentalRecord]
 
 
 class FilmRentRequestItemModel(BaseModel):

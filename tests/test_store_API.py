@@ -130,14 +130,11 @@ def test_api_get_film_inventory_returns_correct_json_mode():
 
     def arrangement():
 
-        reservation_id_1 = uuid4()
-        reservation_id_2 = uuid4()
-
-        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50, reservation_list=[reservation_id_1])
-        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50, reservation_list=[reservation_id_2])
+        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50)
         film_inventory_mock = Inventory(films=[item_1, item_2])
 
-        return film_inventory_mock, reservation_id_1, reservation_id_2
+        return film_inventory_mock
 
 
     def action():
@@ -145,27 +142,25 @@ def test_api_get_film_inventory_returns_correct_json_mode():
 
         return response
 
-    def assertion(response, reservation_id_1, reservation_id_2):
+    def assertion(response):
         assert response.json() == {
             'films': [
                 {
                     'id': 0,
                     'title': 'Matrix 11',
                     'type': 'New release',
-                    'items_total': 50,
-                    'reservation_list': [f'{reservation_id_1}']
+                    'items_total': 50
                 },
                 {
                     'id': 0,
                     'title': 'Spider Man',
                     'type': 'Regular',
-                    'items_total': 50,
-                    'reservation_list': [f'{reservation_id_2}']
+                    'items_total': 50
                 }
             ]
         }
 
-    film_inventory_mock, reservation_id_1, reservation_id_2 = arrangement()
+    film_inventory_mock = arrangement()
     with patch('rental_store.store_api.get_film_inventory', return_value=film_inventory_mock):
         action_result = action()
-        assertion(action_result, reservation_id_1, reservation_id_2)
+        assertion(action_result)
