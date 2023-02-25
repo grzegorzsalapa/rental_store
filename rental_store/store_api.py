@@ -1,16 +1,13 @@
-import rental_store.config
+import rental_store.repositories
 from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
-from rental_store.data_storage import MemoryDataStorage
 from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals
 
 
 store = FastAPI()
 
-rental_store.config.data_storage_class = MemoryDataStorage
-
-# data_storage = MemoryDataStorage()
+rental_store.repositories.data_storage
 
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)

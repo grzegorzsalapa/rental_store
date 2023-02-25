@@ -1,15 +1,15 @@
-import rental_store.config
 from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
+from rental_store.data_storage import MemoryDataStorage
 from uuid import UUID
 import datetime
 
-data_storage = rental_store.config.data_storage_class()
+data_storage = MemoryDataStorage()
 
 
 class Repository:
 
     @classmethod
-    def create_customer(cls, customer_id: int) -> Customer:
+    def create_customer(cls) -> Customer:
         pass
 
     @classmethod

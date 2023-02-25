@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_api import store
 from unittest.mock import patch
-from uuid import uuid4, UUID
+from rental_store.repositories import Repository
 from rental_store.data_models import Inventory, Film, \
     FilmRentResponseModel,\
     FilmRentResponseItemModel,\
@@ -164,3 +164,120 @@ def test_api_get_film_inventory_returns_correct_json_mode():
     with patch('rental_store.store_api.get_film_inventory', return_value=film_inventory_mock):
         action_result = action()
         assertion(action_result)
+
+
+def test_end2end_post_rent_films_accepts_request_and_returns_correct_response():
+
+    def arrangement():
+        customer = Repository.create_customer()
+        customer_id = customer.id
+
+
+    def action():
+
+        response = test_client.post(
+            "/films/rent",
+            json={
+                "customer_id": 0,
+                "rented_films": [
+                    {
+                        "film_id": 0,
+                        "up_front_days": 1
+                    }
+                ]
+            }
+        )
+
+        return response
+
+    def assertion(response):
+
+        assert response.json() == {
+            "rented_films": [
+                {
+                    "film_id": 0,
+                    "charge": 40,
+                    "currency": "SEK"
+                }
+            ]
+        }
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
+def test_end2end_post_return_films_accepts_request_and_returns_correct_response():
+
+    def arrangement():
+        pass
+
+    def action():
+
+        response = test_client.post(
+            "/films/return",
+            json={
+                "customer_id": "0",
+                "returned_films": [
+                    {
+                        "film_id": "3"
+                    }
+                ]
+            }
+        )
+        return response
+
+    def assertion(response, return_films_mock):
+
+        assert response.json() == {
+            "returned_films": [
+                {
+                    'film_id': 3,
+                    'surcharge': 30,
+                    'currency': 'SEK'
+                }
+            ]
+        }
+
+    arrangement()
+    result = action()
+    assertion(result)
+
+
+def test_end2end_get_film_inventory_returns_correct_response():
+
+    def arrangement():
+
+        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50)
+        inventory = Inventory(films=[item_1, item_2])
+
+
+    def action():
+        response = test_client.get("/films")
+
+        return response
+
+    def assertion(response):
+        assert response.json() == {
+            'films': [
+                {
+                    'id': 0,
+                    'title': 'Matrix 11',
+                    'type': 'New release',
+                    'items_total': 50
+                },
+                {
+                    'id': 0,
+                    'title': 'Spider Man',
+                    'type': 'Regular',
+                    'items_total': 50
+                }
+            ]
+        }
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
