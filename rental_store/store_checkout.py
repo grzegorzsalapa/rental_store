@@ -78,7 +78,7 @@ def get_film_inventory():
     return Repository.get_film_inventory()
 
 
-def get_customers_rentals(customer_id: int) -> Customer:
+def get_customers_rentals(customer_id: int) -> list:
     customer = Repository.get_customer(customer_id)
     return customer.rentals
 
@@ -86,9 +86,13 @@ def get_customers_rentals(customer_id: int) -> Customer:
 def reserve_film(request_id, film_id: int):
     film = Repository.get_film_by_id(film_id)
     if film.available_items:
-        Repository.set_reservation_on_film(film_id, request_id)
+        set_reservation_on_film(film_id, request_id)
     else:
         raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
+
+
+def set_reservation_on_film(film_id: int, request_id):
+    Repository.update_reservation_list(film_id, request_id)
 
 
 def add_record_to_rental_ledger(request_id, customer_id, film_id, up_front_days, charge, date_of_rent):

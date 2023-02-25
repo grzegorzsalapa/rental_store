@@ -15,7 +15,7 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
     def arrangement():
 
         film_id = 14
-        film = Film(film_id, "Matrix 11", "New release", 265)
+        film = Film(id=film_id, title="Matrix 11", type="New release", items_total=50, available_items=34)
 
         def _set_up_mocked_repository():
             RepositoryMock = MagicMock(name="Repository_Instance")
@@ -38,7 +38,9 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
             ]
         )
 
-        return RepositoryMock, rent_request, film
+        calculate_rent_charge_mock = MagicMock(return_value=(40, "SEK"))
+
+        return RepositoryMock, rent_request, film, calculate_rent_charge_mock
 
     def action(rent_request):
 
@@ -59,16 +61,18 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
         )
 
         assert result == film_rent_response
+        print(RepositoryMock.calculate_rent_charge_mock.call_args_list)
+        assert RepositoryMock.calculate_rent_charge_mock.assert_called_once
+        assert RepositoryMock.calculate_rent_charge_mock.assert_called_once_with(film, 8)
         assert RepositoryMock.get_customer.assert_called_once_with(700)
-        assert calculate_rent_charge_mock.assert_called_once_with(film, 8)
 
 
-    RepositoryMock, rent_request, film = arrangement()
-    with patch('rental_store.store_checkout.Repository', new=RepositoryMock):
-        with patch('rental_store.store_checkout.calculate_rent_charge', return_value=(40, "SEK"))\
-                as calculate_rent_charge_mock:
+
+    RepositoryMock, rent_request, film, calculate_rent_charge_mock = arrangement()
+    with patch('rental_store.store_checkout.Repository', new=RepositoryMock) as repo_mock:
+        with patch('rental_store.store_checkout.calculate_rent_charge', new=calculate_rent_charge_mock) as calc_mock:
             result = action(rent_request)
-            assertion(result, calculate_rent_charge_mock, film, RepositoryMock)
+            assertion(result, calc_mock, film, repo_mock)
 
 
 # def test_rent_films_returns_exception_if_one_of_films_not_available():

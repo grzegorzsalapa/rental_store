@@ -21,25 +21,13 @@ class Customer (BaseModel):
     rentals: list[RentalRecord]
 
 
-class Film:
+class Film(BaseModel):
 
-    def __init__(self, film_id, film_title, film_type, available_items: int):
-        self.film_id = film_id
-        self.film_title = film_title
-        self.film_type = film_type
-        self.available_items = available_items
-
-    @property
-    def id(self):
-        return self.film_id
-
-    @property
-    def title(self):
-        return self.film_title
-
-    @property
-    def type(self):
-        return self.film_type
+    id: int
+    title: str
+    type: str
+    items_total: int
+    available_items: int
 
 
 class PriceList (BaseModel):
@@ -47,7 +35,6 @@ class PriceList (BaseModel):
     currency: str = "SEK"
     premium_price: int = 40
     basic_price: int = 30
-
 
 
 class FilmRentRequestItemModel(BaseModel):
