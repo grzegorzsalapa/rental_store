@@ -29,12 +29,6 @@ class Repository:
         pass
 
     @classmethod
-    def create_rental_record(cls, request_id: UUID, customer_id: Customer,
-                             film_id: int, up_front_days: int, charge: int,
-                             date_of_rent: datetime.date) -> RentalRecord:
-        pass
-
-    @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
         pass
 

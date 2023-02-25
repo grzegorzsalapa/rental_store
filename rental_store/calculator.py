@@ -1,5 +1,5 @@
 from rental_store.data_models import Film, Customer, PriceList
-from datetime import date, datetime
+from datetime import date
 
 
 def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days):

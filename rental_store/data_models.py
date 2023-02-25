@@ -6,6 +6,7 @@ from uuid import UUID
 class RentalRecord(BaseModel):
     request_id: UUID = None
     film_id: int = None
+    customer_id: int = None
     date_of_rent: datetime.date = None
     up_front_days: int = None
     charge: int = None
@@ -19,8 +20,8 @@ class ReservationRecord(BaseModel):
 
 
 class Ledger(BaseModel):
-    rentals: list[RentalRecord]
-    reservations: list[ReservationRecord]
+    rentals: list[RentalRecord] = None
+    reservations: list[ReservationRecord] = None
 
 
 class Film(BaseModel):
@@ -31,7 +32,7 @@ class Film(BaseModel):
 
 
 class Inventory(BaseModel):
-    films: list[Film]
+    films: list[Film] = None
 
 
 class Customer (BaseModel):

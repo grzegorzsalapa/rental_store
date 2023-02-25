@@ -1,7 +1,7 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.repositories import Repository
-from rental_store.data_models import Film, Customer, Inventory, ReservationRecord, \
+from rental_store.data_models import Film, Customer, Inventory, ReservationRecord, RentalRecord, Ledger, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
     FilmReturnRequestModel,\
@@ -26,32 +26,43 @@ class RentError(Exception):
 def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
     request_id = uuid4()
+    ledger = Repository.get_ledger()
 
     for item in rent_request.rented_films:
 
         try:
-            reserve_film(request_id, item.film_id)
+            reserve_film(ledger, request_id, item.film_id)
 
         except AvailabilityError as e:
-            release_reservation(request_id)
 
             raise RentError(str(e))
 
+    Repository.update_ledger(ledger)
+
     customer = Repository.get_customer(rent_request.customer_id)
+    price_list = Repository.get_price_list()
     response_items = []
 
     for item in rent_request.rented_films:
 
         film = Repository.get_film(item.film_id)
-        price_list = Repository.get_price_list()
 
         charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
 
-        Repository.create_rental_record(request_id, customer, film.id, item.up_front_days, charge, date.today())
+        new_rental_record = RentalRecord(
+            request_id=request_id,
+            customer_id=customer.id,
+            film_id=film.id,
+            up_front_days=item.up_front_days,
+            charge=charge,
+            date_of_rent=date.today())
+
+        ledger.rentals.append(new_rental_record)
 
         response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
 
-    release_reservation(request_id)
+    release_reservation(ledger, request_id)
+    Repository.update_ledger(ledger)
 
     return FilmRentResponseModel(rented_films=response_items)
 
@@ -84,9 +95,7 @@ def get_customers_rentals(customer_id: int) -> list:
     return customer.rentals
 
 
-def reserve_film(request_id: UUID, film_id: int):
-
-    ledger = Repository.get_ledger()
+def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
 
     rented = 0
     for item in ledger.rentals:
@@ -105,14 +114,12 @@ def reserve_film(request_id: UUID, film_id: int):
     if available_items:
         new_record = ReservationRecord(request_id=request_id, film_id=film_id)
         ledger.reservations.append(new_record)
-        Repository.update_ledger(ledger)
     else:
         raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
 
 
-def release_reservation(request_id):
+def release_reservation(ledger: Ledger, request_id: UUID):
 
-    ledger = Repository.get_ledger()
     for item in ledger.reservations:
         if item.request_id == request_id:
             ledger.reservations.remove(item)

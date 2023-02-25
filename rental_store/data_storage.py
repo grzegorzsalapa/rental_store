@@ -33,13 +33,4 @@ film_inventory = [
      }
 ]
 film_types = {"New release", "Regular", "Old"}
-film_price_list = [
-    {
-        "premium price": 40,
-        "currency": "SEK"
-    },
-    {
-        "basic price": 30,
-        "currency": "SEK"
-    }
-]
+
