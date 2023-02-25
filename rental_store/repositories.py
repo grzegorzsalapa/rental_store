@@ -1,5 +1,5 @@
 import rental_store.config
-from rental_store.data_models import Film, Customer
+from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger
 
 
 data_storage = rental_store.config.data_storage_class()
@@ -8,32 +8,61 @@ data_storage = rental_store.config.data_storage_class()
 class Repository:
 
     @classmethod
-    def get_customer(cls, customer_id: int):
+    def create_customer(cls, customer_id: int) -> Customer:
         pass
 
     @classmethod
-    def get_film_by_id(cls, film_id: int) -> Film:
+    def create_film(cls, customer_id: int) -> Film:
         pass
 
     @classmethod
-    def get_film_inventory(cls):
+    def create_inventory(cls) -> Inventory:
         pass
 
     @classmethod
-    def get_customers_rentals(cls, customer_id: int):
-        rentals_ledger = data_storage.read_rentals_ledger
-
-
-    @classmethod
-    def update_reservation_list(cls, film_id, request_id):
-        pass
-
-
-    @classmethod
-    def clear_reservation(cls, request_id):
+    def create_price_list(cls) -> PriceList:
         pass
 
     @classmethod
-    def clear_reservation_on_film(cls, request_id, film_id):
+    def create_ledger(cls) -> Ledger:
         pass
 
+    @classmethod
+    def get_customer(cls, customer_id: int) -> Customer:
+        pass
+
+    @classmethod
+    def get_film(cls, film_id: int) -> Film:
+        pass
+
+    @classmethod
+    def get_inventory(cls) -> Inventory:
+        pass
+
+    @classmethod
+    def get_price_list(cls) -> PriceList:
+        pass
+
+    @classmethod
+    def get_ledger(cls) -> Ledger:
+        pass
+
+    @classmethod
+    def update_customer(cls, customer: Customer):
+        pass
+
+    @classmethod
+    def update_film(cls, film: Film):
+        pass
+
+    @classmethod
+    def update_inventory(cls, inventory: Inventory):
+        pass
+
+    @classmethod
+    def update_price_list(cls, price_list: PriceList):
+        pass
+
+    @classmethod
+    def update_ledger(cls, ledger: Ledger):
+        pass

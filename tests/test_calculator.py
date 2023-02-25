@@ -52,7 +52,7 @@ def test_calculate_rent_surcharge_for_new_release():
             )
         ]
 
-        customer = Customer(customer_id=7, rentals=rentals)
+        customer = Customer(id=7, rentals=rentals)
 
         return price_list, film, customer
 

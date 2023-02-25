@@ -1,18 +1,15 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.repositories import Repository
-from rental_store.data_models import \
+from rental_store.data_models import Film, Customer, Inventory, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
     FilmReturnRequestModel,\
     FilmRentResponseItemModel, \
     FilmReturnResponseModel,\
-    FilmReturnResponseItemModel,\
-    FilmInventoryItemModel,\
-    FilmInventoryModel,\
-    Film,\
-    Customer
-import uuid
+    FilmReturnResponseItemModel
+from uuid import UUID, uuid4
+from typing import Type
 
 
 class AvailabilityError(Exception):
@@ -29,7 +26,7 @@ class RentError(Exception):
 
 def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
-    request_id = uuid.uuid4()
+    request_id = uuid4()
 
     for item in rent_request.rented_films:
 
@@ -37,7 +34,7 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
             reserve_film(request_id, item.film_id)
 
         except AvailabilityError as e:
-            Repository.clear_reservation(request_id)
+            revert_reservation(request_id)
 
             raise RentError(str(e))
 
@@ -46,7 +43,7 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
     for item in rent_request.rented_films:
 
-        film = Repository.get_film_by_id(item.film_id)
+        film = Repository.get_film(item.film_id)
 
         charge, currency = calculate_rent_charge(film, item.up_front_days)
 
@@ -63,7 +60,7 @@ def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseMo
 
     for item in return_request.returned_films:
 
-        film = Repository.get_film_by_id(item.film_id)
+        film = Repository.get_film(item.film_id)
         customer = Repository.get_customer(return_request.customer_id)
         surcharge, currency = calculate_rent_surcharge(film, customer)
 
@@ -74,8 +71,8 @@ def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseMo
     return FilmReturnResponseModel(returned_films=response_items)
 
 
-def get_film_inventory():
-    return Repository.get_film_inventory()
+def get_film_inventory() -> Inventory:
+    return Repository.get_inventory()
 
 
 def get_customers_rentals(customer_id: int) -> list:
@@ -85,7 +82,7 @@ def get_customers_rentals(customer_id: int) -> list:
 
 def reserve_film(request_id, film_id: int):
 
-    film = Repository.get_film_by_id(film_id)
+    film = Repository.get_film(film_id)
     available_items = film.items_total - len(film.reservation_list)
 
     if available_items:
@@ -95,7 +92,13 @@ def reserve_film(request_id, film_id: int):
         raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
 
 
-def add_record_to_rental_ledger(request_id, customer_id, film_id, up_front_days, charge, date_of_rent):
+def revert_reservation(request_id):
+    inventory = Repository.get_inventory()
+    for item in inventory.films:
+        item.reservation_list.remove(request_id)
+
+
+def add_record_to_rental_ledger(request_id: Type[UUID], customer_id: Customer, film_id, up_front_days, charge, date_of_rent):
     pass
 
 

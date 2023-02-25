@@ -15,9 +15,8 @@ class RentalRecord(BaseModel):
     surcharge: int = None
 
 
-class Customer (BaseModel):
+class Ledger(BaseModel):
 
-    customer_id: int
     rentals: list[RentalRecord]
 
 
@@ -30,11 +29,22 @@ class Film(BaseModel):
     reservation_list: list[UUID]
 
 
+class Inventory(BaseModel):
+
+    films: list[Film]
+
+
 class PriceList (BaseModel):
 
     currency: str = "SEK"
     premium_price: int = 40
     basic_price: int = 30
+
+
+class Customer (BaseModel):
+
+    id: int
+    rentals: list[RentalRecord]
 
 
 class FilmRentRequestItemModel(BaseModel):
@@ -74,13 +84,3 @@ class FilmReturnResponseItemModel(BaseModel):
 
 class FilmReturnResponseModel(BaseModel):
     returned_films: list[FilmReturnResponseItemModel]
-
-
-class FilmInventoryItemModel(BaseModel):
-    film_id: int
-    film_title: str
-    film_type: str
-
-
-class FilmInventoryModel(BaseModel):
-    film_inventory: list[FilmInventoryItemModel]

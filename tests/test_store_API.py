@@ -1,14 +1,13 @@
 import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_api import store
-from unittest.mock import patch, MagicMock
-from rental_store.data_models import \
+from unittest.mock import patch
+from uuid import uuid4, UUID
+from rental_store.data_models import Inventory, Film, \
     FilmRentResponseModel,\
     FilmRentResponseItemModel,\
     FilmReturnResponseModel,\
     FilmReturnResponseItemModel,\
-    FilmInventoryModel,\
-    FilmInventoryItemModel,\
     FilmRentRequestItemModel,\
     FilmRentRequestModel,\
     FilmReturnRequestItemModel,\
@@ -130,34 +129,43 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
 def test_api_get_film_inventory_returns_correct_json_mode():
 
     def arrangement():
-        film_inventory_item_1 = FilmInventoryItemModel(film_id=0, film_title="Matrix 11", film_type="New release")
-        film_inventory_item_2 = FilmInventoryItemModel(film_id=1, film_title="Spider Man", film_type="Regular")
-        film_inventory_mock = FilmInventoryModel(film_inventory=[film_inventory_item_1, film_inventory_item_2])
 
-        return film_inventory_mock
+        reservation_id_1 = uuid4()
+        reservation_id_2 = uuid4()
+
+        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50, reservation_list=[reservation_id_1])
+        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50, reservation_list=[reservation_id_2])
+        film_inventory_mock = Inventory(films=[item_1, item_2])
+
+        return film_inventory_mock, reservation_id_1, reservation_id_2
+
 
     def action():
         response = test_client.get("/films")
 
         return response
 
-    def assertion(response):
+    def assertion(response, reservation_id_1, reservation_id_2):
         assert response.json() == {
-            "film_inventory": [
+            'films': [
                 {
-                    "film_id": 0,
-                    "film_title": "Matrix 11",
-                    "film_type": "New release"
-                 },
+                    'id': 0,
+                    'title': 'Matrix 11',
+                    'type': 'New release',
+                    'items_total': 50,
+                    'reservation_list': [f'{reservation_id_1}']
+                },
                 {
-                    "film_id": 1,
-                    "film_title": "Spider Man",
-                    "film_type": "Regular"
-                 }
+                    'id': 0,
+                    'title': 'Spider Man',
+                    'type': 'Regular',
+                    'items_total': 50,
+                    'reservation_list': [f'{reservation_id_2}']
+                }
             ]
         }
 
-    film_inventory_mock = arrangement()
+    film_inventory_mock, reservation_id_1, reservation_id_2 = arrangement()
     with patch('rental_store.store_api.get_film_inventory', return_value=film_inventory_mock):
         action_result = action()
-        assertion(action_result)
+        assertion(action_result, reservation_id_1, reservation_id_2)

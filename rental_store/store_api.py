@@ -1,6 +1,7 @@
 import rental_store.config
 from fastapi import FastAPI, HTTPException
-from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, FilmReturnResponseModel
+from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
+    FilmReturnResponseModel, Inventory
 from rental_store.data_storage import MemoryDataStorage
 from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals
 
@@ -44,7 +45,7 @@ def return_films(return_request: FilmReturnRequestModel):
     return response
 
 
-@store.get("/films")
+@store.get("/films", response_model=Inventory)
 def get_film_inventory():
 
     try:
