@@ -1,19 +1,24 @@
 from pydantic import BaseModel
+import datetime
+import uuid
 
 
-class Customer:
+class RentalRecord(BaseModel):
 
-    def __init__(self, customer_id: int, rentals: list):
-        self.customer_id = customer_id
-        self.rentals = rentals
+    customer_id: int = None
+    request_id: uuid.UUID = None
+    film_id: int = None
+    date_of_rent: datetime.date = None
+    up_front_days: int = None
+    charge: int = None
+    date_of_return: datetime.date = None
+    surcharge: int = None
 
-    @property
-    def rent_ledger(self) -> list:
-        return self.rentals
 
-    @property
-    def id(self) -> int:
-        return self.customer_id
+class Customer (BaseModel):
+
+    customer_id: int
+    rentals: list[RentalRecord]
 
 
 class Film:

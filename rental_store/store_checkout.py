@@ -78,8 +78,9 @@ def get_film_inventory():
     return Repository.get_film_inventory()
 
 
-def get_customers_rentals(customer_id: int):
-    return Repository.get_customers_rentals(customer_id)
+def get_customers_rentals(customer_id: int) -> Customer:
+    customer = Repository.get_customer(customer_id)
+    return customer.rentals
 
 
 def reserve_film(request_id, film_id: int):

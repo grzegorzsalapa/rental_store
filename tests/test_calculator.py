@@ -1,7 +1,8 @@
 import pytest
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
-from rental_store.data_models import Film, Customer, PriceList
+from rental_store.data_models import Film, Customer, PriceList, RentalRecord
 from datetime import date, timedelta
+import uuid
 
 
 def test_calculate_rent_charge_for_new_release():
@@ -34,22 +35,24 @@ def test_calculate_rent_surcharge_for_new_release():
         price_list = PriceList("SEK", 40, 30)
         film = Film(0, "Matrix 11", "New release", 50)
 
+        request_id = uuid.uuid4()
+
         today = date.today()
         d = timedelta(days=3)
         rent_date = (today - d)
 
-        print(rent_date)
-
         rentals = [
-            {
-                "film_id": 0,
-                "up_front_days": 1,
-                "charge": 40,
-                "date_of_rent": rent_date
-            }
+            RentalRecord(
+                customer_id=7,
+                request_id=request_id,
+                film_id=0,
+                up_front_days=1,
+                charge=40,
+                date_of_rent=rent_date
+            )
         ]
 
-        customer = Customer(7, rentals)
+        customer = Customer(customer_id=7, rentals=rentals)
 
         return price_list, film, customer
 

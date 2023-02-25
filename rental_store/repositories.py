@@ -21,11 +21,11 @@ class Repository:
 
     @classmethod
     def get_customers_rentals(cls, customer_id: int):
-        rentals_ledger = data_storage.get_rentals_ledger
+        rentals_ledger = data_storage.read_rentals_ledger
 
     @classmethod
-    def set_reservation_on_film(cls, film: Film, request_id):
-        pass
+    def set_reservation_on_film(cls, film_id: int, request_id):
+        data_storage.update_reservetion_list(film_id, request_id)
 
     @classmethod
     def clear_reservation(cls, request_id):

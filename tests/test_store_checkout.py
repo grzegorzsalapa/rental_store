@@ -15,12 +15,12 @@ def test_rent_films_assignes_film_to_customer_in_rental_ledger():
     def arrangement():
 
         film_id = 14
-        film = Film(film_id, "Matrix 11", "New release")
+        film = Film(film_id, "Matrix 11", "New release", 265)
 
         def _set_up_mocked_repository():
             RepositoryMock = MagicMock(name="Repository_Instance")
             RepositoryMock.get_film_by_id.return_value = film
-            RepositoryMock.get_customer = MagicMock(resturn_value=Customer(700, rentals=[]))
+            RepositoryMock.get_customer = MagicMock(resturn_value=Customer(customer_id=700, rentals=[]))
             RepositoryMock.reserve_film = MagicMock()
             RepositoryMock.add_record_to_rental_ledger = MagicMock()
 
