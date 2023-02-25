@@ -10,7 +10,7 @@ def test_calculate_rent_charge_for_new_release():
     def arrangement():
 
         price_list = PriceList(currency="SEK", premium_price=40, basic_price=30)
-        film = Film(id=0, title="Matrix 11", type="New release", items_total=50, available_items=34)
+        film = Film(id=0, title="Matrix 11", type="New release", items_total=50, reservation_list=[uuid.uuid4()])
         up_front_days = 1
 
         return price_list, film, up_front_days
@@ -33,7 +33,7 @@ def test_calculate_rent_surcharge_for_new_release():
     def arrangement():
 
         price_list = PriceList(currency="SEK", premium_price=40, basic_price=30)
-        film = Film(id=0, title="Matrix 11", type="New release", items_total=50, available_items=34)
+        film = Film(id=0, title="Matrix 11", type="New release", items_total=50, reservation_list=[uuid.uuid4()])
 
         request_id = uuid.uuid4()
 

@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 import datetime
-import uuid
+from uuid import UUID
 
 
 class RentalRecord(BaseModel):
 
     customer_id: int = None
-    request_id: uuid.UUID = None
+    request_id: UUID = None
     film_id: int = None
     date_of_rent: datetime.date = None
     up_front_days: int = None
@@ -27,7 +27,7 @@ class Film(BaseModel):
     title: str
     type: str
     items_total: int
-    available_items: int
+    reservation_list: list[UUID]
 
 
 class PriceList (BaseModel):
