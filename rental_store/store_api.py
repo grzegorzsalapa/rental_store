@@ -58,7 +58,7 @@ def api_get_film_inventory():
     return response
 
 
-@store.get("/ledger/{customer_id}")
+@store.get("/rentals/{customer_id}")
 def api_get_customers_rentals(customer_id: int):
 
     return get_customers_rentals(customer_id)

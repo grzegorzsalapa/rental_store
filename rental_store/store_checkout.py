@@ -25,7 +25,6 @@ class RentError(Exception):
 
 def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
-    print("DUUUPPPPAAAAAAAAAA!!!!!!!!!!!!!!!!!!!!")
     request_id = uuid4()
     ledger = Repository.get_ledger()
 
