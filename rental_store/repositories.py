@@ -30,23 +30,35 @@ class Repository:
 
     @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
-        pass
+        customers = data_storage.customers
+        for customer in customers:
+            if customer.id == customer_id:
+                rentals_ledger = data_storage.ledger.rentals
+                for record in rentals_ledger:
+                    if record.customer_id == customer_id:
+                        customer.rentals.append(record)
+
+                return customer
+
 
     @classmethod
     def get_film(cls, film_id: int) -> Film:
-        pass
+        inventory = data_storage.inventory
+        for film in inventory.films:
+            if film.id == film_id:
+                return film
 
     @classmethod
     def get_inventory(cls) -> Inventory:
-        pass
+        return data_storage.inventory
 
     @classmethod
     def get_price_list(cls) -> PriceList:
-        pass
+        return data_storage.price_list
 
     @classmethod
     def get_ledger(cls) -> Ledger:
-        pass
+        return data_storage.ledger
 
     @classmethod
     def update_customer(cls, customer: Customer):
@@ -66,4 +78,4 @@ class Repository:
 
     @classmethod
     def update_ledger(cls, ledger: Ledger):
-        pass
+        data_storage.ledger = ledger

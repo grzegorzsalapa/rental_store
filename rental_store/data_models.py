@@ -20,8 +20,8 @@ class ReservationRecord(BaseModel):
 
 
 class Ledger(BaseModel):
-    rentals: list[RentalRecord] = None
-    reservations: list[ReservationRecord] = None
+    rentals: list[RentalRecord] = []
+    reservations: list[ReservationRecord] = []
 
 
 class Film(BaseModel):
@@ -32,7 +32,7 @@ class Film(BaseModel):
 
 
 class Inventory(BaseModel):
-    films: list[Film] = None
+    films: list[Film] = []
 
 
 class Customer (BaseModel):

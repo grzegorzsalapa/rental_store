@@ -11,7 +11,7 @@ rental_store.repositories.data_storage
 
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)
-def rent_films(rent_request: FilmRentRequestModel):
+def api_rent_films(rent_request: FilmRentRequestModel):
 
     try:
         response = rent_films(rent_request)
@@ -27,7 +27,7 @@ def rent_films(rent_request: FilmRentRequestModel):
 
 
 @store.post("/films/return", response_model=FilmReturnResponseModel)
-def return_films(return_request: FilmReturnRequestModel):
+def api_return_films(return_request: FilmReturnRequestModel):
 
     try:
         response = return_films(return_request)
@@ -43,7 +43,7 @@ def return_films(return_request: FilmReturnRequestModel):
 
 
 @store.get("/films", response_model=Inventory)
-def get_film_inventory():
+def api_get_film_inventory():
 
     try:
         response = get_film_inventory()
@@ -59,6 +59,6 @@ def get_film_inventory():
 
 
 @store.get("/ledger/{customer_id}")
-def get_customers_rentals(customer_id: int):
+def api_get_customers_rentals(customer_id: int):
 
     return get_customers_rentals(customer_id)

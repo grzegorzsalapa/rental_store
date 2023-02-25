@@ -4,10 +4,10 @@ from rental_store.data_models import Inventory, Customer, Ledger, PriceList
 
 class MemoryDataStorage(BaseModel):
 
-    customers: list[Customer] = None
-    inventory: Inventory = None
-    ledger: Ledger = None
-    price_list: PriceList = None
+    customers: list[Customer] = []
+    inventory: Inventory = Inventory()
+    ledger: Ledger = Ledger()
+    price_list: PriceList = PriceList()
 
 
 film_inventory = [

@@ -22,9 +22,9 @@ def calculate_rent_surcharge(price_list: PriceList, film: Film, customer: Custom
         for record in customer.rentals:
             if record.film_id == film.id and record.date_of_return is None:
                 rent_duration = (date.today() - record.date_of_rent).days
-                overdue = rent_duration - record.up_front_days
+                overdue = max(0, rent_duration - record.up_front_days)
 
-        charge = max(0, overdue) * price_list.premium_price
+        charge = overdue * price_list.premium_price
 
         return charge, price_list.currency
 

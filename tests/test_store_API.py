@@ -13,7 +13,7 @@ from rental_store.data_models import Inventory, Film, Ledger, Customer, PriceLis
     FilmReturnRequestItemModel,\
     FilmReturnRequestModel
 from uuid import uuid4
-from datetime import date
+from datetime import date, datetime, timedelta
 
 
 test_client = TestClient(store)
@@ -218,20 +218,16 @@ def test_end2end_post_return_films():
     def arrangement():
         rental_store.repositories.data_storage.customers = [Customer(id=9, rentals=[]), Customer(id=16, rentals=[])]
         rental_store.repositories.data_storage.price_list = PriceList()
-        rental_store.repositories.data_storage.ledger
-        ledger = Ledger(
-            rentals=[
-                RentalRecord(
-                    request_id=uuid4(),
-                    film_id=5,
-                    customer_id=9,
-                    date_of_rent=date.today(),
-                    up_front_days=1,
-                    charge=40
-                )
-            ]
-        )
-        rental_store.repositories.data_storage.ledger = ledger
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id=uuid4(),
+                film_id=5,
+                customer_id=9,
+                date_of_rent=date.today() - timedelta(days=3),
+                up_front_days=1,
+                charge=40
+            )
+        ]
         item_5 = Film(id=5, title="Matrix 11", type="New release", items_total=50)
         item_8 = Film(id=8, title="Spider Man", type="Regular", items_total=50)
         rental_store.repositories.data_storage.inventory = Inventory(films=[item_5, item_8])
