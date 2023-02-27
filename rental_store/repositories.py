@@ -1,9 +1,14 @@
 from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
 from rental_store.data_storage import MemoryDataStorage
-from uuid import UUID
-import datetime
+
 
 data_storage = MemoryDataStorage()
+
+
+class NotFoundError(Exception):
+
+    def __init__(self, message: str):
+        self.message = message
 
 
 class Repository:
@@ -12,9 +17,9 @@ class Repository:
     def create_customer(cls) -> Customer:
         new_id = 0
         for customer in data_storage.customers:
-            new_id = max(new_id, customer.id)
+            new_id = max(new_id, customer.id) + 1
 
-        new_customer = Customer(id=new_id + 1, rentals=[])
+        new_customer = Customer(id=new_id, rentals=[])
         data_storage.customers.append(new_customer)
 
         return new_customer
@@ -24,21 +29,9 @@ class Repository:
         pass
 
     @classmethod
-    def create_inventory(cls) -> Inventory:
-        pass
-
-    @classmethod
-    def create_price_list(cls) -> PriceList:
-        pass
-
-    @classmethod
-    def create_ledger(cls) -> Ledger:
-        pass
-
-    @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
-        customers = data_storage.customers
-        for customer in customers:
+
+        for customer in data_storage.customers:
             if customer.id == customer_id:
                 rentals_ledger = data_storage.ledger.rentals
                 for record in rentals_ledger:
@@ -47,6 +40,10 @@ class Repository:
 
                 return customer
 
+        else:
+            raise NotFoundError(f"There is no record of customer id: {customer_id}.")
+
+        return customer
 
     @classmethod
     def get_film(cls, film_id: int) -> Film:
@@ -54,6 +51,9 @@ class Repository:
         for film in inventory.films:
             if film.id == film_id:
                 return film
+
+        else:
+            raise NotFoundError(f"There is no film id: {film_id} in repository.")
 
     @classmethod
     def get_inventory(cls) -> Inventory:
@@ -77,11 +77,11 @@ class Repository:
 
     @classmethod
     def update_inventory(cls, inventory: Inventory):
-        pass
+        data_storage.inventory = inventory
 
     @classmethod
     def update_price_list(cls, price_list: PriceList):
-        pass
+        data_storage.price_list = price_list
 
     @classmethod
     def update_ledger(cls, ledger: Ledger):

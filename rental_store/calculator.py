@@ -2,7 +2,7 @@ from rental_store.data_models import Film, PriceList
 from datetime import date
 
 
-def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: date):
+def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: int):
 
     if film.type == "New release":
         charge = price_list.premium_price * up_front_days

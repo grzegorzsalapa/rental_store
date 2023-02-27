@@ -1,6 +1,7 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.repositories import Repository
+from rental_store.repositories import NotFoundError
 from rental_store.data_models import Film, Customer, Inventory, ReservationRecord, RentalRecord, Ledger, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
@@ -37,44 +38,48 @@ class ReturnError(Exception):
 
 def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
-    request_id = uuid4()
-    ledger = Repository.get_ledger()
+    try:
+        request_id = uuid4()
+        customer = Repository.get_customer(rent_request.customer_id)
+        ledger = Repository.get_ledger()
 
-    for item in rent_request.rented_films:
+        for item in rent_request.rented_films:
 
-        try:
-            reserve_film(ledger, request_id, item.film_id)
+            try:
+                reserve_film(ledger, request_id, item.film_id)
 
-        except NotAvailableError as e:
+            except NotAvailableError as e:
 
-            raise RentError(str(e))
+                raise RentError(str(e))
 
-    Repository.update_ledger(ledger)
+        Repository.update_ledger(ledger)
 
-    customer = Repository.get_customer(rent_request.customer_id)
-    price_list = Repository.get_price_list()
-    response_items = []
+        price_list = Repository.get_price_list()
+        response_items = []
 
-    for item in rent_request.rented_films:
+        for item in rent_request.rented_films:
 
-        film = Repository.get_film(item.film_id)
+            film = Repository.get_film(item.film_id)
 
-        charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
+            charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
 
-        new_rental_record = RentalRecord(
-            request_id=request_id,
-            customer_id=customer.id,
-            film_id=film.id,
-            up_front_days=item.up_front_days,
-            charge=charge,
-            date_of_rent=date.today())
+            new_rental_record = RentalRecord(
+                request_id=request_id,
+                customer_id=customer.id,
+                film_id=film.id,
+                up_front_days=item.up_front_days,
+                charge=charge,
+                date_of_rent=date.today())
 
-        ledger.rentals.append(new_rental_record)
+            ledger.rentals.append(new_rental_record)
 
-        response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
+            response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
 
-    release_reservation(ledger, request_id)
-    Repository.update_ledger(ledger)
+        release_reservation(ledger, request_id)
+        Repository.update_ledger(ledger)
+
+    except NotFoundError as e:
+        raise ReturnError(str(e))
 
     return FilmRentResponseModel(rented_films=response_items)
 

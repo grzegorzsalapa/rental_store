@@ -14,23 +14,23 @@ rental_store.repositories.data_storage
 @store.post("/films/rent", response_model=FilmRentResponseModel)
 def api_rent_films(rent_request: FilmRentRequestModel):
 
-    try:
-        response = rent_films(rent_request)
-
-    except RentError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e),
-            headers={"X-Error": "Rent error."}
-        )
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-            headers={"X-Error": "Unexpected error."}
-        )
-
+    # try:
+    #     response = rent_films(rent_request)
+    #
+    # except RentError as e:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail=str(e),
+    #         headers={"X-Error": "Rent error."}
+    #     )
+    #
+    # except Exception as e:
+    #     raise HTTPException(
+    #         status_code=500,
+    #         detail=str(e),
+    #         headers={"X-Error": "Unexpected error."}
+    #     )
+    response = rent_films(rent_request)
     return response
 
 

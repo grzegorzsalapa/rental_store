@@ -272,7 +272,6 @@ def test_end2end_get_film_inventory():
         item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
         rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
 
-
     def action():
         response = test_client.get("/films")
 
