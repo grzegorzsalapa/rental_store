@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 import datetime
 from uuid import UUID
 
@@ -29,6 +30,7 @@ class Film(BaseModel):
     title: str
     type: str
     items_total: int
+    available_items: Optional[int]
 
 
 class Inventory(BaseModel):

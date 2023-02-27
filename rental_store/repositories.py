@@ -79,7 +79,25 @@ class Repository:
 
     @classmethod
     def get_inventory(cls) -> Inventory:
-        return data_storage.inventory
+
+        ledger = Repository.get_ledger()
+        films = copy.deepcopy(data_storage.inventory.films)
+
+        for film in films:
+
+            rented = 0
+            for item in ledger.rentals:
+                if item.film_id == film.id and item.date_of_return is None:
+                    rented += 1
+
+            reserved = 0
+            for item in ledger.reservations:
+                if item.film_id == film.id:
+                    reserved += 1
+
+            film.available_items = film.items_total - rented - reserved
+
+        return films
 
     @classmethod
     def get_price_list(cls) -> PriceList:

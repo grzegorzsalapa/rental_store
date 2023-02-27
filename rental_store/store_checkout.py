@@ -10,6 +10,7 @@ from rental_store.data_models import Film, Inventory, ReservationRecord, RentalR
     FilmReturnResponseItemModel, \
     RequestAddFilmModel
 from uuid import UUID, uuid4
+import copy
 
 
 class NotAvailableError(Exception):
