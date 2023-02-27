@@ -1,7 +1,7 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
 from rental_store.repositories import Repository, RecordNotFoundError
-from rental_store.data_models import Inventory, ReservationRecord, RentalRecord, Ledger, \
+from rental_store.data_models import Film, Inventory, ReservationRecord, RentalRecord, Ledger, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
     FilmReturnRequestModel,\
@@ -147,6 +147,16 @@ class StoreCheckout:
     def get_customers_rentals(customer_id: int) -> list:
         customer = Repository.get_customer(customer_id)
         return customer.rentals
+
+    @staticmethod
+    def add_film(title: str, type_: str, items_total: int) -> Film:
+
+        if type_ in Repository.film_types():
+
+            return Repository.create_film(title, type_, items_total)
+
+        else:
+            raise RecordNotFoundError(f"Invalid film type: '{type_}. Valid types are: {Repository.film_types()}.")
 
 
 def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):

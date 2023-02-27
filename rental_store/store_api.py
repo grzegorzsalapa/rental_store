@@ -121,6 +121,12 @@ def api_get_customers():
     return StoreCheckout.get_customers()
 
 
+@store.post("/films/add", status_code=201)
+def api_add_film():
+
+    return StoreCheckout.add_film()
+
+
 @store.post("/demo")
 def api_start_demo():
 

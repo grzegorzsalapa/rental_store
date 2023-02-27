@@ -10,6 +10,7 @@ class MemoryDataStorage(BaseModel):
     inventory: Inventory = Inventory()
     ledger: Ledger = Ledger()
     price_list: PriceList = PriceList()
+    film_types: list[str] = ["New release", "Regular", "Old"]
 
     def load_demo_data(self):
         self.inventory.films = [

@@ -86,6 +86,11 @@ class Repository:
         return data_storage.price_list
 
     @classmethod
+    def film_types(cls) -> list:
+        return data_storage.film_types
+
+
+    @classmethod
     def get_ledger(cls) -> Ledger:
         return data_storage.ledger
 

@@ -35,12 +35,12 @@ class Inventory(BaseModel):
     films: list[Film] = []
 
 
-class Customer (BaseModel):
+class Customer(BaseModel):
     id: int
     rentals: list[RentalRecord]
 
 
-class PriceList (BaseModel):
+class PriceList(BaseModel):
     currency: str = "SEK"
     premium_price: int = 40
     basic_price: int = 30
@@ -83,3 +83,9 @@ class FilmReturnResponseItemModel(BaseModel):
 
 class FilmReturnResponseModel(BaseModel):
     returned_films: list[FilmReturnResponseItemModel]
+
+
+class RequestAddFilmModel(BaseModel):
+    title: str
+    type: str
+    items_total: int
