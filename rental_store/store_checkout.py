@@ -154,6 +154,10 @@ def add_customer():
     return Repository.create_customer()
 
 
+def get_customer(customer_id: int):
+    return Repository.get_customer(customer_id)
+
+
 def get_customers():
     return {"customers": Repository.get_customers()}
 
