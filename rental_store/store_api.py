@@ -2,7 +2,7 @@ import rental_store.repositories
 from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
-from rental_store.store_checkout import StoreCheckout, RentError, ReturnError
+from rental_store.store_checkout import StoreCheckout, StoreCheckoutError
 
 
 store = FastAPI()
@@ -16,7 +16,7 @@ def api_rent_films(rent_request: FilmRentRequestModel):
     try:
         response = StoreCheckout.rent_films(rent_request)
 
-    except RentError as e:
+    except StoreCheckoutError as e:
         raise HTTPException(
             status_code=404,
             detail=str(e),
@@ -39,7 +39,7 @@ def api_return_films(return_request: FilmReturnRequestModel):
     try:
         response = StoreCheckout.return_films(return_request)
 
-    except ReturnError as e:
+    except StoreCheckoutError as e:
         raise HTTPException(
             status_code=404,
             detail=str(e),
@@ -75,13 +75,13 @@ def api_get_film_inventory():
 @store.get("/store/ledger")
 def api_get_ledger():
 
-    return get_ledger()
+    return StoreCheckout.get_ledger()
 
 
-@store.post("/customers/add")
+@store.post("/customers/add", status_code=201)
 def api_add_customer():
 
-    return add_customer()
+    return StoreCheckout.add_customer()
 
 
 @store.get("/customers/{customer_id}")

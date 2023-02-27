@@ -17,13 +17,7 @@ class NotAvailableError(Exception):
         self.message = message
 
 
-class RentError(Exception):
-
-    def __init__(self, message):
-        self.message = message
-
-
-class ReturnError(Exception):
+class StoreCheckoutError(Exception):
 
     def __init__(self, message):
         self.message = message
@@ -46,7 +40,7 @@ class StoreCheckout:
 
                 except NotAvailableError as e:
 
-                    raise RentError(str(e))
+                    raise StoreCheckoutError(str(e))
 
             Repository.update_ledger(ledger)
 
@@ -77,10 +71,10 @@ class StoreCheckout:
             return FilmRentResponseModel(rented_films=response_items)
 
         except RecordNotFoundError as e:
-            raise RentError(str(e))
+            raise StoreCheckoutError(str(e))
 
         except NotAvailableError as e:
-            raise RentError(str(e))
+            raise StoreCheckoutError(str(e))
 
     @staticmethod
     def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
@@ -118,7 +112,7 @@ class StoreCheckout:
                 return FilmReturnResponseModel(returned_films=response_items)
 
         except RecordNotFoundError as e:
-            raise ReturnError(str(e))
+            raise StoreCheckoutError(str(e))
 
     @staticmethod
     def add_customer():
