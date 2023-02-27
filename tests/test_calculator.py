@@ -36,34 +36,22 @@ def test_calculate_rent_surcharge_for_new_release():
         film = Film(id=0, title="Matrix 11", type="New release", items_total=50)
 
         request_id = uuid.uuid4()
+        up_front_days = 1
 
         today = date.today()
         d = timedelta(days=3)
-        rent_date = (today - d)
+        date_of_rent = (today - d)
 
-        rentals = [
-            RentalRecord(
-                customer_id=7,
-                request_id=request_id,
-                film_id=0,
-                up_front_days=1,
-                charge=40,
-                date_of_rent=rent_date
-            )
-        ]
+        return price_list, film, up_front_days, date_of_rent
 
-        customer = Customer(id=7, rentals=rentals)
-
-        return price_list, film, customer
-
-    def action(price_list, film, customer):
-        charge = calculate_rent_surcharge(price_list, film, customer)
+    def action(price_list, film, up_front_days, date_of_rent):
+        charge = calculate_rent_surcharge(price_list, film, up_front_days, date_of_rent)
 
         return charge
 
     def assertion(charge):
         assert charge == (80, "SEK")
 
-    price_list, film, customer = arrangement()
-    action_result = action(price_list, film, customer)
+    price_list, film, up_front_days, date_of_rent = arrangement()
+    action_result = action(price_list, film, up_front_days, date_of_rent)
     assertion(action_result)

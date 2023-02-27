@@ -11,13 +11,25 @@ from rental_store.data_models import Film, Customer, Inventory, ReservationRecor
 from uuid import UUID, uuid4
 
 
-class AvailabilityError(Exception):
+class NotAvailableError(Exception):
+
+    def __init__(self, message: str):
+        self.message = message
+
+
+class RecordNotFoundError(Exception):
 
     def __init__(self, message: str):
         self.message = message
 
 
 class RentError(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
+class ReturnError(Exception):
 
     def __init__(self, message):
         self.message = message
@@ -33,7 +45,7 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
         try:
             reserve_film(ledger, request_id, item.film_id)
 
-        except AvailabilityError as e:
+        except NotAvailableError as e:
 
             raise RentError(str(e))
 
@@ -69,19 +81,36 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
 def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
 
-    response_items = []
-
-    for item in return_request.returned_films:
-
-        film = Repository.get_film(item.film_id)
+    try:
+        response_items = []
+        ledger = Repository.get_ledger()
         customer = Repository.get_customer(return_request.customer_id)
         price_list = Repository.get_price_list()
 
-        surcharge, currency = calculate_rent_surcharge(price_list, film, customer)
+        for item in return_request.returned_films:
 
-        return_film(customer, film, surcharge, date.today())
+            film = Repository.get_film(item.film_id)
 
-        response_items.append(FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
+            for record in ledger.rentals:
+                if record.customer_id == customer.id and record.film_id == film.id and record.date_of_return is None:
+
+                    surcharge, currency = calculate_rent_surcharge(price_list, film, record.up_front_days,
+                                                                   record.date_of_rent)
+
+                    record.surcharge = surcharge
+                    record.date_of_return = date.today()
+
+                    break
+
+            else:
+                raise RecordNotFoundError(
+                    f"Customer id:{customer.id} cannot return film id:{film.id}. "
+                    f"There is no rental record pending return.")
+
+            response_items.append(FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
+
+    except RecordNotFoundError as e:
+        raise ReturnError(str(e))
 
     return FilmReturnResponseModel(returned_films=response_items)
 
@@ -115,7 +144,7 @@ def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
         new_record = ReservationRecord(request_id=request_id, film_id=film_id)
         ledger.reservations.append(new_record)
     else:
-        raise AvailabilityError(f"Film id:{film.id}, title: {film.title} is not available.")
+        raise NotAvailableError(f"Film id:{film.id}, title: {film.title} is not available.")
 
 
 def release_reservation(ledger: Ledger, request_id: UUID):
@@ -127,11 +156,24 @@ def release_reservation(ledger: Ledger, request_id: UUID):
     Repository.update_ledger(ledger)
 
 
-def add_record_to_ledger(request_id: UUID, customer_id: Customer, film_id, up_front_days, charge, date_of_rent):
+def return_film(customer: Customer, film: Film, surcharge: int):
+
+    ledger = Repository.get_ledger()
+
+    def mark_films_as_returned_in_rentals_ledger():
+
+        for item in ledger.rentals:
+            if item.customer_id == customer.id and item.film_id == film.id:
+                item.surcharge = surcharge
+                item.date_of_return = date.today()
+                break
+        else:
+            raise RecordNotFoundError(f"Cannot return film id:{film.id}. It was not rented by customer id:{customer.id}.")
+
+    mark_films_as_returned_in_rentals_ledger()
+
+    Repository.update_ledger(ledger)
+
+
+def add_customer():
     pass
-
-
-def return_film(customer: Customer, film: Film, surcharge: int, date_of_return):
-    pass
-
-
