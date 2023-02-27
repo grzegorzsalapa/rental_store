@@ -159,4 +159,8 @@ def release_reservation(ledger: Ledger, request_id: UUID):
 
 
 def add_customer():
-    pass
+    return Repository.create_customer()
+
+
+def load_demo_data():
+    Repository.load_demo_data()

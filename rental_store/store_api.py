@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
 from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals, \
-    RentError, ReturnError
+    add_customer, load_demo_data, RentError, ReturnError
 
 
 store = FastAPI()
@@ -16,6 +16,13 @@ def api_rent_films(rent_request: FilmRentRequestModel):
 
     try:
         response = rent_films(rent_request)
+
+    except RentError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+            headers={"X-Error": "Rent error."}
+        )
 
     except Exception as e:
         raise HTTPException(
@@ -30,16 +37,23 @@ def api_rent_films(rent_request: FilmRentRequestModel):
 @store.post("/films/return", response_model=FilmReturnResponseModel)
 def api_return_films(return_request: FilmReturnRequestModel):
 
-    # try:
-    #     response = return_films(return_request)
-    #
-    # except Exception as e:
-    #     raise HTTPException(
-    #         status_code=500,
-    #         detail=str(e),
-    #         headers={"X-Error": "Unexpected error."}
-    #     )
-    response = return_films(return_request)
+    try:
+        response = return_films(return_request)
+
+    except ReturnError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+            headers={"X-Error": "Return error."}
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
+
     return response
 
 
@@ -69,3 +83,10 @@ def api_get_customers_rentals(customer_id: int):
 def api_add_customer():
 
     return add_customer()
+
+
+@store.post("/demo")
+def api_start_demo():
+
+    load_demo_data()
+    return "Demo data loaded"

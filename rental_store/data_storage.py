@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from rental_store.data_models import Inventory, Customer, Ledger, PriceList
+from rental_store.data_models import Inventory, Customer, Film, Ledger, PriceList
 
 
 class MemoryDataStorage(BaseModel):
@@ -9,28 +9,33 @@ class MemoryDataStorage(BaseModel):
     ledger: Ledger = Ledger()
     price_list: PriceList = PriceList()
 
-
-film_inventory = [
-    {
-        "film_id": 0,
-        "film_title": "Matrix 11",
-        "film_type": "New release",
-     },
-    {
-        "film_id": 1,
-        "film_title": "Spider Man",
-        "film_type": "Regular",
-     },
-    {
-        "film_id": 2,
-        "film_title": "Spider Man 2",
-        "film_type": "Regular",
-     },
-    {
-        "film_id": 3,
-        "film_title": "Out of Africa",
-        "film_type": "Old",
-     }
-]
-film_types = {"New release", "Regular", "Old"}
+    def load_demo_data(self):
+        self.inventory = Inventory(
+            films=[
+                Film(
+                    id=0,
+                    title="Matrix 11",
+                    type="New release",
+                    items_total=50
+                ),
+                Film(
+                    id=1,
+                    title="Spider Man",
+                    type="Regular",
+                    items_total=50
+                ),
+                Film(
+                    id=2,
+                    title="Spider Man 2",
+                    type="Regular",
+                    items_total=50
+                ),
+                Film(
+                    id=3,
+                    title="Out of Africa",
+                    type="Old",
+                    items_total=50
+                )
+            ]
+        )
 

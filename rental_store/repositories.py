@@ -10,7 +10,14 @@ class Repository:
 
     @classmethod
     def create_customer(cls) -> Customer:
-        pass
+        new_id = 0
+        for customer in data_storage.customers:
+            new_id = max(new_id, customer.id)
+
+        new_customer = Customer(id=new_id + 1, rentals=[])
+        data_storage.customers.append(new_customer)
+
+        return new_customer
 
     @classmethod
     def create_film(cls) -> Film:
@@ -79,3 +86,7 @@ class Repository:
     @classmethod
     def update_ledger(cls, ledger: Ledger):
         data_storage.ledger = ledger
+
+    @classmethod
+    def load_demo_data(cls):
+        data_storage.load_demo_data()
