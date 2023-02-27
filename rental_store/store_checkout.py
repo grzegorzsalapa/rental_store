@@ -167,7 +167,7 @@ def get_film_inventory() -> Inventory:
 
 
 def get_ledger() -> Ledger:
-    return Repository.get_ledger()
+    return {"rentals": Repository.get_ledger().rentals}
 
 
 def get_customers_rentals(customer_id: int) -> list:
