@@ -17,6 +17,7 @@ def api_rent_films(rent_request: FilmRentRequestModel):
         response = StoreCheckout.rent_films(rent_request)
 
     except StoreCheckoutError as e:
+
         raise HTTPException(
             status_code=404,
             detail=str(e),
@@ -42,6 +43,7 @@ def api_return_films(return_request: FilmReturnRequestModel):
         response = StoreCheckout.return_films(return_request)
 
     except StoreCheckoutError as e:
+
         raise HTTPException(
             status_code=404,
             detail=str(e),
@@ -78,6 +80,32 @@ def api_get_film_inventory():
     return response
 
 
+@store.get("/films/{film_id}", response_model=Film)
+def api_get_film(film_id: int):
+
+    try:
+        response = StoreCheckout.get_film(film_id)
+
+    except StoreCheckoutError as e:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+            headers={"X-Error": "Get film error."}
+        )
+
+    except Exception as e:
+
+        print(str(e))
+
+        raise HTTPException(
+            status_code=500,
+            headers={"X-Error": "Unexpected error."}
+        )
+
+    return response
+
+
 @store.get("/store/ledger")
 def api_get_ledger():
 
@@ -97,6 +125,7 @@ def api_get_customer(customer_id: int):
         response = StoreCheckout.get_customer(customer_id)
 
     except StoreCheckoutError as e:
+
         raise HTTPException(
             status_code=404,
             detail=str(e),
@@ -128,6 +157,7 @@ def api_add_film(add_film_request: RequestAddFilmModel):
         return StoreCheckout.add_film(add_film_request)
 
     except StoreCheckoutError as e:
+
         raise HTTPException(
             status_code=404,
             detail=str(e),

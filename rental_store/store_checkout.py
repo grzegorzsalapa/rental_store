@@ -142,6 +142,10 @@ class StoreCheckout:
         return Repository.get_inventory()
 
     @staticmethod
+    def get_film(film_id: int) -> Inventory:
+        return Repository.get_film(film_id)
+
+    @staticmethod
     def get_ledger() -> dict:
         return {"rentals": Repository.get_ledger().rentals}
 
