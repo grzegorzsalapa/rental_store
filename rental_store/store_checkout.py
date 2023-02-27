@@ -164,7 +164,7 @@ def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
 
     rented = 0
     for item in ledger.rentals:
-        if item.film_id == film_id:
+        if item.film_id == film_id and item.date_of_return is None:
             rented += 1
 
     reserved = 0
@@ -180,7 +180,7 @@ def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
         new_record = ReservationRecord(request_id=request_id, film_id=film_id)
         ledger.reservations.append(new_record)
     else:
-        raise NotAvailableError(f"Film id:{film.id}, title: {film.title} is not available.")
+        raise NotAvailableError(f"Film id:{film.id}, title: '{film.title}' is not available.")
 
 
 def release_reservation(ledger: Ledger, request_id: UUID):
