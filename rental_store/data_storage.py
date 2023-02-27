@@ -10,32 +10,31 @@ class MemoryDataStorage(BaseModel):
     price_list: PriceList = PriceList()
 
     def load_demo_data(self):
-        self.inventory = Inventory(
-            films=[
-                Film(
-                    id=0,
-                    title="Matrix 11",
-                    type="New release",
-                    items_total=50
-                ),
-                Film(
-                    id=1,
-                    title="Spider Man",
-                    type="Regular",
-                    items_total=50
-                ),
-                Film(
-                    id=2,
-                    title="Spider Man 2",
-                    type="Regular",
-                    items_total=50
-                ),
-                Film(
-                    id=3,
-                    title="Out of Africa",
-                    type="Old",
-                    items_total=50
-                )
-            ]
-        )
+        self.inventory.films = [
+            Film(
+                id=0,
+                title="Matrix 11",
+                type="New release",
+                items_total=50
+            ),
+            Film(
+                id=1,
+                title="Spider Man",
+                type="Regular",
+                items_total=50
+            ),
+            Film(
+                id=2,
+                title="Spider Man 2",
+                type="Regular",
+                items_total=50
+            ),
+            Film(
+                id=3,
+                title="Out of Africa",
+                type="Old",
+                items_total=50
+            )
+        ]
+
 

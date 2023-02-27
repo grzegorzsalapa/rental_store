@@ -167,5 +167,9 @@ def add_customer():
     return Repository.create_customer()
 
 
+def get_customers():
+    return {"customers": Repository.get_customers()}
+
+
 def load_demo_data():
     Repository.load_demo_data()

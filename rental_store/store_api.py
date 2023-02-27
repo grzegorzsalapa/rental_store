@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
 from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals, \
-    add_customer, load_demo_data, RentError, ReturnError
+    add_customer, load_demo_data, get_customers, RentError, ReturnError
 
 
 store = FastAPI()
@@ -14,23 +14,23 @@ rental_store.repositories.data_storage
 @store.post("/films/rent", response_model=FilmRentResponseModel)
 def api_rent_films(rent_request: FilmRentRequestModel):
 
-    # try:
-    #     response = rent_films(rent_request)
-    #
-    # except RentError as e:
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail=str(e),
-    #         headers={"X-Error": "Rent error."}
-    #     )
-    #
-    # except Exception as e:
-    #     raise HTTPException(
-    #         status_code=500,
-    #         detail=str(e),
-    #         headers={"X-Error": "Unexpected error."}
-    #     )
-    response = rent_films(rent_request)
+    try:
+        response = rent_films(rent_request)
+
+    except RentError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+            headers={"X-Error": "Rent error."}
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
+    # response = rent_films(rent_request)
     return response
 
 
@@ -73,16 +73,22 @@ def api_get_film_inventory():
     return response
 
 
-@store.get("/rentals/{customer_id}")
+@store.get("/customers/rentals/{customer_id}")
 def api_get_customers_rentals(customer_id: int):
 
     return get_customers_rentals(customer_id)
 
 
-@store.post("/customers")
+@store.post("/customers/add")
 def api_add_customer():
 
     return add_customer()
+
+
+@store.get("/customers")
+def api_get_customers():
+
+    return get_customers()
 
 
 @store.post("/demo")

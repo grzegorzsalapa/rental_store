@@ -38,6 +38,19 @@ class Repository:
         return new_film
 
     @classmethod
+    def get_customers(cls) -> list[Customer]:
+
+        rentals_ledger = data_storage.ledger.rentals
+        customers = data_storage.customers
+
+        for customer in customers:
+            for record in rentals_ledger:
+                if record.customer_id == customer.id:
+                    customer.rentals.append(record)
+
+        return customers
+
+    @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
 
         for customer in data_storage.customers:
