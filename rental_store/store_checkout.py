@@ -1,7 +1,6 @@
 from datetime import date
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
-from rental_store.repositories import Repository
-from rental_store.repositories import NotFoundError
+from rental_store.repositories import Repository, RecordNotFoundError
 from rental_store.data_models import Film, Customer, Inventory, ReservationRecord, RentalRecord, Ledger, \
     FilmRentResponseModel,\
     FilmRentRequestModel,\
@@ -13,12 +12,6 @@ from uuid import UUID, uuid4
 
 
 class NotAvailableError(Exception):
-
-    def __init__(self, message: str):
-        self.message = message
-
-
-class RecordNotFoundError(Exception):
 
     def __init__(self, message: str):
         self.message = message
@@ -78,10 +71,13 @@ def rent_films(rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
         release_reservation(ledger, request_id)
         Repository.update_ledger(ledger)
 
-    except NotFoundError as e:
-        raise ReturnError(str(e))
+        return FilmRentResponseModel(rented_films=response_items)
 
-    return FilmRentResponseModel(rented_films=response_items)
+    except RecordNotFoundError as e:
+        raise RentError(str(e))
+
+    except NotAvailableError as e:
+        raise RentError(str(e))
 
 
 def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
@@ -116,19 +112,10 @@ def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseMo
 
             Repository.update_ledger(ledger)
 
+            return FilmReturnResponseModel(returned_films=response_items)
+
     except RecordNotFoundError as e:
         raise ReturnError(str(e))
-
-    return FilmReturnResponseModel(returned_films=response_items)
-
-
-def get_film_inventory() -> Inventory:
-    return Repository.get_inventory()
-
-
-def get_customers_rentals(customer_id: int) -> list:
-    customer = Repository.get_customer(customer_id)
-    return customer.rentals
 
 
 def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
@@ -173,3 +160,16 @@ def get_customers():
 
 def load_demo_data():
     Repository.load_demo_data()
+
+
+def get_film_inventory() -> Inventory:
+    return Repository.get_inventory()
+
+
+def get_ledger() -> Ledger:
+    return Repository.get_ledger()
+
+
+def get_customers_rentals(customer_id: int) -> list:
+    customer = Repository.get_customer(customer_id)
+    return customer.rentals

@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
 from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals, \
-    add_customer, load_demo_data, get_customers, RentError, ReturnError
+    add_customer, load_demo_data, get_customers, get_ledger, RentError, ReturnError
 
 
 store = FastAPI()
@@ -26,11 +26,11 @@ def api_rent_films(rent_request: FilmRentRequestModel):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500,
+            status_code=504,
             detail=str(e),
             headers={"X-Error": "Unexpected error."}
         )
-    # response = rent_films(rent_request)
+
     return response
 
 
@@ -42,7 +42,7 @@ def api_return_films(return_request: FilmReturnRequestModel):
 
     except ReturnError as e:
         raise HTTPException(
-            status_code=400,
+            status_code=404,
             detail=str(e),
             headers={"X-Error": "Return error."}
         )
@@ -77,6 +77,12 @@ def api_get_film_inventory():
 def api_get_customers_rentals(customer_id: int):
 
     return get_customers_rentals(customer_id)
+
+
+@store.get("/store/ledger")
+def api_get_ledger():
+
+    return get_ledger()
 
 
 @store.post("/customers/add")

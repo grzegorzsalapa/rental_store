@@ -5,7 +5,7 @@ from rental_store.data_storage import MemoryDataStorage
 data_storage = MemoryDataStorage()
 
 
-class NotFoundError(Exception):
+class RecordNotFoundError(Exception):
 
     def __init__(self, message: str):
         self.message = message
@@ -62,7 +62,7 @@ class Repository:
 
                 return customer
         else:
-            raise NotFoundError(f"There is no record of customer id: {customer_id}.")
+            raise RecordNotFoundError(f"There is no record of customer id: {customer_id}.")
 
     @classmethod
     def get_film(cls, film_id: int) -> Film:
@@ -72,7 +72,7 @@ class Repository:
 
                 return film
         else:
-            raise NotFoundError(f"There is no film id: {film_id} in inventory.")
+            raise RecordNotFoundError(f"There is no film id: {film_id} in inventory.")
 
     @classmethod
     def get_inventory(cls) -> Inventory:
