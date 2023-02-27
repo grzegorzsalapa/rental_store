@@ -1,7 +1,7 @@
 import rental_store.repositories
 from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
-    FilmReturnResponseModel, Inventory
+    FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
 from rental_store.store_checkout import StoreCheckout, StoreCheckoutError
 
 
@@ -121,10 +121,27 @@ def api_get_customers():
     return StoreCheckout.get_customers()
 
 
-@store.post("/films/add", status_code=201)
-def api_add_film():
+@store.post("/films/add", status_code=201, response_model=Film)
+def api_add_film(add_film_request: RequestAddFilmModel):
 
-    return StoreCheckout.add_film()
+    try:
+        return StoreCheckout.add_film(add_film_request)
+
+    except StoreCheckoutError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+            headers={"X-Error": "Add film error."}
+        )
+
+    except Exception as e:
+
+        print(str(e))
+
+        raise HTTPException(
+            status_code=500,
+            headers={"X-Error": "Unexpected error."}
+        )
 
 
 @store.post("/demo")

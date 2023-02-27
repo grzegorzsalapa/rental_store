@@ -7,7 +7,8 @@ from rental_store.data_models import Film, Inventory, ReservationRecord, RentalR
     FilmReturnRequestModel,\
     FilmRentResponseItemModel, \
     FilmReturnResponseModel,\
-    FilmReturnResponseItemModel
+    FilmReturnResponseItemModel, \
+    RequestAddFilmModel
 from uuid import UUID, uuid4
 
 
@@ -149,14 +150,14 @@ class StoreCheckout:
         return customer.rentals
 
     @staticmethod
-    def add_film(title: str, type_: str, items_total: int) -> Film:
+    def add_film(request: RequestAddFilmModel) -> Film:
 
-        if type_ in Repository.film_types():
+        if request.type in Repository.film_types():
 
-            return Repository.create_film(title, type_, items_total)
+            return Repository.create_film(request.title, request.type, request.items_total)
 
         else:
-            raise RecordNotFoundError(f"Invalid film type: '{type_}. Valid types are: {Repository.film_types()}.")
+            raise StoreCheckoutError(f"Invalid film type: '{request.type}. Valid types are: {Repository.film_types()}.")
 
 
 def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
