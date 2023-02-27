@@ -109,6 +109,8 @@ def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseMo
 
             response_items.append(FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
 
+            Repository.update_ledger(ledger)
+
     except RecordNotFoundError as e:
         raise ReturnError(str(e))
 
@@ -152,25 +154,6 @@ def release_reservation(ledger: Ledger, request_id: UUID):
     for item in ledger.reservations:
         if item.request_id == request_id:
             ledger.reservations.remove(item)
-
-    Repository.update_ledger(ledger)
-
-
-def return_film(customer: Customer, film: Film, surcharge: int):
-
-    ledger = Repository.get_ledger()
-
-    def mark_films_as_returned_in_rentals_ledger():
-
-        for item in ledger.rentals:
-            if item.customer_id == customer.id and item.film_id == film.id:
-                item.surcharge = surcharge
-                item.date_of_return = date.today()
-                break
-        else:
-            raise RecordNotFoundError(f"Cannot return film id:{film.id}. It was not rented by customer id:{customer.id}.")
-
-    mark_films_as_returned_in_rentals_ledger()
 
     Repository.update_ledger(ledger)
 
