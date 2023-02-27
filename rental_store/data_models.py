@@ -5,8 +5,8 @@ from uuid import UUID
 
 class RentalRecord(BaseModel):
     request_id: UUID = None
-    film_id: int = None
     customer_id: int = None
+    film_id: int = None
     date_of_rent: datetime.date = None
     up_front_days: int = None
     charge: int = None

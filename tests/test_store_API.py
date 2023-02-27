@@ -13,7 +13,7 @@ from rental_store.data_models import Inventory, Film, Ledger, Customer, PriceLis
     FilmReturnRequestItemModel,\
     FilmReturnRequestModel
 from uuid import uuid4
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 
 test_client = TestClient(store)
