@@ -120,7 +120,12 @@ class StoreCheckout:
 
     @staticmethod
     def get_customer(customer_id: int):
-        return Repository.get_customer(customer_id)
+
+        try:
+            return Repository.get_customer(customer_id)
+
+        except RecordNotFoundError as e:
+            raise StoreCheckoutError(str(e))
 
     @staticmethod
     def get_customers():

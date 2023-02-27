@@ -24,9 +24,11 @@ def api_rent_films(rent_request: FilmRentRequestModel):
         )
 
     except Exception as e:
+
+        print(str(e))
+
         raise HTTPException(
-            status_code=504,
-            detail=str(e),
+            status_code=500,
             headers={"X-Error": "Unexpected error."}
         )
 
@@ -47,9 +49,11 @@ def api_return_films(return_request: FilmReturnRequestModel):
         )
 
     except Exception as e:
+
+        print(str(e))
+
         raise HTTPException(
             status_code=500,
-            detail=str(e),
             headers={"X-Error": "Unexpected error."}
         )
 
@@ -63,9 +67,11 @@ def api_get_film_inventory():
         response = StoreCheckout.get_film_inventory()
 
     except Exception as e:
+
+        print(str(e))
+
         raise HTTPException(
             status_code=500,
-            detail=str(e),
             headers={"X-Error": "Unexpected error."}
         )
 
@@ -90,10 +96,19 @@ def api_get_customer(customer_id: int):
     try:
         response = StoreCheckout.get_customer(customer_id)
 
+    except StoreCheckoutError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+            headers={"X-Error": "Get customer error."}
+        )
+
     except Exception as e:
+
+        print(str(e))
+
         raise HTTPException(
             status_code=500,
-            detail=str(e),
             headers={"X-Error": "Unexpected error."}
         )
 
