@@ -88,7 +88,17 @@ def api_add_customer():
 @store.get("/customers/{customer_id}")
 def api_get_customer(customer_id: int):
 
-    return get_customer(customer_id)
+    try:
+        response = get_customer(customer_id)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+            headers={"X-Error": "Unexpected error."}
+        )
+
+    return response
 
 
 @store.get("/customers")

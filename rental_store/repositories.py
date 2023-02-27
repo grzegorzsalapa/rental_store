@@ -1,5 +1,6 @@
 from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
 from rental_store.data_storage import MemoryDataStorage
+import copy
 
 
 data_storage = MemoryDataStorage()
@@ -41,7 +42,7 @@ class Repository:
     def get_customers(cls) -> list[Customer]:
 
         rentals_ledger = data_storage.ledger.rentals
-        customers = data_storage.customers
+        customers = copy.deepcopy(data_storage.customers)
 
         for customer in customers:
             for record in rentals_ledger:
@@ -53,10 +54,12 @@ class Repository:
     @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
 
-        for customer in data_storage.customers:
-            if customer.id == customer_id:
-                rentals_ledger = data_storage.ledger.rentals
-                for record in rentals_ledger:
+        for item in data_storage.customers:
+            if item.id == customer_id:
+
+                customer = copy.deepcopy(item)
+
+                for record in data_storage.ledger.rentals:
                     if record.customer_id == customer_id:
                         customer.rentals.append(record)
 
