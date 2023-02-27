@@ -70,7 +70,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
         )
 
     film_rent_response = arrangement()
-    with patch('rental_store.store_api.rent_films', return_value=film_rent_response) as rent_films_mock:
+    with patch('rental_store.store_api.StoreCheckout.rent_films', return_value=film_rent_response) as rent_films_mock:
         action_result = action()
         assertion(action_result, rent_films_mock)
 
@@ -123,7 +123,7 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
         )
 
     film_return_response = arrangement()
-    with patch('rental_store.store_api.return_films', return_value=film_return_response) as return_films_mock:
+    with patch('rental_store.store_api.StoreCheckout.return_films', return_value=film_return_response) as return_films_mock:
         result = action()
         assertion(result, return_films_mock)
 
@@ -163,7 +163,7 @@ def test_api_get_film_inventory_returns_correct_json_mode():
         }
 
     film_inventory_mock = arrangement()
-    with patch('rental_store.store_api.get_film_inventory', return_value=film_inventory_mock):
+    with patch('rental_store.store_api.StoreCheckout.get_film_inventory', return_value=film_inventory_mock):
         action_result = action()
         assertion(action_result)
 

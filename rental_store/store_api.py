@@ -2,8 +2,7 @@ import rental_store.repositories
 from fastapi import FastAPI, HTTPException
 from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
     FilmReturnResponseModel, Inventory
-from rental_store.store_checkout import rent_films, return_films, get_film_inventory, get_customers_rentals, \
-    add_customer, load_demo_data, get_customers, get_ledger, get_customer, RentError, ReturnError
+from rental_store.store_checkout import StoreCheckout, RentError, ReturnError
 
 
 store = FastAPI()
@@ -15,7 +14,7 @@ rental_store.repositories.data_storage
 def api_rent_films(rent_request: FilmRentRequestModel):
 
     try:
-        response = rent_films(rent_request)
+        response = StoreCheckout.rent_films(rent_request)
 
     except RentError as e:
         raise HTTPException(
@@ -38,7 +37,7 @@ def api_rent_films(rent_request: FilmRentRequestModel):
 def api_return_films(return_request: FilmReturnRequestModel):
 
     try:
-        response = return_films(return_request)
+        response = StoreCheckout.return_films(return_request)
 
     except ReturnError as e:
         raise HTTPException(
@@ -61,7 +60,7 @@ def api_return_films(return_request: FilmReturnRequestModel):
 def api_get_film_inventory():
 
     try:
-        response = get_film_inventory()
+        response = StoreCheckout.get_film_inventory()
 
     except Exception as e:
         raise HTTPException(
@@ -89,7 +88,7 @@ def api_add_customer():
 def api_get_customer(customer_id: int):
 
     try:
-        response = get_customer(customer_id)
+        response = StoreCheckout.get_customer(customer_id)
 
     except Exception as e:
         raise HTTPException(
@@ -104,11 +103,12 @@ def api_get_customer(customer_id: int):
 @store.get("/customers")
 def api_get_customers():
 
-    return get_customers()
+    return StoreCheckout.get_customers()
 
 
 @store.post("/demo")
 def api_start_demo():
 
-    load_demo_data()
+    StoreCheckout.load_demo_data()
+
     return "Demo data loaded"
