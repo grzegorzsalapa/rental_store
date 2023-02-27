@@ -15,6 +15,7 @@ class Repository:
 
     @classmethod
     def create_customer(cls) -> Customer:
+
         new_id = 0
         for customer in data_storage.customers:
             new_id = max(new_id, customer.id) + 1
@@ -25,8 +26,16 @@ class Repository:
         return new_customer
 
     @classmethod
-    def create_film(cls) -> Film:
-        pass
+    def create_film(cls, title: str, type_: str, items_total: int) -> Film:
+
+        new_id = 0
+        for film in data_storage.inventory.films:
+            new_id = max(new_id, film.id) + 1
+
+        new_film = Film(id=new_id, title=title, type=type_, items_total=items_total)
+        data_storage.inventory.films.append(new_film)
+
+        return new_film
 
     @classmethod
     def get_customer(cls, customer_id: int) -> Customer:
@@ -39,21 +48,18 @@ class Repository:
                         customer.rentals.append(record)
 
                 return customer
-
         else:
             raise NotFoundError(f"There is no record of customer id: {customer_id}.")
-
-        return customer
 
     @classmethod
     def get_film(cls, film_id: int) -> Film:
         inventory = data_storage.inventory
         for film in inventory.films:
             if film.id == film_id:
-                return film
 
+                return film
         else:
-            raise NotFoundError(f"There is no film id: {film_id} in repository.")
+            raise NotFoundError(f"There is no film id: {film_id} in inventory.")
 
     @classmethod
     def get_inventory(cls) -> Inventory:
@@ -69,11 +75,20 @@ class Repository:
 
     @classmethod
     def update_customer(cls, customer: Customer):
-        pass
+
+        for item in data_storage.customers:
+            if item.id == customer.id:
+                item = customer
+                break
 
     @classmethod
     def update_film(cls, film: Film):
-        pass
+
+        inventory = data_storage.inventory
+        for item in inventory.films:
+            if item.id == film.id:
+                item = film
+                break
 
     @classmethod
     def update_inventory(cls, inventory: Inventory):
