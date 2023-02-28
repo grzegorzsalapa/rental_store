@@ -128,12 +128,12 @@ def test_api_post_return_films_accepts_json_model_and_returns_correct_json_mode(
         assertion(result, return_films_mock)
 
 
-def test_api_get_film_inventory_returns_correct_json_mode():
+def test_api_get_film_inventory_returns_correct_json_model():
 
     def arrangement():
 
-        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
-        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50)
+        item_1 = Film(id=0, title="Matrix 11", type="New release", items_total=50, available_items=12)
+        item_2 = Film(id=0, title="Spider Man", type="Regular", items_total=50, available_items=10)
         film_inventory_mock = Inventory(films=[item_1, item_2])
 
         return film_inventory_mock
@@ -151,13 +151,15 @@ def test_api_get_film_inventory_returns_correct_json_mode():
                     'id': 0,
                     'title': 'Matrix 11',
                     'type': 'New release',
-                    'items_total': 50
+                    'items_total': 50,
+                    'available_items': 12
                 },
                 {
                     'id': 0,
                     'title': 'Spider Man',
                     'type': 'Regular',
-                    'items_total': 50
+                    'items_total': 50,
+                    'available_items': 10
                 }
             ]
         }
@@ -271,6 +273,16 @@ def test_end2end_get_film_inventory():
         item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
         item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
         rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id=uuid4(),
+                film_id=1,
+                customer_id=9,
+                date_of_rent=date.today() - timedelta(days=8),
+                up_front_days=3,
+                charge=120
+            )
+        ]
 
     def action():
         response = test_client.get("/films")
@@ -284,13 +296,15 @@ def test_end2end_get_film_inventory():
                     'id': 0,
                     'title': 'Matrix 11',
                     'type': 'New release',
-                    'items_total': 50
+                    'items_total': 50,
+                    'available_items': 50
                 },
                 {
                     'id': 1,
                     'title': 'Spider Man',
                     'type': 'Regular',
-                    'items_total': 20
+                    'items_total': 20,
+                    'available_items': 19
                 }
             ]
         }
