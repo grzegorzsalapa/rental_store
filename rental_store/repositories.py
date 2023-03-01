@@ -23,6 +23,7 @@ class Repository:
 
         new_customer = Customer(id=new_id)
         data_storage.customers.append(new_customer)
+        new_customer = copy.deepcopy(Repository.get_customer(new_id))
 
         return new_customer
 
@@ -35,6 +36,7 @@ class Repository:
 
         new_film = Film(id=new_id, title=title, type=type_, items_total=items_total)
         data_storage.inventory.films.append(new_film)
+        new_film = copy.deepcopy(Repository.get_film(new_id))
 
         return new_film
 
@@ -45,7 +47,9 @@ class Repository:
         customers = copy.deepcopy(data_storage.customers)
 
         for customer in customers:
+
             customer.rentals = []
+
             for record in rentals_ledger:
                 if record.customer_id == customer.id:
                     customer.rentals.append(record)

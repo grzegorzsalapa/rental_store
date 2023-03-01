@@ -144,16 +144,15 @@ class StoreCheckout:
 
     @staticmethod
     def get_film(film_id: int) -> Inventory:
-        return Repository.get_film(film_id)
+        try:
+            return Repository.get_film(film_id)
+
+        except RecordNotFoundError as e:
+            raise StoreCheckoutError(str(e))
 
     @staticmethod
     def get_ledger() -> dict:
         return {"rentals": Repository.get_ledger().rentals}
-
-    @staticmethod
-    def get_customers_rentals(customer_id: int) -> list:
-        customer = Repository.get_customer(customer_id)
-        return customer.rentals
 
     @staticmethod
     def add_film(request: RequestAddFilmModel) -> Film:

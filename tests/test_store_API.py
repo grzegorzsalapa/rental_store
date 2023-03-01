@@ -314,7 +314,124 @@ def test_end2end_get_film_inventory():
     assertion(action_result)
 
 
-def test_end2end_get_customer():
+def test_end2end_get_get_film():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id=uuid4(),
+                customer_id=9,
+                film_id=0,
+                date_of_rent='2021-07-23',
+                up_front_days=3,
+                charge=120
+            )
+        ]
+
+    def action():
+        response = test_client.get("/films/0")
+
+        return response
+
+    def assertion(response):
+        assert response.json() == {
+            'id': 0,
+            'title': 'Matrix 11',
+            'type': 'New release',
+            'items_total': 50,
+            'available_items': 49
+        }
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
+def test_end2end_post_add_film():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=12, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+
+    def action():
+        response = test_client.post(
+            "/films/add",
+            json={
+                "title": "Film o dupie Maryni",
+                "type": "Old",
+                "items_total": "5"
+            }
+        )
+
+        return response
+
+    def assertion(response):
+
+        assert response.json() == {
+            "id": 13,
+            "title": "Film o dupie Maryni",
+            "type": "Old",
+            "items_total": 5,
+            "available_items": 5
+        }
+
+        for film in rental_store.repositories.data_storage.inventory.films:
+            if film.id == 13:
+                assert film.type == "Old"
+                assert film.items_total == 5
+
+                break
+
+        else:
+            assert False
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
+def test_end2end_post_add_customer():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=12, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.customers = [Customer(id=9), Customer(id=16)]
+
+    def action():
+        response = test_client.post("/customers/add")
+
+        return response
+
+    def assertion(response):
+
+        assert response.json() == {
+            "id": 17,
+            "rentals": []
+        }
+
+        for customer in rental_store.repositories.data_storage.customers:
+            if customer.id == 17:
+                assert customer.rentals is None
+
+                break
+
+        else:
+            assert False
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
+def test_end2end_get_get_customer():
 
     def arrangement():
 
@@ -448,7 +565,6 @@ def test_404_on_post_rent_unavailable_film():
         item_5 = Film(id=5, title="Matrix 11", type="New release", items_total=2)
         item_8 = Film(id=8, title="Spider Man", type="Regular", items_total=50)
         rental_store.repositories.data_storage.inventory = Inventory(films=[item_5, item_8])
-
 
     def action():
 
@@ -667,6 +783,37 @@ def test_404_on_post_return_film_non_existing_customer():
     arrangement()
     result = action()
     assertion(result)
+
+
+def test_404_on_get_film_not_in_inventory():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id=uuid4(),
+                customer_id=9,
+                film_id=0,
+                date_of_rent='2021-07-23',
+                up_front_days=3,
+                charge=120
+            )
+        ]
+
+    def action():
+        response = test_client.get("/films/2")
+
+        return response
+
+    def assertion(response):
+        assert response.status_code == 404
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
 
 
 def test_404_on_get_customer_that_does_not_exist():
