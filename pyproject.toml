@@ -34,8 +34,9 @@ exclude = [
 
 [project.optional-dependencies]
 test = [
-  "pytest < 5.0.0",
-  "httpx"
+  "pytest==7.2.1",
+  "httpx==0.23.3"
+
 ]
 
 [project.scripts]

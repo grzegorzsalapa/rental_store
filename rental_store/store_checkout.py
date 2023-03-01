@@ -33,13 +33,14 @@ class StoreCheckout:
         try:
             request_id = uuid4()
             customer = Repository.get_customer(rent_request.customer_id)
-
             ledger = Repository.get_ledger()
 
             for item in rent_request.rented_films:
 
+                film = Repository.get_film(item.film_id)
+
                 try:
-                    reserve_film(ledger, request_id, item.film_id)
+                    reserve_film(ledger, request_id, film)
 
                 except NotAvailableError as e:
 
@@ -165,24 +166,22 @@ class StoreCheckout:
             raise StoreCheckoutError(f"Invalid film type: '{request.type}. Valid types are: {Repository.film_types()}.")
 
 
-def reserve_film(ledger: Ledger, request_id: UUID, film_id: int):
+def reserve_film(ledger: Ledger, request_id: UUID, film: Film):
 
     rented = 0
     for item in ledger.rentals:
-        if item.film_id == film_id and item.date_of_return is None:
+        if item.film_id == film.id and item.date_of_return is None:
             rented += 1
 
     reserved = 0
     for item in ledger.reservations:
-        if item.film_id == film_id:
+        if item.film_id == film.id:
             reserved += 1
-
-    film = Repository.get_film(film_id)
 
     available_items = film.items_total - rented - reserved
 
     if available_items:
-        new_record = ReservationRecord(request_id=request_id, film_id=film_id)
+        new_record = ReservationRecord(request_id=request_id, film_id=film.id)
         ledger.reservations.append(new_record)
     else:
         raise NotAvailableError(f"Film id:{film.id}, title: '{film.title}' is not available.")
