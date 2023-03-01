@@ -218,7 +218,7 @@ def test_end2end_post_rent_films():
 def test_end2end_post_return_films():
 
     def arrangement():
-        rental_store.repositories.data_storage.customers = [Customer(id=9, rentals=[]), Customer(id=16, rentals=[])]
+        rental_store.repositories.data_storage.customers = [Customer(id=9), Customer(id=16)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
             RentalRecord(
@@ -314,6 +314,51 @@ def test_end2end_get_film_inventory():
     assertion(action_result)
 
 
+def test_end2end_get_customer():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.customers = [Customer(id=9), Customer(id=16)]
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id='bab7010e-7803-468f-807b-6f4252a57178',
+                customer_id=9,
+                film_id=1,
+                date_of_rent='2023-01-11',
+                up_front_days=3,
+                charge=120
+            )
+        ]
+
+    def action():
+        response = test_client.get("/customers/9")
+
+        return response
+
+    def assertion(response):
+        assert response.json() == {
+            'id': 9,
+            'rentals': [
+                {'request_id': 'bab7010e-7803-468f-807b-6f4252a57178',
+                 'customer_id': 9,
+                 'film_id': 1,
+                 'date_of_rent': '2023-01-11',
+                 'up_front_days': 3,
+                 'charge': 120,
+                 'date_of_return': None,
+                 'surcharge': None
+                 }
+            ]
+        }
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
+
+
 def test_404_on_post_rent_unavailable_film():
 
     def arrangement():
@@ -401,7 +446,7 @@ def test_404_on_post_rent_film_not_in_inventory():
     assertion(result)
 
 
-def test_404_on_post_rent_film_non_existing_client():
+def test_404_on_post_rent_film_non_existing_customer():
     def arrangement():
         rental_store.repositories.data_storage.customers = [Customer(id=4), Customer(id=7), Customer(id=9)]
         rental_store.repositories.data_storage.price_list = PriceList()
@@ -519,7 +564,7 @@ def test_404_on_post_return_film_that_was_not_in_inventory():
     assertion(result)
 
 
-def test_404_on_post_return_film_non_existing_client():
+def test_404_on_post_return_film_non_existing_customer():
 
     def arrangement():
         rental_store.repositories.data_storage.customers = [Customer(id=9), Customer(id=16)]
@@ -560,3 +605,35 @@ def test_404_on_post_return_film_non_existing_client():
     arrangement()
     result = action()
     assertion(result)
+
+
+def test_404_on_get_customer_that_does_not_exist():
+
+    def arrangement():
+
+        item_0 = Film(id=0, title="Matrix 11", type="New release", items_total=50)
+        item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
+        rental_store.repositories.data_storage.inventory = Inventory(films=[item_0, item_1])
+        rental_store.repositories.data_storage.customers = [Customer(id=9), Customer(id=16)]
+        rental_store.repositories.data_storage.ledger.rentals = [
+            RentalRecord(
+                request_id='bab7010e-7803-468f-807b-6f4252a57178',
+                customer_id=9,
+                film_id=1,
+                date_of_rent='2023-01-11',
+                up_front_days=3,
+                charge=120
+            )
+        ]
+
+    def action():
+        response = test_client.get("/customers/13")
+
+        return response
+
+    def assertion(response):
+        assert response.status_code == 404
+
+    arrangement()
+    action_result = action()
+    assertion(action_result)
