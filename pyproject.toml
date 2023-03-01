@@ -5,16 +5,22 @@ build-backend = "hatchling.build"
 [project]
 name = "rental_store_idziegrzesprzezbobrow"
 version = "0.0.1"
-authors = [
-  { name="Greg", email="" },
-]
 description = "A simple film rental store with REST API."
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [
+  { name="Greg", email="" },
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+dependencies = [
+    "fastapi==0.92.0",
+    "pydantic==1.10.5",
+    "pytest==7.2.1",
+    "uvicorn==0.20.0"
 ]
 packages = [
     {include = "rental_store"},
@@ -25,5 +31,12 @@ exclude = [
     ".gitignore",
     ".pytest_cache"
 ]
+
+[project.optional-dependencies]
+test = [
+  "pytest < 5.0.0",
+  "httpx"
+]
+
 [project.scripts]
 rental_store = "uvicorn rental_store.store_api:store --host 127.0.0.1 --port 8080"
