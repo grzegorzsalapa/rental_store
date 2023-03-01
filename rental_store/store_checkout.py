@@ -33,6 +33,7 @@ class StoreCheckout:
         try:
             request_id = uuid4()
             customer = Repository.get_customer(rent_request.customer_id)
+
             ledger = Repository.get_ledger()
 
             for item in rent_request.rented_films:

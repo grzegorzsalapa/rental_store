@@ -39,7 +39,7 @@ class Inventory(BaseModel):
 
 class Customer(BaseModel):
     id: int
-    rentals: list[RentalRecord]
+    rentals: Optional[list[RentalRecord]]
 
 
 class PriceList(BaseModel):

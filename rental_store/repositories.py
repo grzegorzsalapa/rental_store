@@ -21,7 +21,7 @@ class Repository:
         for customer in data_storage.customers:
             new_id = max(new_id, customer.id) + 1
 
-        new_customer = Customer(id=new_id, rentals=[])
+        new_customer = Customer(id=new_id)
         data_storage.customers.append(new_customer)
 
         return new_customer
@@ -45,6 +45,7 @@ class Repository:
         customers = copy.deepcopy(data_storage.customers)
 
         for customer in customers:
+            customer.rentals = []
             for record in rentals_ledger:
                 if record.customer_id == customer.id:
                     customer.rentals.append(record)
@@ -58,6 +59,7 @@ class Repository:
             if item.id == customer_id:
 
                 customer = copy.deepcopy(item)
+                customer.rentals = []
 
                 for record in data_storage.ledger.rentals:
                     if record.customer_id == customer_id:
@@ -132,6 +134,7 @@ class Repository:
 
         for item in data_storage.customers:
             if item.id == customer.id:
+                customer.rentals = None
                 item = customer
                 break
 
