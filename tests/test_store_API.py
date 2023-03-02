@@ -21,6 +21,7 @@ test_client = TestClient(store)
 
 def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model():
 
+    # given
     def arrangement():
 
         film_rent_response_item = [FilmRentResponseItemModel(film_id=0, charge=40, currency="SEK")]
@@ -28,6 +29,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
 
         return film_rent_response
 
+    # when
     def action():
 
         response = test_client.post(
@@ -45,6 +47,7 @@ def test_api_post_rent_films_accepts_json_model_and_returns_correct_json_model()
 
         return response
 
+    # then
     def assertion(response, rent_films_mock):
 
         assert response.json() == {

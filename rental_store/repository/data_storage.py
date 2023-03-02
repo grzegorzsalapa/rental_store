@@ -4,7 +4,11 @@ from uuid import uuid4
 import datetime
 
 
-class MemoryDataStorage(BaseModel):
+class ListMemoryDataStorage(BaseModel):
+    film_types: list[str] = ["New release", "Regular", "Old"]
+
+
+class ListMemoryDataStorage(BaseModel):
 
     customers: list[Customer] = []
     inventory: Inventory = Inventory()

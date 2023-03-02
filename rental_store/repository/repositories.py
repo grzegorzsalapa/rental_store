@@ -1,9 +1,9 @@
 from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
-from rental_store.data_storage import MemoryDataStorage
+from rental_store.data_storage import ListMemoryDataStorage
 import copy
 
 
-data_storage = MemoryDataStorage()
+data_storage = ListMemoryDataStorage()
 
 
 class RecordNotFoundError(Exception):

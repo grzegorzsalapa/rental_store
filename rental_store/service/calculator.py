@@ -1,11 +1,12 @@
-from rental_store.data_models import Film, PriceList
 from datetime import date
+
+from rental_store.data_models import Film, PriceList
 
 regular_flat_days = 3
 old_flat_days = 5
 
-def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: int):
 
+def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: int):
     if film.type == "New release":
 
         charge = price_list.premium_price * up_front_days
@@ -26,7 +27,6 @@ def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: int)
 
 
 def calculate_rent_surcharge(price_list: PriceList, film: Film, up_front_days: int, date_of_rent: date):
-
     if film.type == "New release":
 
         rent_duration = (date.today() - date_of_rent).days
