@@ -1,73 +1,68 @@
-import uuid
-from datetime import date
+from datetime import date, timedelta
 
-from rental_store.models import FilmRentRequestModel, FilmRentResponseModel, Film, FilmReturnRequest, ReturnFilmResponse
-from rental_store.repository.data_storage import InMemoryFilmRepository, FilmRentalDetails, InMemoryRentalsRepository, \
-    Rental
-from rental_store.service.calculator import calculate_rent_charge
-
-film_repository = InMemoryFilmRepository()
-rental_repository = InMemoryRentalsRepository()
+from rental_store.models import Film, FilmReturnRequest, ReturnFilmResponse, FilmRentRequestModel
+from rental_store.repository.data_storage import FilmRentalDetails, Rental, InMemoryRentalsRepository, \
+    InMemoryFilmRepository
+from rental_store.service.price_calculator import PriceCalculator
 
 
 class RentalService:
 
+    # Instead of creating/hard-coding repositories in this module, I'll pass them as arguments - then I'll be able to
+    # INJECT the dependencies of the Rentals Service (see I in SOLID)
+    def __init__(self,
+                 film_repository: InMemoryFilmRepository,
+                 rental_repository: InMemoryRentalsRepository,
+                 calculator: PriceCalculator):
+        self.film_repository = film_repository
+        self.rental_repository = rental_repository
+        self.calculator = calculator
+
     # assumptions:
     # 1. we allow partial rentals in case some movies are not available
-    # 2. for now we assume we have only 1 Rental per customer
-    @staticmethod
-    def rent(request: FilmRentRequestModel) -> FilmRentResponseModel:
+    # 2. we allow only 1 rental per customer
+    def rent_films(self, request: FilmRentRequestModel) -> list[FilmRentalDetails]:
         not_available_films: set[Film] = set()
-        available_films: set[Film] = set()
+        film_rental_details: set[FilmRentalDetails] = set()
 
-        for film_to_be_rented in request.rented_films:
-            film = film_repository.films.get(film_to_be_rented.film_id)
-            if film.available_items > 0:
-                charge, currency = calculate_rent_charge(price_list, film,
-                                                         film_to_be_rented.up_front_days)  # TODO: remove currency
-
+        for film_to_be_rented in request.rented_films:  # TODO rename to films_to_rent in the request
+            detail = self.film_repository.films.get(film_to_be_rented.film_id)
+            if detail.available_items > 0:  # TODO: refactor - magic number
+                # TODO: currency not used
+                charge, currency = self.calculator.calculate_rent_charge(detail, film_to_be_rented.up_front_days)
                 film_rental_detail = FilmRentalDetails(film_id=film_to_be_rented.film_id,
-                                                       rental_date=date.date.today(),
+                                                       rental_date=date.today(),
                                                        charged=charge,
                                                        up_front_days=film_to_be_rented.up_front_days)
-                available_films.add(film_rental_detail)
+                film_rental_details.add(film_rental_detail)
             else:
                 not_available_films.add(film_to_be_rented.film_id)
 
-        for film in available_films:
-            film_repository.mark_as_rented(film.id)
+        for detail in film_rental_details:
+            self.film_repository.mark_as_rented(detail.film_id)
 
-        rental_repository.save(Rental(uuid.uuid4(), request.customer_id, available_films))
+        self.rental_repository.save(Rental(customer_id=request.customer_id, details=film_rental_details))
 
-        return available_films
-
+        return film_rental_details
 
     # assumptions:
-    # 1. they must pay upon the return
-    # 2. they might return only a subset of already rented movies
-    # 3. for the movies not returned they will pay surcharge when they return it
-    # 4. if they return movie earlier they will not get any money back
-    @staticmethod
-    def return(request: FilmReturnRequest) -> ReturnFilmResponse:
-        rental = rental_repository.find_by_customer_id(request.customer_id)
+    # 1. customer must pay upon the return
+    # 2. customer might return only a subset of already rented movies
+    # 3. for the movies not returned now, customer will not pay surcharge, it will be calculated when returned
+    # 4. if customer returns a movie earlier than up_font_days, no money will be returned to the customer
+    def return_films(self, request: FilmReturnRequest) -> ReturnFilmResponse:
+        rental = self.rental_repository.find_by_customer_id(request.customer_id)
 
         for returned_film in request.returned_films:
-            details = rental.details.pop(returned_film)
-            # if surcharge is needed:
-            #  film_repo.get film
-            # calculate_rent_surcharge(price_list, details.)
+            rented_film_details = rental.details.pop(returned_film)
 
+            total_surcharge = 0
+            if date.today() > rented_film_details.rental_date + timedelta(days=rented_film_details.up_front_days3):
+                film = self.film_repository.find_film(rented_film_details.film_id)
+                surcharge = self.calculator.calculate_rent_surcharge(film, rented_film_details.up_front_days)
+                total_surcharge += surcharge
 
-            film_repository.mark_as_returned(returned_film)
+            self.film_repository.mark_as_returned(returned_film)
+            self.rental_repository.save(rental)
 
-        if len(rental.details) <= 0:
-            rental_repository.delete(rental)
-        else:
-            rental_repository.save(rental)
-
-        return ReturnFilmResponse()
-
-
-
-
-
+        return ReturnFilmResponse(total_surcharge)

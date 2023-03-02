@@ -6,8 +6,9 @@ from pydantic import BaseModel
 from rental_store.models import Inventory, Customer, Film, Ledger, PriceList, RentalRecord
 
 
-class InMemoryFilmRepository(BaseModel):
-    films: dict[Film] = dict()
+class InMemoryFilmRepository:
+    def __init__(self):
+        self.films: dict[Film] = dict()
 
     # I Suppose it will add or update
     def save_film(self, new_film):
@@ -21,8 +22,11 @@ class InMemoryFilmRepository(BaseModel):
         film = self.films[film_id]
         film.available_items += 1
 
+    def find_film(self, film_id) -> Film:
+        return self.films[film_id]
 
-class InMemoryCustomerRepository(BaseModel):
+
+class InMemoryCustomerRepository:
     customers: dict[Customer] = dict()
 
     # I Suppose it will add or update
@@ -33,39 +37,27 @@ class InMemoryCustomerRepository(BaseModel):
 class FilmRentalDetails(BaseModel):
     film_id: UUID  # TODO: should we always set it to None
     rental_date: datetime.date
-    return_date: datetime.date
     charged: int = None  # TODO: change to floating point
     up_front_days: int = None
 
+    def __hash__(self):
+        return hash(self.film_id)
+
 
 class Rental(BaseModel):
-    rental_id: UUID
     customer_id: UUID
     details: set[FilmRentalDetails] = set()
 
 
-class InMemoryRentalsRepository(BaseModel):
-    rentals: dict[Rental] = dict()
+class InMemoryRentalsRepository:
+    def __init__(self):
+        self.rentals: dict[Rental] = dict()
 
     def save(self, rental):
-        self.rentals[rental.customer_id]
+        self.rentals[rental.customer_id] = rental
 
     def find_by_customer_id(self, customer_id):
         return self.rentals[customer_id]
-
-
-class MapMemoryDataStorage(BaseModel):
-    films: dict[Film] = dict()
-    film_types: list[str] = ["New release", "Regular", "Old"]
-    film_prices: PriceList = PriceList()
-
-    customers: list[Customer] = []
-
-    inventory: Inventory = Inventory()
-    ledger: Ledger = Ledger()
-
-    def save_film(self, new_film):
-        self.films[new_film.id] = new_film
 
 
 class ListMemoryDataStorage(BaseModel):
