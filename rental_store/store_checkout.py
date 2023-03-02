@@ -85,8 +85,8 @@ class StoreCheckout:
 
         try:
             response_items = []
-            ledger = Repository.get_ledger()
             customer = Repository.get_customer(return_request.customer_id)
+            ledger = Repository.get_ledger()
             price_list = Repository.get_price_list()
 
             for item in return_request.returned_films:
