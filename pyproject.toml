@@ -9,7 +9,7 @@ description = "A simple film rental store with REST API."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-  { name="Greg", email="" },
+    { name = "Greg", email = "" },
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -23,8 +23,8 @@ dependencies = [
     "uvicorn==0.20.0"
 ]
 packages = [
-    {include = "rental_store"},
-    {exclude = "tests"}
+    { include = "rental_store" },
+    { exclude = "tests" }
 ]
 exclude = [
     ".venv",
@@ -34,10 +34,9 @@ exclude = [
 
 [project.optional-dependencies]
 test = [
-  "pytest==7.2.1",
-  "httpx==0.23.3"
-
+    "pytest==7.2.1",
+    "httpx==0.23.3"
 ]
 
 [project.scripts]
-rental_store = "uvicorn rental_store.store_api:store --host 127.0.0.1 --port 8080"
+rental_store = "uvicorn rental_store.api.store_api:store --host 127.0.0.1 --port 8080"
