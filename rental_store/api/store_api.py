@@ -1,9 +1,9 @@
-import rental_store.repositories
 from fastapi import FastAPI, HTTPException
-from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel,\
-    FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
-from rental_store.store_checkout import StoreCheckout, StoreCheckoutError
 
+import rental_store.repository.repositories
+from rental_store.models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
+    FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
+from rental_store.service.store_checkout import StoreCheckout, StoreCheckoutError
 
 store = FastAPI()
 
@@ -12,7 +12,6 @@ rental_store.repositories.data_storage
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)
 def api_rent_films(rent_request: FilmRentRequestModel):
-
     try:
         response = StoreCheckout.rent_films(rent_request)
 
@@ -38,7 +37,6 @@ def api_rent_films(rent_request: FilmRentRequestModel):
 
 @store.post("/films/return", response_model=FilmReturnResponseModel)
 def api_return_films(return_request: FilmReturnRequestModel):
-
     try:
         response = StoreCheckout.return_films(return_request)
 
@@ -64,7 +62,6 @@ def api_return_films(return_request: FilmReturnRequestModel):
 
 @store.get("/films", response_model=Inventory)
 def api_get_film_inventory():
-
     try:
         response = StoreCheckout.get_film_inventory()
 
@@ -82,7 +79,6 @@ def api_get_film_inventory():
 
 @store.get("/films/{film_id}", response_model=Film)
 def api_get_film(film_id: int):
-
     try:
         response = StoreCheckout.get_film(film_id)
 
@@ -108,19 +104,16 @@ def api_get_film(film_id: int):
 
 @store.get("/store/ledger")
 def api_get_ledger():
-
     return StoreCheckout.get_ledger()
 
 
 @store.post("/customers/add", status_code=201)
 def api_add_customer():
-
     return StoreCheckout.add_customer()
 
 
 @store.get("/customers/{customer_id}")
 def api_get_customer(customer_id: int):
-
     try:
         response = StoreCheckout.get_customer(customer_id)
 
@@ -146,13 +139,11 @@ def api_get_customer(customer_id: int):
 
 @store.get("/customers")
 def api_get_customers():
-
     return StoreCheckout.get_customers()
 
 
 @store.post("/films/add", status_code=201, response_model=Film)
 def api_add_film(add_film_request: RequestAddFilmModel):
-
     try:
         return StoreCheckout.add_film(add_film_request)
 
@@ -176,7 +167,6 @@ def api_add_film(add_film_request: RequestAddFilmModel):
 
 @store.post("/demo")
 def api_start_demo():
-
     StoreCheckout.load_demo_data()
 
     return "Demo data loaded"

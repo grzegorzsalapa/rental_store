@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from typing import Optional
 import datetime
+from typing import Optional
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class RentalRecord(BaseModel):

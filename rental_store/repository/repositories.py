@@ -1,7 +1,7 @@
-from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
-from rental_store.data_storage import ListMemoryDataStorage
 import copy
 
+from rental_store.models import Film, Customer, Inventory, PriceList, Ledger
+from rental_store.repository.data_storage import ListMemoryDataStorage
 
 data_storage = ListMemoryDataStorage()
 
@@ -127,7 +127,6 @@ class Repository:
     @classmethod
     def film_types(cls) -> list:
         return data_storage.film_types
-
 
     @classmethod
     def get_ledger(cls) -> Ledger:

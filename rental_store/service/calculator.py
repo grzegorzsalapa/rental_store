@@ -1,6 +1,6 @@
 from datetime import date
 
-from rental_store.data_models import Film, PriceList
+from rental_store.models import Film, PriceList
 
 regular_flat_days = 3
 old_flat_days = 5

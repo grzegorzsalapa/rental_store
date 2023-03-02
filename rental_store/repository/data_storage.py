@@ -1,15 +1,16 @@
-from pydantic import BaseModel
-from rental_store.data_models import Inventory, Customer, Film, Ledger, PriceList, RentalRecord
-from uuid import uuid4
 import datetime
+from uuid import uuid4
+
+from pydantic import BaseModel
+
+from rental_store.models import Inventory, Customer, Film, Ledger, PriceList, RentalRecord
 
 
-class ListMemoryDataStorage(BaseModel):
+class MapMemoryDataStorage(BaseModel):
     film_types: list[str] = ["New release", "Regular", "Old"]
 
 
 class ListMemoryDataStorage(BaseModel):
-
     customers: list[Customer] = []
     inventory: Inventory = Inventory()
     ledger: Ledger = Ledger()
@@ -87,4 +88,3 @@ class ListMemoryDataStorage(BaseModel):
                 )
             ]
         )
-

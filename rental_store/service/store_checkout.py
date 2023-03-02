@@ -1,16 +1,16 @@
 from datetime import date
-from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
-from rental_store.repositories import Repository, RecordNotFoundError
-from rental_store.data_models import Film, Inventory, ReservationRecord, RentalRecord, Ledger, \
-    FilmRentResponseModel,\
-    FilmRentRequestModel,\
-    FilmReturnRequestModel,\
+from uuid import UUID, uuid4
+
+from rental_store.models import Film, Inventory, ReservationRecord, RentalRecord, Ledger, \
+    FilmRentResponseModel, \
+    FilmRentRequestModel, \
+    FilmReturnRequestModel, \
     FilmRentResponseItemModel, \
-    FilmReturnResponseModel,\
+    FilmReturnResponseModel, \
     FilmReturnResponseItemModel, \
     RequestAddFilmModel
-from uuid import UUID, uuid4
-import copy
+from rental_store.repository.repositories import Repository, RecordNotFoundError
+from rental_store.service.calculator import calculate_rent_charge, calculate_rent_surcharge
 
 
 class NotAvailableError(Exception):
@@ -52,7 +52,6 @@ class StoreCheckout:
             response_items = []
 
             for item in rent_request.rented_films:
-
                 film = Repository.get_film(item.film_id)
 
                 charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
@@ -95,7 +94,6 @@ class StoreCheckout:
 
                 for record in ledger.rentals:
                     if record.customer_id == customer.id and record.film_id == film.id and record.date_of_return is None:
-
                         surcharge, currency = calculate_rent_surcharge(price_list, film, record.up_front_days,
                                                                        record.date_of_rent)
 
@@ -109,7 +107,8 @@ class StoreCheckout:
                         f"Customer id:{customer.id} cannot return film id:{film.id}. "
                         f"There is no rental record pending return.")
 
-                response_items.append(FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
+                response_items.append(
+                    FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
 
                 Repository.update_ledger(ledger)
 
@@ -167,7 +166,6 @@ class StoreCheckout:
 
 
 def reserve_film(ledger: Ledger, request_id: UUID, film: Film):
-
     rented = 0
     for item in ledger.rentals:
         if item.film_id == film.id and item.date_of_return is None:
@@ -188,11 +186,8 @@ def reserve_film(ledger: Ledger, request_id: UUID, film: Film):
 
 
 def release_reservation(ledger: Ledger, request_id: UUID):
-
     for item in ledger.reservations:
         if item.request_id == request_id:
             ledger.reservations.remove(item)
 
     Repository.update_ledger(ledger)
-
-
