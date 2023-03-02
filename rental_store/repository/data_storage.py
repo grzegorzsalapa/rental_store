@@ -1,9 +1,57 @@
 import datetime
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from pydantic import BaseModel
 
 from rental_store.models import Inventory, Customer, Film, Ledger, PriceList, RentalRecord
+
+
+class InMemoryFilmRepository(BaseModel):
+    films: dict[Film] = dict()
+
+    # I Suppose it will add or update
+    def save_film(self, new_film):
+        self.films[new_film.id] = new_film
+
+    def mark_as_rented(self, film_id):
+        film = self.films[film_id]
+        film.available_items -= 1
+
+    def mark_as_returned(self, film_id):
+        film = self.films[film_id]
+        film.available_items += 1
+
+
+class InMemoryCustomerRepository(BaseModel):
+    customers: dict[Customer] = dict()
+
+    # I Suppose it will add or update
+    def save(self, customer):
+        self.customers[customer.id] = customer
+
+
+class FilmRentalDetails(BaseModel):
+    film_id: UUID  # TODO: should we always set it to None
+    rental_date: datetime.date
+    return_date: datetime.date
+    charged: int = None  # TODO: change to floating point
+    up_front_days: int = None
+
+
+class Rental(BaseModel):
+    rental_id: UUID
+    customer_id: UUID
+    details: set[FilmRentalDetails] = set()
+
+
+class InMemoryRentalsRepository(BaseModel):
+    rentals: dict[Rental] = dict()
+
+    def save(self, rental):
+        self.rentals[rental.customer_id]
+
+    def find_by_customer_id(self, customer_id):
+        return self.rentals[customer_id]
 
 
 class MapMemoryDataStorage(BaseModel):

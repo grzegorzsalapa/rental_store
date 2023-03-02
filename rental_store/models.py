@@ -56,7 +56,7 @@ class FilmRentRequestItemModel(BaseModel):
 
 class FilmRentRequestModel(BaseModel):
     customer_id: int
-    rented_films: list[FilmRentRequestItemModel]
+    rented_films: list[FilmRentRequestItemModel]  # TODO those are not rented yet, em will be possibly rented
 
 
 class FilmReturnRequestItemModel(BaseModel):
@@ -67,6 +67,13 @@ class FilmReturnRequestModel(BaseModel):
     customer_id: int
     returned_films: list[FilmReturnRequestItemModel]
 
+
+class FilmReturnRequest(BaseModel):
+    customer_id: UUID
+    returned_films: set[UUID]
+
+class ReturnFilmResponse(BaseModel):
+    surcharge: int
 
 class FilmRentResponseItemModel(BaseModel):
     film_id: int
