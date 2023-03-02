@@ -3,7 +3,7 @@ from datetime import date
 from rental_store.models import Film, PriceList
 
 
-class Calculator:
+class PriceCalculator:
 
     def __init__(self, price_list: PriceList, regular_flat_days: int, old_flat_days: int):
         self.price_list = price_list

@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 
 from rental_store.models import Film, PriceList
-from rental_store.service.calculator import Calculator
+from rental_store.service.price_calculator import PriceCalculator
 
-calculator = Calculator(PriceList(currency="SEK", premium_price=40, basic_price=30), 3, 5)
+calculator = PriceCalculator(PriceList(currency="SEK", premium_price=40, basic_price=30), 3, 5)
 
 
 def test_calculate_rent_charge_for_new_release():
