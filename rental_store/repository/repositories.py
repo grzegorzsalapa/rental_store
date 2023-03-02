@@ -1,9 +1,11 @@
 import copy
+import uuid
 
 from rental_store.models import Film, Customer, Inventory, PriceList, Ledger
-from rental_store.repository.data_storage import ListMemoryDataStorage
+from rental_store.repository.data_storage import ListMemoryDataStorage, MapMemoryDataStorage
 
 data_storage = ListMemoryDataStorage()
+map_data_storage = MapMemoryDataStorage()
 
 
 class RecordNotFoundError(Exception):
@@ -38,6 +40,13 @@ class Repository:
         data_storage.inventory.films.append(new_film)
         new_film = copy.deepcopy(Repository.get_film(new_id))
 
+        return new_film
+
+    @classmethod
+    def create_film2(cls, title: str, type_: str, items_total: int) -> Film:
+        new_film = Film(id=uuid.uuid4(), title=title, type=type_, items_total=items_total)
+        map_data_storage.save_film(new_film)
+        # new_film = copy.deepcopy(Repository.get_film(new_id)) TODO: no fucking idea what's that doin' yet
         return new_film
 
     @classmethod

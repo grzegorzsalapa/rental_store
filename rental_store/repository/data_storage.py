@@ -7,7 +7,17 @@ from rental_store.models import Inventory, Customer, Film, Ledger, PriceList, Re
 
 
 class MapMemoryDataStorage(BaseModel):
+    films: dict[Film] = dict()
     film_types: list[str] = ["New release", "Regular", "Old"]
+    film_prices: PriceList = PriceList()
+
+    customers: list[Customer] = []
+
+    inventory: Inventory = Inventory()
+    ledger: Ledger = Ledger()
+
+    def save_film(self, new_film):
+        self.films[new_film.id] = new_film
 
 
 class ListMemoryDataStorage(BaseModel):
