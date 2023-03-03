@@ -1,9 +1,8 @@
 import abc
 import datetime
 from uuid import UUID
-
+from abc import ABC, abstractmethod
 from pydantic import BaseModel
-
 from rental_store.models import Film, Customer
 
 
@@ -31,6 +30,26 @@ class RentalsRepository(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def find_by_customer_id(self, customer_id: UUID):
+        raise NotImplementedError()
+
+
+class FilmRepository(ABC):
+    """An interface for film repository"""
+
+    @abstractmethod
+    def save_film(self, new_film: Film):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def mark_as_rented(self, film_id: UUID):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def mark_as_returned(self, film_id: UUID):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def find_film(self, film_id: UUID) -> Film:
         raise NotImplementedError()
 
 
