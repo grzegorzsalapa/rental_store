@@ -24,7 +24,7 @@ class PriceCalculatorImpl(PriceCalculator):
         self.old_flat_days = old_flat_days
 
     def calculate_rent_charge(self, film_type: FilmType, up_front_days: int):
-        if film_type == FilmType.REGULAR:
+        if film_type == FilmType.NEW_RELEASE:
 
             charge = self.price_list.premium_price * up_front_days
 
