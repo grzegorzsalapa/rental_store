@@ -8,7 +8,7 @@ from rental_store.service.store_checkout import StoreCheckout, StoreCheckoutErro
 
 store = FastAPI()
 
-rental_store.repositories.data_storage
+# rental_store.repositories.data_storage
 
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)

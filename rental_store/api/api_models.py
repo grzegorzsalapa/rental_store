@@ -16,10 +16,9 @@ class FilmRentRequestItemModel(BaseModel):
 
 
 # TODO do I need to make it as BaseModel to make it work for rest FastApi
-class FilmRentRequestModel:
-    def __init__(self, customer_id: UUID, rented_films: list[FilmRentRequestItemModel]):
-        self.customer_id = customer_id
-        self.rented_films = rented_films
+class FilmRentRequestModel(BaseModel):
+    customer_id: UUID
+    rented_films: list[FilmRentRequestItemModel]
 
 
 class RentFilmRequest(BaseModel):

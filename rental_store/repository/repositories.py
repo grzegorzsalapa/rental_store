@@ -5,7 +5,6 @@ from rental_store.models import Film, Customer, Inventory, PriceList, Ledger
 from rental_store.repository.data_storage import ListMemoryDataStorage
 
 data_storage = ListMemoryDataStorage()
-map_data_storage = MapMemoryDataStorage()
 
 
 class RecordNotFoundError(Exception):
