@@ -1,9 +1,22 @@
+import abc
 from datetime import date
 
 from rental_store.models import Film, PriceList
 
 
-class PriceCalculator:
+class PriceCalculator(metaclass=abc.ABCMeta):
+    """An interface for price calculator"""
+
+    @abc.abstractmethod
+    def calculate_rent_charge(self, film: Film, up_front_days: int):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def calculate_rent_surcharge(self, film: Film, up_front_days: int, date_of_rent: date):
+        raise NotImplementedError()
+
+
+class PriceCalculatorImpl(PriceCalculator):
 
     def __init__(self, price_list: PriceList, regular_flat_days: int, old_flat_days: int):
         self.price_list = price_list
