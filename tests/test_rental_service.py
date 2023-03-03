@@ -3,10 +3,10 @@ import uuid
 from datetime import date
 
 from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
-from rental_store.models import PriceList, Film
+from rental_store.models import Film
 from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, InMemoryFilmRepository, \
     FilmRentalDetails
-from rental_store.service.price_calculator import PriceCalculatorImpl, PriceCalculator
+from rental_store.service.price_calculator import PriceCalculator
 from rental_store.service.rental_service import RentalService
 
 """
@@ -38,24 +38,24 @@ https://realpython.com/python-interface/
 """
 
 
+# This is example of how we can mock without using any framework, simple isn't it
 class MockedPriceCalculator(PriceCalculator):
 
     def calculate_rent_charge(self, film: Film, up_front_days: int):
-        pass
+        return 11, "SEK"
 
     def calculate_rent_surcharge(self, film: Film, up_front_days: int, date_of_rent: date):
-        pass
+        return 9999, "DONNER"
 
 
 class RentalServiceTest(unittest.TestCase):
     def setUp(self):
         # TODO: we are testing both RentalService and Calculator in here we should use some mocks
-        calculator = MockedPriceCalculator(PriceList(currency="SEK", premium_price=40, basic_price=30), 3, 5)
         self.film_repository = InMemoryFilmRepository()
         self.rental_repository = InMemoryRentalsRepository()
         self.rental_service = RentalService(film_repository=self.film_repository,
                                             rental_repository=self.rental_repository,
-                                            calculator=calculator)
+                                            calculator=MockedPriceCalculator())
 
     # TODO: what are the test case naming conventions?
     def test_when_no_films_available_empty_then_should_return_empty_list(self):
@@ -85,7 +85,7 @@ class RentalServiceTest(unittest.TestCase):
         result = self.rental_service.rent_films(request)
 
         # then
-        expected = {(FilmRentalDetails(film_id=film1_id, rental_date=date.today(), charged=90, up_front_days=3))}
+        expected = {(FilmRentalDetails(film_id=film1_id, rental_date=date.today(), charged=11, up_front_days=3))}
         self.assertEqual(result, expected)
 
 
