@@ -1,4 +1,3 @@
-import abc
 import datetime
 from uuid import UUID
 from abc import ABC, abstractmethod
@@ -21,14 +20,14 @@ class Rental(BaseModel):  # TODO: Do we need BaseModel in here? What other thing
     details: set[FilmRentalDetails] = set()
 
 
-class RentalsRepository(metaclass=abc.ABCMeta):
+class RentalsRepository(ABC):
     """An interface for rentals repository"""
 
-    @abc.abstractmethod
+    @abstractmethod
     def save(self, rental: Rental):
         raise NotImplementedError()
 
-    @abc.abstractmethod
+    @abstractmethod
     def find_by_customer_id(self, customer_id: UUID):
         raise NotImplementedError()
 
