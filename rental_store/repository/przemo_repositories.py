@@ -63,7 +63,7 @@ class InMemoryRentalsRepository(RentalsRepository):
         return self.rentals[customer_id]
 
 
-class InMemoryFilmRepository:
+class InMemoryFilmRepository(FilmRepository):
     def __init__(self):
         self.films: dict[Film] = dict()
 
