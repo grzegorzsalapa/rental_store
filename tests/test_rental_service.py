@@ -4,7 +4,7 @@ from datetime import date
 
 from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
 from rental_store.models import Film, FilmType
-from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, \
+from rental_store.repository.przemo_repositories import Rental, RentalsRepository, \
     FilmRentalDetails, FilmRepository
 from rental_store.service.price_calculator import PriceCalculator
 from rental_store.service.rental_service import RentalService
@@ -62,11 +62,19 @@ class MockedFilmRepository(FilmRepository):
         return Film(id=film_id, title="", type=FilmType.REGULAR, items_total=5, available_items=3)
 
 
+class MockedRentalsRepository(RentalsRepository):
+    def save(self, rental: Rental):
+        pass
+
+    def find_by_customer_id(self, customer_id: uuid.UUID):
+        pass
+
+
 class RentalServiceTest(unittest.TestCase):
     def setUp(self):
         # TODO: we are testing both RentalService and Calculator in here we should use some mocks
         self.film_repository = MockedFilmRepository()
-        self.rental_repository = InMemoryRentalsRepository()
+        self.rental_repository = MockedRentalsRepository()
         self.rental_service = RentalService(film_repository=self.film_repository,
                                             rental_repository=self.rental_repository,
                                             calculator=MockedPriceCalculator())
