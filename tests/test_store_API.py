@@ -1,9 +1,7 @@
 from datetime import date, timedelta
 from unittest.mock import patch
 from uuid import uuid4
-
 from fastapi.testclient import TestClient
-
 import rental_store.repository.repositories
 from rental_store.api.store_api import store
 from rental_store.models import Inventory, Film, Customer, PriceList, RentalRecord, \

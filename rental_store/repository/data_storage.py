@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from rental_store.models import Inventory, Customer, Film, Ledger, PriceList, RentalRecord
 
+# class syntax
 
 class ListMemoryDataStorage(BaseModel):
     customers: list[Customer] = []
