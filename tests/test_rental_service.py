@@ -2,7 +2,8 @@ import unittest
 import uuid
 from datetime import date
 
-from rental_store.models import PriceList, FilmRentRequestModel, Film, FilmRentRequestItemModel
+from rental_store.models import PriceList, Film
+from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
 from rental_store.repository.data_storage import FilmRentalDetails, InMemoryRentalsRepository, InMemoryFilmRepository
 from rental_store.service.price_calculator import PriceCalculator
 from rental_store.service.rental_service import RentalService

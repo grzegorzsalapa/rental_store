@@ -3,12 +3,12 @@ from uuid import UUID, uuid4
 
 from rental_store.models import Film, Inventory, ReservationRecord, RentalRecord, Ledger, \
     FilmRentResponseModel, \
-    FilmRentRequestModel, \
     FilmReturnRequestModel, \
     FilmRentResponseItemModel, \
     FilmReturnResponseModel, \
     FilmReturnResponseItemModel, \
     RequestAddFilmModel
+from rental_store.api.api_models import FilmRentRequestModel
 from rental_store.repository.repositories import Repository, RecordNotFoundError
 from rental_store.service.calculator import calculate_rent_charge, calculate_rent_surcharge
 

@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
 
 import rental_store.repository.repositories
-from rental_store.models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
+from rental_store.models import FilmRentResponseModel, FilmReturnRequestModel, \
     FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
+from rental_store.api.api_models import FilmRentRequestModel
 from rental_store.service.store_checkout import StoreCheckout, StoreCheckoutError
 
 store = FastAPI()

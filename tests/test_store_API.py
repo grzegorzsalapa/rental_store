@@ -11,10 +11,9 @@ from rental_store.models import Inventory, Film, Customer, PriceList, RentalReco
     FilmRentResponseItemModel, \
     FilmReturnResponseModel, \
     FilmReturnResponseItemModel, \
-    FilmRentRequestItemModel, \
-    FilmRentRequestModel, \
     FilmReturnRequestItemModel, \
     FilmReturnRequestModel
+from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
 
 test_client = TestClient(store)
 

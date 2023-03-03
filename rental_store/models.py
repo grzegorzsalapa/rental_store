@@ -49,18 +49,6 @@ class PriceList(BaseModel):
     basic_price: int = 30
 
 
-class FilmRentRequestItemModel:
-    def __init__(self, film_id: UUID, up_front_days: int):
-        self.film_id = film_id
-        self.up_front_days = up_front_days
-
-
-class FilmRentRequestModel:
-    def __init__(self, customer_id: UUID, rented_films: list[FilmRentRequestItemModel]):
-        self.customer_id = customer_id
-        self.rented_films = rented_films
-
-
 class FilmReturnRequestItemModel(BaseModel):
     film_id: int
 
@@ -68,15 +56,6 @@ class FilmReturnRequestItemModel(BaseModel):
 class FilmReturnRequestModel(BaseModel):
     customer_id: int
     returned_films: list[FilmReturnRequestItemModel]
-
-
-class FilmReturnRequest(BaseModel):
-    customer_id: UUID
-    returned_films: set[UUID]
-
-
-class ReturnFilmResponse(BaseModel):
-    surcharge: int
 
 
 class FilmRentResponseItemModel(BaseModel):
