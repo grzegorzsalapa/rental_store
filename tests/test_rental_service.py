@@ -3,7 +3,7 @@ import uuid
 from datetime import date
 
 from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
-from rental_store.models import Film
+from rental_store.models import Film, FilmType
 from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, InMemoryFilmRepository, \
     FilmRentalDetails
 from rental_store.service.price_calculator import PriceCalculator
@@ -72,7 +72,7 @@ class RentalServiceTest(unittest.TestCase):
         film1 = Film(
             id=film1_id,
             title="Spider Man",
-            type="Regular",
+            type=FilmType.REGULAR,
             items_total=50,
             available_items=50
         )

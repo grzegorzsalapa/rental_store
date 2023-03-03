@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
 from uuid import UUID
+from enum import Enum
 
 from pydantic import BaseModel
 
@@ -26,10 +27,16 @@ class Ledger(BaseModel):
     reservations: list[ReservationRecord] = []
 
 
+class FilmType(Enum):
+    NEW_RELEASE = 0
+    REGULAR = 1
+    OLD = 2
+
+
 class Film(BaseModel):
     id: UUID
     title: str
-    type: str
+    type: FilmType
     items_total: int
     available_items: int
 

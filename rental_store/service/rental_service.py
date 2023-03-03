@@ -30,7 +30,7 @@ class RentalService:
             detail = self.film_repository.films.get(film_to_be_rented.film_id)
             if detail.available_items > 0:  # TODO: refactor - magic number
                 # TODO: currency not used
-                charge, currency = self.calculator.calculate_rent_charge(detail, film_to_be_rented.up_front_days)
+                charge, currency = self.calculator.calculate_rent_charge(detail.type, film_to_be_rented.up_front_days)
                 film_rental_detail = FilmRentalDetails(film_id=film_to_be_rented.film_id,
                                                        rental_date=date.today(),
                                                        charged=charge,
