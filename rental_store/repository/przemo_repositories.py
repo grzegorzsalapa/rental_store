@@ -1,20 +1,10 @@
+import abc
 import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
 
 from rental_store.models import Film, Customer
-
-
-class InMemoryRentalsRepository:
-    def __init__(self):
-        self.rentals: dict[Rental] = dict()
-
-    def save(self, rental):
-        self.rentals[rental.customer_id] = rental
-
-    def find_by_customer_id(self, customer_id):
-        return self.rentals[customer_id]
 
 
 class FilmRentalDetails(BaseModel):
@@ -30,6 +20,29 @@ class FilmRentalDetails(BaseModel):
 class Rental(BaseModel):  # TODO: Do we need BaseModel in here? What other things it give apart from JSON for FastApi()?
     customer_id: UUID
     details: set[FilmRentalDetails] = set()
+
+
+class RentalsRepository(metaclass=abc.ABCMeta):
+    """An interface for rentals repository"""
+
+    @abc.abstractmethod
+    def save(self, rental: Rental):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def find_by_customer_id(self, customer_id: UUID):
+        raise NotImplementedError()
+
+
+class InMemoryRentalsRepository(RentalsRepository):
+    def __init__(self):
+        self.rentals: dict[Rental] = dict()
+
+    def save(self, rental: Rental):
+        self.rentals[rental.customer_id] = rental
+
+    def find_by_customer_id(self, customer_id: UUID):
+        return self.rentals[customer_id]
 
 
 class InMemoryFilmRepository:

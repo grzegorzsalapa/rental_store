@@ -1,9 +1,9 @@
 from datetime import date, timedelta
 
-from rental_store.models import Film
 from rental_store.api.api_models import FilmRentRequestModel, ReturnFilmResponse, FilmReturnRequest
-from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, Rental, InMemoryFilmRepository, \
-    FilmRentalDetails
+from rental_store.models import Film
+from rental_store.repository.przemo_repositories import Rental, InMemoryFilmRepository, \
+    FilmRentalDetails, RentalsRepository
 from rental_store.service.price_calculator import PriceCalculator
 
 
@@ -13,7 +13,7 @@ class RentalService:
     # INJECT the dependencies of the Rentals Service (see I in SOLID)
     def __init__(self,
                  film_repository: InMemoryFilmRepository,
-                 rental_repository: InMemoryRentalsRepository,
+                 rental_repository: RentalsRepository,
                  calculator: PriceCalculator):
         self.film_repository = film_repository
         self.rental_repository = rental_repository
