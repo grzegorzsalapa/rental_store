@@ -27,7 +27,7 @@ class RentalService:
         film_rental_details: set[FilmRentalDetails] = set()
 
         for film_to_be_rented in request.rented_films:  # TODO rename to films_to_rent in the request
-            detail = self.film_repository.films.get(film_to_be_rented.film_id)
+            detail = self.film_repository.find_film(film_to_be_rented.film_id)
             if detail.available_items > 0:  # TODO: refactor - magic number
                 # TODO: currency not used
                 charge, currency = self.calculator.calculate_rent_charge(detail.type, film_to_be_rented.up_front_days)
