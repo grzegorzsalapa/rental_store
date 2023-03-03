@@ -4,7 +4,8 @@ from datetime import date
 
 from rental_store.models import PriceList, Film
 from rental_store.api.api_models import FilmRentRequestModel, FilmRentRequestItemModel
-from rental_store.repository.data_storage import FilmRentalDetails, InMemoryRentalsRepository, InMemoryFilmRepository
+from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, InMemoryFilmRepository, \
+    FilmRentalDetails
 from rental_store.service.price_calculator import PriceCalculator
 from rental_store.service.rental_service import RentalService
 

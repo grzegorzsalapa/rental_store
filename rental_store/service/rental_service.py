@@ -2,8 +2,8 @@ from datetime import date, timedelta
 
 from rental_store.models import Film
 from rental_store.api.api_models import FilmRentRequestModel, ReturnFilmResponse, FilmReturnRequest
-from rental_store.repository.data_storage import FilmRentalDetails, Rental, InMemoryRentalsRepository, \
-    InMemoryFilmRepository
+from rental_store.repository.przemo_repositories import InMemoryRentalsRepository, Rental, InMemoryFilmRepository, \
+    FilmRentalDetails
 from rental_store.service.price_calculator import PriceCalculator
 
 
