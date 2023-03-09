@@ -1,37 +1,37 @@
 from fastapi import FastAPI, HTTPException
 from rental_store.calculator import PriceCalculator
-from rental_store.data_models import FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
+from rental_store.data_models import PriceList, FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
     FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
 from rental_store.store_checkout import StoreCheckout, StoreCheckoutError
 
 store = FastAPI()
 
-
-store_checkout = StoreCheckout(PriceCalculator)
+price_calculator = PriceCalculator(PriceList)
+store_checkout = StoreCheckout(price_calculator)
 
 
 @store.post("/films/rent", response_model=FilmRentResponseModel)
 def api_rent_films(rent_request: FilmRentRequestModel):
-    try:
-        response = store_checkout.rent_films(rent_request)
-
-    except StoreCheckoutError as e:
-
-        raise HTTPException(
-            status_code=404,
-            detail=str(e),
-            headers={"X-Error": "Rent error."}
-        )
-
-    except Exception as e:
-
-        print(str(e))
-
-        raise HTTPException(
-            status_code=500,
-            headers={"X-Error": "Unexpected error."}
-        )
-
+    # try:
+    #     response = store_checkout.rent_films(rent_request)
+    #
+    # except StoreCheckoutError as e:
+    #
+    #     raise HTTPException(
+    #         status_code=404,
+    #         detail=str(e),
+    #         headers={"X-Error": "Rent error."}
+    #     )
+    #
+    # except Exception as e:
+    #
+    #     print(str(e))
+    #
+    #     raise HTTPException(
+    #         status_code=500,
+    #         headers={"X-Error": "Unexpected error."}
+    #     )
+    response = store_checkout.rent_films(rent_request)
     return response
 
 #

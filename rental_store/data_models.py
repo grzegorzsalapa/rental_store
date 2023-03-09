@@ -55,12 +55,12 @@ class FilmType(Enum):
 
 
 class FilmRentRequestItemModel(BaseModel):
-    film_id: int
+    film_id: UUID
     up_front_days: int
 
 
 class FilmRentRequestModel(BaseModel):
-    customer_id: int
+    customer_id: UUID
     films_to_rent: list[FilmRentRequestItemModel]
 
 

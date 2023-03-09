@@ -30,7 +30,7 @@ class StoreCheckoutError(Exception):
 class StoreCheckout:
 
     def __init__(self, price_calculator: PriceCalculator):
-        self.price_calculator = price_calculator()
+        self.price_calculator = price_calculator
         self.engine = create_engine("postgresql://postgres:password@127.0.0.1:5432/rental_store", echo=True)
 
     def rent_films(self, rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
@@ -49,12 +49,14 @@ class StoreCheckout:
 
                     stmt = select(Film).where(Film.id == item.film_id)
                     film = session.scalars(stmt).one()
+                    print(item.film_id)
+                    print(film.id)
 
                     try:
                         stmt = select(Cassette).where(Cassette.film_id == item.film_id).where(
                             Cassette.available_flag is True).with_for_update()
                         cassette = session.scalars(stmt).first()
-                        cassette.available_flag = False
+                        cassette.available_flag = False # NoneType object: Why?
 
                     except Exception as e:
 

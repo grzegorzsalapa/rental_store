@@ -6,6 +6,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
+from rental_store.data_models import FilmType
 
 
 class Base(DeclarativeBase):
@@ -17,7 +18,7 @@ class Film(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(30))
-    type: Mapped[str] = mapped_column(String(30))
+    type: Mapped[int] = mapped_column()
 
     def __repr__(self) -> str:
         return f"Film(id={self.id!r}, title={self.title!r}, type={self.type!r})"
