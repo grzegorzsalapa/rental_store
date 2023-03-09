@@ -3,8 +3,8 @@ from uuid import UUID, uuid4
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
-from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord, PriceList
+from rental_store.calculator import PriceCalculator
+from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord
 from rental_store.data_models import PriceList, \
     FilmRentResponseModel, \
     FilmRentRequestModel, \
@@ -28,7 +28,10 @@ class StoreCheckoutError(Exception):
 
 
 class StoreCheckout:
-    engine = create_engine("postgresql://postgres:password@127.0.0.1:5432/rental_store", echo=True)
+
+    def __init__(self, price_calculator: PriceCalculator):
+        self.price_calculator = price_calculator()
+        self.engine = create_engine("postgresql://postgres:password@127.0.0.1:5432/rental_store", echo=True)
 
     def rent_films(self, rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
@@ -38,9 +41,6 @@ class StoreCheckout:
                 request_id = uuid4()
                 stmt = select(Customer).where(Customer.id == rent_request.customer_id)
                 customer = session.scalars(stmt).one()
-
-                stmt = select(PriceList)
-                price_list = session.scalars(stmt).one()
 
                 response_items = []
                 rental_records = []
@@ -60,7 +60,7 @@ class StoreCheckout:
 
                         raise StoreCheckoutError(str(e))
 
-                    charge, currency = calculate_rent_charge(price_list, film, item.up_front_days)
+                    charge, currency = self.price_calculator.calculate_rent_charge(PriceList, film, item.up_front_days)
 
                     new_rental_record = RentalRecord(
                         id=request_id,

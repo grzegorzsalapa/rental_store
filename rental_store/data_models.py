@@ -43,9 +43,15 @@ class Customer(BaseModel):
     rentals: Optional[list[RentalRecord]]
 
 
-class PriceList(Enum):
-    PREMIUM_PRICE = 40
-    BASIC_PRICE = 30
+class PriceList:
+    premium_price: int = 40
+    basic_price: int = 30
+
+
+class FilmType(Enum):
+    NEW_RELEASE = 0
+    REGULAR = 1
+    OLD = 2
 
 
 class FilmRentRequestItemModel(BaseModel):

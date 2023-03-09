@@ -57,11 +57,3 @@ class RentalRecord(Base):
 
     def __repr__(self) -> str:
         return f"Rental record(id={self.id!r}, customer_id={self.customer_id!r}, cassette_id={self.cassette_id!r})"
-
-
-class PriceList(Base):
-    __tablename__ = "price_list"
-
-    currency: Mapped[str] = mapped_column()
-    premium_price: Mapped[int] = mapped_column()
-    basic_price: Mapped[int] = mapped_column()

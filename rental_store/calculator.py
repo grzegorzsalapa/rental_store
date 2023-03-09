@@ -1,55 +1,59 @@
-from rental_store.data_models import Film, PriceList
+from rental_store.data_models import FilmType, PriceList
 from datetime import date
 
-regular_flat_days = 3
-old_flat_days = 5
 
-def calculate_rent_charge(price_list: PriceList, film: Film, up_front_days: int):
+class PriceCalculator:
 
-    if film.type == "New release":
+    def __init__(self, price_list: PriceList, regular_flat_days=3, old_flat_days=5):
+        self.price_list = price_list
+        self.regular_flat_days = regular_flat_days
+        self.old_flat_days = old_flat_days
 
-        charge = price_list.premium_price * up_front_days
+    def calculate_rent_charge(self, film_type: FilmType, up_front_days: int):
 
-        return charge, price_list.currency
+        if film_type == FilmType.NEW_RELEASE:
 
-    elif film.type == "Regular":
+            charge = self.price_list.premium_price * up_front_days
 
-        charge = max(regular_flat_days, up_front_days) * price_list.basic_price
+            return charge
 
-        return charge, price_list.currency
+        elif film_type == FilmType.REGULAR:
 
-    elif film.type == "Old":
+            charge = max(self.regular_flat_days, up_front_days) * self.price_list.basic_price
 
-        charge = max(old_flat_days, up_front_days) * price_list.basic_price
+            return charge
 
-        return charge, price_list.currency
+        elif film_type == FilmType.OLD:
 
+            charge = max(self.old_flat_days, up_front_days) * self.price_list.basic_price
 
-def calculate_rent_surcharge(price_list: PriceList, film: Film, up_front_days: int, date_of_rent: date):
+            return charge
 
-    if film.type == "New release":
+    def calculate_rent_surcharge(self, film_type: FilmType, up_front_days: int, date_of_rent: date):
 
-        rent_duration = (date.today() - date_of_rent).days
-        overdue = max(0, rent_duration - up_front_days)
+        if film_type == FilmType.NEW_RELEASE:
 
-        charge = overdue * price_list.premium_price
+            rent_duration = (date.today() - date_of_rent).days
+            overdue = max(0, rent_duration - up_front_days)
 
-        return charge, price_list.currency
+            charge = overdue * self.price_list.premium_price
 
-    elif film.type == "Regular":
+            return charge
 
-        rent_duration = (date.today() - date_of_rent).days
-        overdue = max(0, rent_duration - max(regular_flat_days, up_front_days))
+        elif film_type == FilmType.REGULAR:
 
-        charge = overdue * price_list.basic_price
+            rent_duration = (date.today() - date_of_rent).days
+            overdue = max(0, rent_duration - max(self.regular_flat_days, up_front_days))
 
-        return charge, price_list.currency
+            charge = overdue * self.price_list.basic_price
 
-    elif film.type == "Old":
+            return charge
 
-        rent_duration = (date.today() - date_of_rent).days
-        overdue = max(0, rent_duration - max(old_flat_days, up_front_days))
+        elif film_type == FilmType.OLD:
 
-        charge = overdue * price_list.basic_price
+            rent_duration = (date.today() - date_of_rent).days
+            overdue = max(0, rent_duration - max(self.old_flat_days, up_front_days))
 
-        return charge, price_list.currency
+            charge = overdue * self.price_list.basic_price
+
+            return charge
