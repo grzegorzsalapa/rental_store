@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from enum import Enum
 import datetime
 from uuid import UUID
 
@@ -42,10 +43,9 @@ class Customer(BaseModel):
     rentals: Optional[list[RentalRecord]]
 
 
-class PriceList(BaseModel):
-    currency: str = "SEK"
-    premium_price: int = 40
-    basic_price: int = 30
+class PriceList(Enum):
+    PREMIUM_PRICE = 40
+    BASIC_PRICE = 30
 
 
 class FilmRentRequestItemModel(BaseModel):
@@ -55,7 +55,7 @@ class FilmRentRequestItemModel(BaseModel):
 
 class FilmRentRequestModel(BaseModel):
     customer_id: int
-    rented_films: list[FilmRentRequestItemModel]
+    films_to_rent: list[FilmRentRequestItemModel]
 
 
 class FilmReturnRequestItemModel(BaseModel):
