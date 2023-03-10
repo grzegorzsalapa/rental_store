@@ -32,7 +32,7 @@ class Cassette(Base):
     available_flag: Mapped[bool] = mapped_column()
 
     def __repr__(self) -> str:
-        return f"Cassette(id={self.id!r}, film_id={self.film_id!r}, available={self.rental_record_id})"
+        return f"Cassette(id={self.id!r}, film_id={self.film_id!r}, available={self.available_flag})"
 
 
 class Customer(Base):
@@ -53,8 +53,8 @@ class RentalRecord(Base):
     date_of_rent: Mapped[date] = mapped_column()
     up_front_days: Mapped[int] = mapped_column()
     charge: Mapped[int] = mapped_column()
-    date_of_return: Mapped[Optional[str]] = mapped_column()
-    surcharge: Mapped[int] = mapped_column()
+    date_of_return: Mapped[Optional[date]] = mapped_column()
+    surcharge: Mapped[Optional[int]] = mapped_column()
 
     def __repr__(self) -> str:
         return f"Rental record(id={self.id!r}, customer_id={self.customer_id!r}, cassette_id={self.cassette_id!r})"

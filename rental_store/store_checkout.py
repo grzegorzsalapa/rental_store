@@ -41,6 +41,7 @@ class StoreCheckout:
                 request_id = uuid4()
                 stmt = select(Customer).where(Customer.id == rent_request.customer_id)
                 customer = session.scalars(stmt).one()
+                print(customer)
 
                 response_items = []
                 rental_records = []
@@ -48,21 +49,19 @@ class StoreCheckout:
                 for item in rent_request.films_to_rent:
 
                     stmt = select(Film).where(Film.id == item.film_id)
-                    film = session.scalars(stmt).one()
-                    print(item.film_id)
-                    print(film.id)
+                    film: Film = session.scalars(stmt).one()
 
                     try:
-                        stmt = select(Cassette).where(Cassette.film_id == item.film_id).where(
-                            Cassette.available_flag is True).with_for_update()
-                        cassette = session.scalars(stmt).first()
-                        cassette.available_flag = False # NoneType object: Why?
+                        stmt = select(Cassette).where(Cassette.film_id == film.id).where(
+                            Cassette.available_flag == True).with_for_update()
+                        cassette: Cassette = session.scalars(stmt).first()
+                        cassette.available_flag = False
 
                     except Exception as e:
 
                         raise StoreCheckoutError(str(e))
 
-                    charge, currency = self.price_calculator.calculate_rent_charge(PriceList, film, item.up_front_days)
+                    charge = self.price_calculator.calculate_rent_charge(film.type, item.up_front_days)
 
                     new_rental_record = RentalRecord(
                         id=request_id,
@@ -74,7 +73,9 @@ class StoreCheckout:
 
                     rental_records.append(new_rental_record)
 
-                    response_items.append(FilmRentResponseItemModel(film_id=film.id, charge=charge, currency=currency))
+                    response_items.append(
+                        FilmRentResponseItemModel(film_id=film.id, cassette_id=cassette.id, charge=charge,
+                                                  currency="SEK"))
 
                 session.add_all(rental_records)
                 session.commit()

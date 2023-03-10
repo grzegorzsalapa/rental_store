@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from enum import Enum
+from enum import IntEnum
 import datetime
 from uuid import UUID
 
@@ -48,7 +48,7 @@ class PriceList:
     basic_price: int = 30
 
 
-class FilmType(Enum):
+class FilmType(IntEnum):
     NEW_RELEASE = 0
     REGULAR = 1
     OLD = 2
@@ -74,7 +74,8 @@ class FilmReturnRequestModel(BaseModel):
 
 
 class FilmRentResponseItemModel(BaseModel):
-    film_id: int
+    film_id: UUID
+    cassette_id: UUID
     charge: int
     currency: str
 
