@@ -65,12 +65,12 @@ class FilmRentRequestModel(BaseModel):
 
 
 class FilmReturnRequestItemModel(BaseModel):
-    film_id: int
+    cassette_id: UUID
 
 
 class FilmReturnRequestModel(BaseModel):
-    customer_id: int
-    returned_films: list[FilmReturnRequestItemModel]
+    customer_id: UUID
+    returned_cassettes: list[FilmReturnRequestItemModel]
 
 
 class FilmRentResponseItemModel(BaseModel):
@@ -85,7 +85,8 @@ class FilmRentResponseModel(BaseModel):
 
 
 class FilmReturnResponseItemModel(BaseModel):
-    film_id: int
+    film_id: UUID
+    cassette_id: UUID
     surcharge: int
     currency: str
 

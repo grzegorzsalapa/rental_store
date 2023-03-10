@@ -34,30 +34,30 @@ def api_rent_films(rent_request: FilmRentRequestModel):
     response = store_checkout.rent_films(rent_request)
     return response
 
-#
-# @store.post("/films/return", response_model=FilmReturnResponseModel)
-# def api_return_films(return_request: FilmReturnRequestModel):
-#     try:
-#         response = store_checkout.return_films(return_request)
-#
-#     except StoreCheckoutError as e:
-#
-#         raise HTTPException(
-#             status_code=404,
-#             detail=str(e),
-#             headers={"X-Error": "Return error."}
-#         )
-#
-#     except Exception as e:
-#
-#         print(str(e))
-#
-#         raise HTTPException(
-#             status_code=500,
-#             headers={"X-Error": "Unexpected error."}
-#         )
-#
-#     return response
+
+@store.post("/films/return", response_model=FilmReturnResponseModel)
+def api_return_films(return_request: FilmReturnRequestModel):
+    # try:
+    #     response = store_checkout.return_films(return_request)
+    #
+    # except StoreCheckoutError as e:
+    #
+    #     raise HTTPException(
+    #         status_code=404,
+    #         detail=str(e),
+    #         headers={"X-Error": "Return error."}
+    #     )
+    #
+    # except Exception as e:
+    #
+    #     print(str(e))
+    #
+    #     raise HTTPException(
+    #         status_code=500,
+    #         headers={"X-Error": "Unexpected error."}
+    #     )
+    response = store_checkout.return_films(return_request)
+    return response
 #
 #
 # @store.get("/films", response_model=Inventory)

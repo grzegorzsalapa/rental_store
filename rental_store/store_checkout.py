@@ -21,6 +21,12 @@ class NotAvailableError(Exception):
         self.message = message
 
 
+class RecordNotFoundError(Exception):
+
+    def __init__(self, message: str):
+        self.message = message
+
+
 class StoreCheckoutError(Exception):
 
     def __init__(self, message):
@@ -35,13 +41,13 @@ class StoreCheckout:
 
     def rent_films(self, rent_request: FilmRentRequestModel) -> FilmRentResponseModel:
 
+        request_id = uuid4()
+
         with Session(self.engine) as session:
 
             try:
-                request_id = uuid4()
                 stmt = select(Customer).where(Customer.id == rent_request.customer_id)
                 customer = session.scalars(stmt).one()
-                print(customer)
 
                 response_items = []
                 rental_records = []
@@ -88,43 +94,54 @@ class StoreCheckout:
             except NotAvailableError as e:
                 raise StoreCheckoutError(str(e))
 
-    # @staticmethod
-    # def return_films(return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
-    #
-    #     try:
-    #         response_items = []
-    #         customer = Repository.get_customer(return_request.customer_id)
-    #         ledger = Repository.get_ledger()
-    #         price_list = Repository.get_price_list()
-    #
-    #         for item in return_request.returned_films:
-    #
-    #             film = Repository.get_film(item.film_id)
-    #
-    #             for record in ledger.rentals:
-    #                 if record.customer_id == customer.id and record.film_id == film.id and record.date_of_return is None:
-    #                     surcharge, currency = calculate_rent_surcharge(price_list, film, record.up_front_days,
-    #                                                                    record.date_of_rent)
-    #
-    #                     record.surcharge = surcharge
-    #                     record.date_of_return = date.today()
-    #
-    #                     break
-    #
-    #             else:
-    #                 raise RecordNotFoundError(
-    #                     f"Customer id:{customer.id} cannot return film id:{film.id}. "
-    #                     f"There is no rental record pending return.")
-    #
-    #             response_items.append(
-    #                 FilmReturnResponseItemModel(film_id=film.id, surcharge=surcharge, currency=currency))
-    #
-    #             Repository.update_ledger(ledger)
-    #
-    #             return FilmReturnResponseModel(returned_films=response_items)
-    #
-    #     except RecordNotFoundError as e:
-    #         raise StoreCheckoutError(str(e))
+    def return_films(self, return_request: FilmReturnRequestModel) -> FilmReturnResponseModel:
+
+        with Session(self.engine) as session:
+
+            try:
+                response_items = []
+                stmt = select(Customer).where(Customer.id == return_request.customer_id)
+                customer = session.scalars(stmt).one()
+
+                for item in return_request.returned_cassettes:
+
+                    stmt = select(Cassette).where(Cassette.id == item.cassette_id)
+                    cassette: Cassette = session.scalars(stmt).one()
+                    cassette.available_flag = True
+
+                    try:
+                        stmt = select(RentalRecord).where(RentalRecord.cassette_id == cassette.id).where(
+                            RentalRecord.customer_id == customer.id).where(
+                            RentalRecord.date_of_return == None).with_for_update()
+                        rental_record: RentalRecord = session.scalars(stmt).one()
+
+                    except Exception as e:
+                        print(str(e))
+                        raise RecordNotFoundError(
+                            f"Customer id:{customer.id} cannot return cassette id:{cassette.id}. "
+                            f"There is no rental record pending return.")
+
+                    stmt = select(Film).where(Film.id == cassette.film_id)
+                    film: Film = session.scalars(stmt).one()
+
+                    surcharge = self.price_calculator.calculate_rent_surcharge(
+                        film.type,
+                        rental_record.up_front_days,
+                        rental_record.date_of_rent)
+
+                    rental_record.surcharge = surcharge
+                    rental_record.date_of_return = date.today()
+
+                    response_items.append(
+                        FilmReturnResponseItemModel(film_id=film.id, cassette_id=cassette.id, surcharge=surcharge,
+                                                    currency="SEK"))
+
+                session.commit()
+
+                return FilmReturnResponseModel(returned_films=response_items)
+
+            except RecordNotFoundError as e:
+                raise StoreCheckoutError(str(e))
 
 #     @staticmethod
 #     def add_customer():
