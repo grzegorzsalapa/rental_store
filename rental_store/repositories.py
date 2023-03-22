@@ -1,4 +1,4 @@
-from rental_store.data_models import Film, Customer, InventoryModel, PriceList, Ledger, RentalRecord
+from rental_store.data_models import Film, CustomerModel, InventoryModel, PriceList, Ledger, RentalRecord
 from rental_store.data_storage import MemoryDataStorage
 import copy
 
@@ -15,13 +15,13 @@ class RecordNotFoundError(Exception):
 class Repository:
 
     @classmethod
-    def create_customer(cls) -> Customer:
+    def create_customer(cls) -> CustomerModel:
 
         new_id = 0
         for customer in data_storage.customers:
             new_id = max(new_id, customer.id) + 1
 
-        new_customer = Customer(id=new_id)
+        new_customer = CustomerModel(id=new_id)
         data_storage.customers.append(new_customer)
         new_customer = copy.deepcopy(Repository.get_customer(new_id))
 
@@ -41,7 +41,7 @@ class Repository:
         return new_film
 
     @classmethod
-    def get_customers(cls) -> list[Customer]:
+    def get_customers(cls) -> list[CustomerModel]:
 
         rentals_ledger = data_storage.ledger.rentals
         customers = copy.deepcopy(data_storage.customers)
@@ -57,7 +57,7 @@ class Repository:
         return customers
 
     @classmethod
-    def get_customer(cls, customer_id: int) -> Customer:
+    def get_customer(cls, customer_id: int) -> CustomerModel:
 
         for item in data_storage.customers:
             if item.id == customer_id:
@@ -134,7 +134,7 @@ class Repository:
         return data_storage.ledger
 
     @classmethod
-    def update_customer(cls, customer: Customer):
+    def update_customer(cls, customer: CustomerModel):
 
         for item in data_storage.customers:
             if item.id == customer.id:

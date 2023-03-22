@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from uuid import UUID
 from rental_store.calculator import PriceCalculator
 from rental_store.data_models import PriceList, FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
     FilmReturnResponseModel, RequestAddFilmModel, InventoryModel, FilmModel
@@ -85,36 +86,27 @@ def api_add_customer():
     return store_checkout.add_customer()
 
 
-# @store.get("/customers/{customer_id}")
-# def api_get_customer(customer_id: int):
-#     try:
-#         response = StoreCheckout.get_customer(customer_id)
-#
-#     except StoreCheckoutError as e:
-#
-#         raise HTTPException(
-#             status_code=404,
-#             detail=str(e),
-#             headers={"X-Error": "Get customer error."}
-#         )
-#
-#     except Exception as e:
-#
-#         print(str(e))
-#
-#         raise HTTPException(
-#             status_code=500,
-#             headers={"X-Error": "Unexpected error."}
-#         )
-#
-#     return response
-#
-#
-# @store.get("/customers")
-# def api_get_customers():
-#     return StoreCheckout.get_customers()
-#
-#
+@store.get("/customers/{customer_id}")
+def api_get_customer(customer_id: UUID):
+    try:
+        response = store_checkout.get_customer(customer_id)
+
+    except StoreCheckoutError as e:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+            headers={"X-Error": "Get customer error."}
+        )
+
+    return response
+
+
+@store.get("/customers")
+def api_get_customers():
+    return store_checkout.get_customers()
+
+
 # @store.post("/films/add", status_code=201, response_model=Film)
 # def api_add_film(add_film_request: RequestAddFilmModel):
 #     try:

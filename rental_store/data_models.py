@@ -38,9 +38,9 @@ class InventoryModel(BaseModel):
     films: list[FilmModel] = []
 
 
-class Customer(BaseModel):
+class CustomerModel(BaseModel):
     id: int
-    rentals: Optional[list[RentalRecord]]
+    # rentals: Optional[list[RentalRecord]]
 
 
 class PriceList:

@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-from rental_store.data_models import InventoryModel, Customer, Film, Ledger, PriceList, RentalRecord
+from rental_store.data_models import InventoryModel, CustomerModel, Film, Ledger, PriceList, RentalRecord
 from uuid import uuid4
 import datetime
 
 
 class MemoryDataStorage(BaseModel):
 
-    customers: list[Customer] = []
+    customers: list[CustomerModel] = []
     inventory: InventoryModel = InventoryModel()
     ledger: Ledger = Ledger()
     price_list: PriceList = PriceList
@@ -41,15 +41,15 @@ class MemoryDataStorage(BaseModel):
         ]
 
         self.customers = [
-            Customer(
+            CustomerModel(
                 id=0,
                 rentals=[]
             ),
-            Customer(
+            CustomerModel(
                 id=1,
                 rentals=[]
             ),
-            Customer(
+            CustomerModel(
                 id=2,
                 rentals=[]
             )

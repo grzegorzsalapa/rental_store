@@ -1,6 +1,6 @@
 import pytest
 from rental_store.calculator import calculate_rent_charge, calculate_rent_surcharge
-from rental_store.data_models import Film, Customer, PriceList, RentalRecord
+from rental_store.data_models import Film, CustomerModel, PriceList, RentalRecord
 from datetime import date, timedelta
 import uuid
 

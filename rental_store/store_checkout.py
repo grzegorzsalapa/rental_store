@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy import exc
 from rental_store.calculator import PriceCalculator
 from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord
-from rental_store.data_models import FilmModel, InventoryModel, \
+from rental_store.data_models import CustomerModel, FilmModel, InventoryModel, \
     FilmRentResponseModel, \
     FilmRentRequestModel, \
     FilmReturnRequestModel, \
@@ -184,8 +184,17 @@ class StoreCheckout:
             except RecordNotFoundError as e:
                 raise StoreCheckoutError(str(e))
 
-    # def get_customers():
-    #     return {"customers": Repository.get_customers()}
+    def get_customers(self):
+
+        with Session(self.engine) as session:
+            stmt = select(Customer)
+            customers: [Customer] = session.scalars(stmt).all()
+            customer_lst = []
+
+            for customer in customers:
+                customer_lst.append(CustomerModel(id=customer.id))
+
+            return {"customers": customer_lst}
 
     def get_film_inventory(self) -> InventoryModel:
 
