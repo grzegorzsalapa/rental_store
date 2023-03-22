@@ -47,16 +47,24 @@ class StoreCheckout:
         with Session(self.engine) as session:
 
             try:
-                stmt = select(Customer).where(Customer.id == rent_request.customer_id)
-                customer = session.scalars(stmt).one()
+                try:
+                    stmt = select(Customer).where(Customer.id == rent_request.customer_id)
+                    customer = session.scalars(stmt).one()
+
+                except exc.NoResultFound:
+                    raise RecordNotFoundError(f"No record of customer id:{rent_request.customer_id}")
 
                 response_items = []
                 rental_records = []
 
                 for item in rent_request.films_to_rent:
 
-                    stmt = select(Film).where(Film.id == item.film_id)
-                    film: Film = session.scalars(stmt).one()
+                    try:
+                        stmt = select(Film).where(Film.id == item.film_id)
+                        film: Film = session.scalars(stmt).one()
+
+                    except exc.NoResultFound:
+                        raise RecordNotFoundError(f"No record of film id:{item.film_id}.")
 
                     try:
                         stmt = select(Cassette).where(Cassette.film_id == film.id).where(
@@ -64,9 +72,8 @@ class StoreCheckout:
                         cassette: Cassette = session.scalars(stmt).first()
                         cassette.available_flag = False
 
-                    except Exception as e:
-
-                        raise StoreCheckoutError(str(e))
+                    except exc.NoResultFound:
+                        raise NotAvailableError(f"Film id:{film.id} currently not available.")
 
                     charge = self.price_calculator.calculate_rent_charge(film.type, item.up_front_days)
 
@@ -89,7 +96,7 @@ class StoreCheckout:
 
                 return FilmRentResponseModel(rented_films=response_items)
 
-            except Exception as e:
+            except RecordNotFoundError as e:
                 raise StoreCheckoutError(str(e))
 
             except NotAvailableError as e:
@@ -106,7 +113,7 @@ class StoreCheckout:
                     customer = session.scalars(stmt).one()
 
                 except exc.NoResultFound:
-                    raise RecordNotFoundError(f"No record of customer id:{customer.id}")
+                    raise RecordNotFoundError(f"No record of customer id:{return_request.customer_id}")
 
                 for item in return_request.returned_cassettes:
 
@@ -116,7 +123,7 @@ class StoreCheckout:
                         cassette.available_flag = True
 
                     except exc.NoResultFound:
-                        raise RecordNotFoundError(f"No record of cassette id:{cassette.id}.")
+                        raise RecordNotFoundError(f"No record of cassette id:{item.cassette_id}.")
 
                     try:
                         stmt = select(RentalRecord).where(RentalRecord.cassette_id == cassette.id).where(
