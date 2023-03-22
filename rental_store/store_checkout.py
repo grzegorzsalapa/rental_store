@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy import exc
 from rental_store.calculator import PriceCalculator
 from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord
 from rental_store.data_models import PriceList, \
@@ -99,15 +100,23 @@ class StoreCheckout:
         with Session(self.engine) as session:
 
             try:
-                response_items = []
-                stmt = select(Customer).where(Customer.id == return_request.customer_id)
-                customer = session.scalars(stmt).one()
+                try:
+                    response_items = []
+                    stmt = select(Customer).where(Customer.id == return_request.customer_id)
+                    customer = session.scalars(stmt).one()
+
+                except exc.NoResultFound:
+                    raise RecordNotFoundError(f"No record of customer id:{customer.id}")
 
                 for item in return_request.returned_cassettes:
 
-                    stmt = select(Cassette).where(Cassette.id == item.cassette_id)
-                    cassette: Cassette = session.scalars(stmt).one()
-                    cassette.available_flag = True
+                    try:
+                        stmt = select(Cassette).where(Cassette.id == item.cassette_id)
+                        cassette: Cassette = session.scalars(stmt).one()
+                        cassette.available_flag = True
+
+                    except exc.NoResultFound:
+                        raise RecordNotFoundError(f"No record of cassette id:{cassette.id}.")
 
                     try:
                         stmt = select(RentalRecord).where(RentalRecord.cassette_id == cassette.id).where(
@@ -115,8 +124,7 @@ class StoreCheckout:
                             RentalRecord.date_of_return == None).with_for_update()
                         rental_record: RentalRecord = session.scalars(stmt).one()
 
-                    except Exception as e:
-                        print(str(e))
+                    except exc.NoResultFound:
                         raise RecordNotFoundError(
                             f"Customer id:{customer.id} cannot return cassette id:{cassette.id}. "
                             f"There is no rental record pending return.")
