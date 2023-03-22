@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from rental_store.calculator import PriceCalculator
 from rental_store.data_models import PriceList, FilmRentResponseModel, FilmRentRequestModel, FilmReturnRequestModel, \
-    FilmReturnResponseModel, RequestAddFilmModel, Inventory, Film
+    FilmReturnResponseModel, RequestAddFilmModel, InventoryModel, FilmModel
 from rental_store.store_checkout import StoreCheckout, StoreCheckoutError
 
 store = FastAPI()
@@ -40,25 +40,16 @@ def api_return_films(return_request: FilmReturnRequestModel):
         )
 
     return response
-#
-#
-# @store.get("/films", response_model=Inventory)
-# def api_get_film_inventory():
-#     try:
-#         response = store_checkout.get_film_inventory()
-#
-#     except Exception as e:
-#
-#         print(str(e))
-#
-#         raise HTTPException(
-#             status_code=500,
-#             headers={"X-Error": "Unexpected error."}
-#         )
-#
-#     return response
-#
-#
+
+
+@store.get("/films", response_model=InventoryModel)
+def api_get_film_inventory():
+
+    response = store_checkout.get_film_inventory()
+
+    return response
+
+
 # @store.get("/films/{film_id}", response_model=Film)
 # def api_get_film(film_id: int):
 #     try:
@@ -88,12 +79,12 @@ def api_return_films(return_request: FilmReturnRequestModel):
 # def api_get_ledger():
 #     return StoreCheckout.get_ledger()
 #
-#
-# @store.post("/customers/add", status_code=201)
-# def api_add_customer():
-#     return StoreCheckout.add_customer()
-#
-#
+
+@store.post("/customers/add", status_code=201)
+def api_add_customer():
+    return store_checkout.add_customer()
+
+
 # @store.get("/customers/{customer_id}")
 # def api_get_customer(customer_id: int):
 #     try:

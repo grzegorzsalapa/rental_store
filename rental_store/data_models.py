@@ -26,16 +26,16 @@ class Ledger(BaseModel):
     reservations: list[ReservationRecord] = []
 
 
-class Film(BaseModel):
+class FilmModel(BaseModel):
     id: int
     title: str
     type: str
-    items_total: int
-    available_items: Optional[int]
+    # items_total: int
+    # available_items: Optional[int]
 
 
-class Inventory(BaseModel):
-    films: list[Film] = []
+class InventoryModel(BaseModel):
+    films: list[FilmModel] = []
 
 
 class Customer(BaseModel):

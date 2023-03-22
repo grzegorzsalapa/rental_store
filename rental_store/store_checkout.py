@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy import exc
 from rental_store.calculator import PriceCalculator
 from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord
-from rental_store.data_models import PriceList, \
+from rental_store.data_models import FilmModel, InventoryModel, \
     FilmRentResponseModel, \
     FilmRentRequestModel, \
     FilmReturnRequestModel, \
@@ -158,32 +158,47 @@ class StoreCheckout:
             except RecordNotFoundError as e:
                 raise StoreCheckoutError(str(e))
 
-#     @staticmethod
-#     def add_customer():
-#         return Repository.create_customer()
-#
-#     @staticmethod
-#     def get_customer(customer_id: int):
-#
-#         try:
-#             return Repository.get_customer(customer_id)
-#
-#         except RecordNotFoundError as e:
-#             raise StoreCheckoutError(str(e))
-#
-#     @staticmethod
-#     def get_customers():
-#         return {"customers": Repository.get_customers()}
-#
-#     @staticmethod
-#     def load_demo_data():
-#         Repository.load_demo_data()
-#
-#     @staticmethod
-#     def get_film_inventory() -> Inventory:
-#         return Repository.get_inventory()
-#
-#     @staticmethod
+    def add_customer(self):
+
+        with Session(self.engine) as session:
+
+            customer = Customer(id=uuid4())
+            session.add(customer)
+            session.commit()
+
+            return f"/customers/{customer.id}"
+
+    def get_customer(self, customer_id: UUID):
+
+        with Session(self.engine) as session:
+            try:
+                try:
+                    stmt = select(Customer).where(Customer.id == customer_id)
+                    customer = session.scalars(stmt).one()
+
+                    return customer
+
+                except exc.NoResultFound:
+                    raise RecordNotFoundError(f"No record of customer id:{customer_id}")
+
+            except RecordNotFoundError as e:
+                raise StoreCheckoutError(str(e))
+
+    # def get_customers():
+    #     return {"customers": Repository.get_customers()}
+
+    def get_film_inventory(self) -> InventoryModel:
+
+        with Session(self.engine) as session:
+            stmt = select(Film)
+            films: [Film] = session.scalars(stmt).all()
+            inventory = InventoryModel(films=[])
+            for film in films:
+                inventory.films.append(FilmModel(id=film.id, title=film.title, type=film.type))
+
+        return inventory
+
+
 #     def get_film(film_id: int) -> Inventory:
 #         try:
 #             return Repository.get_film(film_id)
@@ -191,7 +206,6 @@ class StoreCheckout:
 #         except RecordNotFoundError as e:
 #             raise StoreCheckoutError(str(e))
 #
-#     @staticmethod
 #     def get_ledger() -> dict:
 #         return {"rentals": Repository.get_ledger().rentals}
 #
@@ -204,31 +218,6 @@ class StoreCheckout:
 #
 #         else:
 #             raise StoreCheckoutError(f"Invalid film type: '{request.type}. Valid types are: {Repository.film_types()}.")
-#
-#
-# def reserve_film(ledger: Ledger, request_id: UUID, film: Film):
-#     rented = 0
-#     for item in ledger.rentals:
-#         if item.film_id == film.id and item.date_of_return is None:
-#             rented += 1
-#
-#     reserved = 0
-#     for item in ledger.reservations:
-#         if item.film_id == film.id:
-#             reserved += 1
-#
-#     available_items = film.items_total - rented - reserved
-#
-#     if available_items:
-#         new_record = ReservationRecord(request_id=request_id, film_id=film.id)
-#         ledger.reservations.append(new_record)
-#     else:
-#         raise NotAvailableError(f"Film id:{film.id}, title: '{film.title}' is not available.")
-#
-#
-# def release_reservation(ledger: Ledger, request_id: UUID):
-#     for item in ledger.reservations:
-#         if item.request_id == request_id:
-#             ledger.reservations.remove(item)
-#
-#     Repository.update_ledger(ledger)
+
+    #     def load_demo_data():
+    #         Repository.load_demo_data()

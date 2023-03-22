@@ -1,4 +1,4 @@
-from rental_store.data_models import Film, Customer, Inventory, PriceList, Ledger, RentalRecord
+from rental_store.data_models import Film, Customer, InventoryModel, PriceList, Ledger, RentalRecord
 from rental_store.data_storage import MemoryDataStorage
 import copy
 
@@ -99,7 +99,7 @@ class Repository:
             raise RecordNotFoundError(f"There is no film id: {film_id} in inventory.")
 
     @classmethod
-    def get_inventory(cls) -> Inventory:
+    def get_inventory(cls) -> InventoryModel:
 
         ledger = Repository.get_ledger()
         inventory = copy.deepcopy(data_storage.inventory)
@@ -152,7 +152,7 @@ class Repository:
                 break
 
     @classmethod
-    def update_inventory(cls, inventory: Inventory):
+    def update_inventory(cls, inventory: InventoryModel):
         data_storage.inventory = inventory
 
     @classmethod
