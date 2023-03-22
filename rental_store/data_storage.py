@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from rental_store.data_models import InventoryModel, CustomerModel, Film, Ledger, PriceList, RentalRecord
+from rental_store.data_models import InventoryModel, CustomerModel, Film, Rentals, PriceList, RentalRecordModel
 from uuid import uuid4
 import datetime
 
@@ -8,7 +8,7 @@ class MemoryDataStorage(BaseModel):
 
     customers: list[CustomerModel] = []
     inventory: InventoryModel = InventoryModel()
-    ledger: Ledger = Ledger()
+    ledger: Rentals = Rentals()
     price_list: PriceList = PriceList
     film_types: list[str] = ["New release", "Regular", "Old"]
 
@@ -55,9 +55,9 @@ class MemoryDataStorage(BaseModel):
             )
         ]
 
-        self.ledger = Ledger(
+        self.ledger = Rentals(
             rentals=[
-                RentalRecord(
+                RentalRecordModel(
                     request_id=uuid4(),
                     film_id=0,
                     customer_id=1,
@@ -65,7 +65,7 @@ class MemoryDataStorage(BaseModel):
                     up_front_days=1,
                     charge=40
                 ),
-                RentalRecord(
+                RentalRecordModel(
                     request_id=uuid4(),
                     film_id=2,
                     customer_id=0,
@@ -73,7 +73,7 @@ class MemoryDataStorage(BaseModel):
                     up_front_days=1,
                     charge=90
                 ),
-                RentalRecord(
+                RentalRecordModel(
                     request_id=uuid4(),
                     film_id=3,
                     customer_id=2,

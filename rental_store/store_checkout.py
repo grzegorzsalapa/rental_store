@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy import exc
 from rental_store.calculator import PriceCalculator
 from rental_store.orm_classes import Film, Cassette, Customer, RentalRecord
-from rental_store.data_models import CustomerModel, FilmModel, InventoryModel, \
+from rental_store.data_models import CustomerModel, FilmModel, InventoryModel, RentalRecordModel, Rentals, \
     FilmRentResponseModel, \
     FilmRentRequestModel, \
     FilmReturnRequestModel, \
@@ -161,7 +161,6 @@ class StoreCheckout:
     def add_customer(self):
 
         with Session(self.engine) as session:
-
             customer = Customer(id=uuid4())
             session.add(customer)
             session.commit()
@@ -184,7 +183,7 @@ class StoreCheckout:
             except RecordNotFoundError as e:
                 raise StoreCheckoutError(str(e))
 
-    def get_customers(self):
+    def get_customers(self) -> dict:
 
         with Session(self.engine) as session:
             stmt = select(Customer)
@@ -205,20 +204,38 @@ class StoreCheckout:
             for film in films:
                 inventory.films.append(FilmModel(id=film.id, title=film.title, type=film.type))
 
-        return inventory
+            return inventory
 
+    #     def get_film(film_id: int) -> Inventory:
+    #         try:
+    #             return Repository.get_film(film_id)
+    #
+    #         except RecordNotFoundError as e:
+    #             raise StoreCheckoutError(str(e))
 
-#     def get_film(film_id: int) -> Inventory:
-#         try:
-#             return Repository.get_film(film_id)
-#
-#         except RecordNotFoundError as e:
-#             raise StoreCheckoutError(str(e))
-#
-#     def get_ledger() -> dict:
-#         return {"rentals": Repository.get_ledger().rentals}
-#
-#     @staticmethod
+    def get_rentals(self) -> Rentals:
+
+        with Session(self.engine) as session:
+            stmt = select(RentalRecord)
+            rental_records: [RentalRecord] = session.scalars(stmt).all()
+            rentals = Rentals()
+
+            for record in rental_records:
+                rentals.rentals.append(
+                    RentalRecordModel(
+                        request_id=record.id,
+                        customer_id=record.customer_id,
+                        cassette_id=record.cassette_id,
+                        date_of_rent=record.date_of_rent,
+                        up_front_days=record.up_front_days,
+                        charge=record.charge,
+                        date_of_return=record.date_of_return,
+                        surcharge=record.surcharge
+                    )
+                )
+
+            return rentals
+
 #     def add_film(request: RequestAddFilmModel) -> Film:
 #
 #         if request.type in Repository.film_types():
@@ -227,6 +244,6 @@ class StoreCheckout:
 #
 #         else:
 #             raise StoreCheckoutError(f"Invalid film type: '{request.type}. Valid types are: {Repository.film_types()}.")
-
-    #     def load_demo_data():
-    #         Repository.load_demo_data()
+#
+#     def load_demo_data():
+#         Repository.load_demo_data()

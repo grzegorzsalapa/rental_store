@@ -75,11 +75,11 @@ def api_get_film_inventory():
 #
 #     return response
 #
-#
-# @store.get("/store/ledger")
-# def api_get_ledger():
-#     return StoreCheckout.get_ledger()
-#
+
+@store.get("/store/rentals")
+def api_get_rentals():
+    return store_checkout.get_rentals()
+
 
 @store.post("/customers/add", status_code=201)
 def api_add_customer():

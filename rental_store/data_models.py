@@ -1,14 +1,13 @@
 from pydantic import BaseModel
-from typing import Optional
 from enum import IntEnum
 import datetime
 from uuid import UUID
 
 
-class RentalRecord(BaseModel):
+class RentalRecordModel(BaseModel):
     request_id: UUID = None
-    customer_id: int = None
-    film_id: int = None
+    customer_id: UUID = None
+    cassette_id: UUID = None
     date_of_rent: datetime.date = None
     up_front_days: int = None
     charge: int = None
@@ -21,9 +20,8 @@ class ReservationRecord(BaseModel):
     film_id: int
 
 
-class Ledger(BaseModel):
-    rentals: list[RentalRecord] = []
-    reservations: list[ReservationRecord] = []
+class Rentals(BaseModel):
+    rentals: list[RentalRecordModel] = []
 
 
 class FilmModel(BaseModel):

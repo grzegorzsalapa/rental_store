@@ -3,7 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 from rental_store.store_api import store
 from unittest.mock import patch
-from rental_store.data_models import InventoryModel, Film, CustomerModel, PriceList, RentalRecord, \
+from rental_store.data_models import InventoryModel, Film, CustomerModel, PriceList, RentalRecordModel, \
     FilmRentResponseModel,\
     FilmRentResponseItemModel,\
     FilmReturnResponseModel,\
@@ -221,7 +221,7 @@ def test_end2end_post_return_films():
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 film_id=5,
                 customer_id=9,
@@ -274,7 +274,7 @@ def test_end2end_get_film_inventory():
         item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 film_id=1,
                 customer_id=9,
@@ -322,7 +322,7 @@ def test_end2end_get_get_film():
         item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=0,
@@ -440,7 +440,7 @@ def test_end2end_get_get_customer():
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id='bab7010e-7803-468f-807b-6f4252a57178',
                 customer_id=9,
                 film_id=1,
@@ -485,7 +485,7 @@ def test_end2end_get_customers():
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.customers = [CustomerModel(id=0), CustomerModel(id=9), CustomerModel(id=16), CustomerModel(id=17)]
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id='bab7010e-7803-468f-807b-6f4252a57178',
                 customer_id=9,
                 film_id=1,
@@ -545,7 +545,7 @@ def test_404_on_post_rent_unavailable_film():
         rental_store.repositories.data_storage.customers = [CustomerModel(id=4), CustomerModel(id=7), CustomerModel(id=9)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=4,
                 film_id=5,
@@ -553,7 +553,7 @@ def test_404_on_post_rent_unavailable_film():
                 up_front_days=1,
                 charge=40
             ),
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=5,
@@ -662,7 +662,7 @@ def test_404_on_post_return_film_that_was_not_rented():
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=8,
@@ -705,7 +705,7 @@ def test_404_on_post_return_film_that_was_not_in_inventory():
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=8,
@@ -748,7 +748,7 @@ def test_404_on_post_return_film_non_existing_customer():
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.price_list = PriceList()
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=8,
@@ -793,7 +793,7 @@ def test_404_on_get_film_not_in_inventory():
         item_1 = Film(id=1, title="Spider Man", type="Regular", items_total=20)
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id=uuid4(),
                 customer_id=9,
                 film_id=0,
@@ -825,7 +825,7 @@ def test_404_on_get_customer_that_does_not_exist():
         rental_store.repositories.data_storage.inventory = InventoryModel(films=[item_0, item_1])
         rental_store.repositories.data_storage.customers = [CustomerModel(id=9), CustomerModel(id=16)]
         rental_store.repositories.data_storage.ledger.rentals = [
-            RentalRecord(
+            RentalRecordModel(
                 request_id='bab7010e-7803-468f-807b-6f4252a57178',
                 customer_id=9,
                 film_id=1,

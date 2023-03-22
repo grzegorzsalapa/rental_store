@@ -1,4 +1,4 @@
-from rental_store.data_models import Film, CustomerModel, InventoryModel, PriceList, Ledger, RentalRecord
+from rental_store.data_models import Film, CustomerModel, InventoryModel, PriceList, Rentals, RentalRecordModel
 from rental_store.data_storage import MemoryDataStorage
 import copy
 
@@ -130,7 +130,7 @@ class Repository:
 
 
     @classmethod
-    def get_ledger(cls) -> Ledger:
+    def get_ledger(cls) -> Rentals:
         return data_storage.ledger
 
     @classmethod
@@ -160,7 +160,7 @@ class Repository:
         data_storage.price_list = price_list
 
     @classmethod
-    def update_ledger(cls, ledger: Ledger):
+    def update_ledger(cls, ledger: Rentals):
         data_storage.ledger = ledger
 
     @classmethod
