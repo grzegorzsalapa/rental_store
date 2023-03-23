@@ -206,13 +206,6 @@ class StoreCheckout:
 
             return inventory
 
-    #     def get_film(film_id: int) -> Inventory:
-    #         try:
-    #             return Repository.get_film(film_id)
-    #
-    #         except RecordNotFoundError as e:
-    #             raise StoreCheckoutError(str(e))
-
     def get_rentals(self) -> Rentals:
 
         with Session(self.engine) as session:
@@ -236,6 +229,12 @@ class StoreCheckout:
 
             return rentals
 
+#     def get_film(film_id: int) -> Inventory:
+#         try:
+#             return Repository.get_film(film_id)
+#
+#         except RecordNotFoundError as e:
+#             raise StoreCheckoutError(str(e))
 #     def add_film(request: RequestAddFilmModel) -> Film:
 #
 #         if request.type in Repository.film_types():
