@@ -35,5 +35,4 @@ exclude = [
 test = [
   "pytest==7.2.1",
   "httpx==0.23.3"
-
 ]

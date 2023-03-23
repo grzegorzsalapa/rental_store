@@ -1,0 +1,551 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/films/rent": {
+      "post": {
+        "summary": "Api Rent Films",
+        "operationId": "api_rent_films_films_rent_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmRentRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmRentResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/films/return": {
+      "post": {
+        "summary": "Api Return Films",
+        "operationId": "api_return_films_films_return_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmReturnRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmReturnResponseModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/films": {
+      "get": {
+        "summary": "Api Get Film Inventory",
+        "operationId": "api_get_film_inventory_films_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Inventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/films/{film_id}": {
+      "get": {
+        "summary": "Api Get Film",
+        "operationId": "api_get_film_films__film_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "name": "film_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Film"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/store/ledger": {
+      "get": {
+        "summary": "Api Get Ledger",
+        "operationId": "api_get_ledger_store_ledger_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/add": {
+      "post": {
+        "summary": "Api Add Customer",
+        "operationId": "api_add_customer_customers_add_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers/{customer_id}": {
+      "get": {
+        "summary": "Api Get Customer",
+        "operationId": "api_get_customer_customers__customer_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Customer Id",
+              "type": "integer"
+            },
+            "name": "customer_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "summary": "Api Get Customers",
+        "operationId": "api_get_customers_customers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/films/add": {
+      "post": {
+        "summary": "Api Add Film",
+        "operationId": "api_add_film_films_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAddFilmModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Film"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/demo": {
+      "post": {
+        "summary": "Api Start Demo",
+        "operationId": "api_start_demo_demo_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Film": {
+        "title": "Film",
+        "required": [
+          "id",
+          "title",
+          "type",
+          "items_total"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "items_total": {
+            "title": "Items Total",
+            "type": "integer"
+          },
+          "available_items": {
+            "title": "Available Items",
+            "type": "integer"
+          }
+        }
+      },
+      "FilmRentRequestItemModel": {
+        "title": "FilmRentRequestItemModel",
+        "required": [
+          "film_id",
+          "up_front_days"
+        ],
+        "type": "object",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          },
+          "up_front_days": {
+            "title": "Up Front Days",
+            "type": "integer"
+          }
+        }
+      },
+      "FilmRentRequestModel": {
+        "title": "FilmRentRequestModel",
+        "required": [
+          "customer_id",
+          "rented_films"
+        ],
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "integer"
+          },
+          "rented_films": {
+            "title": "Rented Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilmRentRequestItemModel"
+            }
+          }
+        }
+      },
+      "FilmRentResponseItemModel": {
+        "title": "FilmRentResponseItemModel",
+        "required": [
+          "film_id",
+          "charge",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          },
+          "charge": {
+            "title": "Charge",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          }
+        }
+      },
+      "FilmRentResponseModel": {
+        "title": "FilmRentResponseModel",
+        "required": [
+          "rented_films"
+        ],
+        "type": "object",
+        "properties": {
+          "rented_films": {
+            "title": "Rented Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilmRentResponseItemModel"
+            }
+          }
+        }
+      },
+      "FilmReturnRequestItemModel": {
+        "title": "FilmReturnRequestItemModel",
+        "required": [
+          "film_id"
+        ],
+        "type": "object",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          }
+        }
+      },
+      "FilmReturnRequestModel": {
+        "title": "FilmReturnRequestModel",
+        "required": [
+          "customer_id",
+          "returned_films"
+        ],
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "title": "Customer Id",
+            "type": "integer"
+          },
+          "returned_films": {
+            "title": "Returned Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilmReturnRequestItemModel"
+            }
+          }
+        }
+      },
+      "FilmReturnResponseItemModel": {
+        "title": "FilmReturnResponseItemModel",
+        "required": [
+          "film_id",
+          "surcharge",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          },
+          "surcharge": {
+            "title": "Surcharge",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          }
+        }
+      },
+      "FilmReturnResponseModel": {
+        "title": "FilmReturnResponseModel",
+        "required": [
+          "returned_films"
+        ],
+        "type": "object",
+        "properties": {
+          "returned_films": {
+            "title": "Returned Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilmReturnResponseItemModel"
+            }
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "Inventory": {
+        "title": "Inventory",
+        "type": "object",
+        "properties": {
+          "films": {
+            "title": "Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Film"
+            },
+            "default": []
+          }
+        }
+      },
+      "RequestAddFilmModel": {
+        "title": "RequestAddFilmModel",
+        "required": [
+          "title",
+          "type",
+          "items_total"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "items_total": {
+            "title": "Items Total",
+            "type": "integer"
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

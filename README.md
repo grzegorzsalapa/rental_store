@@ -14,6 +14,9 @@ development in branch "ORM".
 
     $ uvicorn rental_store.store_api:store --host 127.0.0.1 --port 8080
 
+Server is running on port 8080, does not require authenticating and can be accessed with valid REST API request (check
+docs/openapi.json). To load demo data POST on /demo endpoint.
+
 ## How to test
 
 #### Installation
