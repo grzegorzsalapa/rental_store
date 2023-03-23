@@ -19,7 +19,6 @@ classifiers = [
 dependencies = [
     "fastapi==0.92.0",
     "pydantic==1.10.5",
-    "pytest==7.2.1",
     "uvicorn==0.20.0"
 ]
 packages = [
@@ -38,6 +37,3 @@ test = [
   "httpx==0.23.3"
 
 ]
-
-[project.scripts]
-rental_store = "uvicorn rental_store.store_api:store --host 127.0.0.1 --port 8080"
